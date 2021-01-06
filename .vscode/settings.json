@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "ec2-100-25-45-111.compute-1.amazonaws.com",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "DBMS",
+            "database": "dbms",
+            "username": "root",
+            "password": "root"
+        }
+    ]
+}
