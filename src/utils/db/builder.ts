@@ -1,25 +1,35 @@
-import {qb_INSERT, qb_SELECT, qb_UPDATE, QBDataType, QBJob, QBJobType} from "./core";
+import {qb_INSERT, qb_SELECT, qb_UPDATE, QBDataType, QBJobType} from "./core";
 
 export class QBuilder {
-    private readonly table: string;
+    private table: string;
     private type: QBJobType;
+
     private updateData!: QBDataType;
     private insertData!: QBDataType;
+
     private selections?: string[];
     private whereCond?: QBDataType;
 
-    constructor(table: string) {
-        this.table = table;
+    private rawQuery!: string;
+    private rawQArgs?: string []
+
+    constructor(table?: string) {
+        this.table = table || '';
         this.type = QBJobType.SELECT
     }
 
+    from(table: string): QBuilder {
+        this.type = QBJobType.SELECT
+        this.table = table
+        return this;
+    }
 
     where(and: QBDataType): QBuilder {
         this.whereCond = and;
         return this;
     }
 
-    select(selection: string[] = []): QBuilder {
+    select(...selection: string[]): QBuilder {
         this.type = QBJobType.SELECT;
         this.selections = selection
         return this
@@ -37,7 +47,13 @@ export class QBuilder {
         return this
     }
 
-    done(): {query: string, args: string[]} {
+    raw(query: string, args: string[]) {
+        this.type = QBJobType.RAW
+        this.rawQuery = query
+        this.rawQArgs = args
+    }
+
+    get query(): {query: string, args: string[]} {
         switch (this.type) {
             case QBJobType.SELECT:
                 return qb_SELECT({
@@ -52,6 +68,15 @@ export class QBuilder {
                     table: this.table,
                     insert: this.insertData
                 })
+            case QBJobType.UPDATE:
+                return qb_UPDATE({
+                    type: this.type,
+                    table: this.table,
+                    update: this.updateData,
+                    where: this.whereCond
+                })
+            case QBJobType.RAW:
+                return {query: this.rawQuery, args: this.rawQArgs || []}
             default:
                 return {query: '', args: []}
         }
