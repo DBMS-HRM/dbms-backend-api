@@ -1,0 +1,11 @@
+node_modules
+
+# editors and ides
+.idea
+.vscode
+
+# environment files
+.env
+
+# other
+dist
