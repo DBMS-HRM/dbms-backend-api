@@ -1,15 +1,25 @@
 import {QBuilder} from "./builder";
-
+import {ErrorCode} from "./error";
+import {runQuery, runTrx} from "./conn";
 
 /**
  * Query Builder
  * @param table
+ * @param alias: short name for table
  */
-export function qb(table?: string) {
-    return new QBuilder(table)
+export function qb(table?: string, alias?: string) {
+    return new QBuilder(table, alias);
 }
 
-import {runQuery} from "./conn";
+/**
+ * Query Executors
+ */
+export {runQuery, runTrx} from "./conn";
+
+/**
+ * Query Error Codes
+ */
+export const MErr = ErrorCode;
 
 
 // async function main() {
@@ -19,7 +29,11 @@ import {runQuery} from "./conn";
 //     )
 //     console.log('ERROR', error)
 //     console.log('RESULT', res)
+//
+//     return qb("userData")
+//         .join("userAccount", "userAccount.userId", "=", "td.userId")
+//         .where({userId: 3}).query.query;
 // }
 //
 //
-// main().then(console.log).catch(console.log)
+// main().then(console.log).catch(console.log);

@@ -1,6 +1,6 @@
 require("dotenv").config();
 import {Pool, PoolConfig} from "pg";
-import {dbError_toMError, MError, NoError, NotFound} from "./merror";
+import {dbError_toMError, Error, NoError, NotFound} from "./error";
 import {arrToCamelCase, objToCamelCase} from "./typo";
 
 
@@ -56,10 +56,26 @@ interface RunQueryConfig {
 /**
  * Run Transaction
  */
-async function runTrx() {
-    pool.connect((err, client, done) => {
-        const res = client.query("");
-    });
+export async function runTrx<T>(...qbs: IQBuilder[]): Promise<[Error, T]> {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN')
+
+        let result: any;
+        for (let qb of qbs) {
+            const qPackage = qb.query;
+            const {rows} = await client.query(qPackage.query, qPackage.args);
+            result = rows;
+        }
+
+        await client.query('COMMIT')
+        return [NoError, result as T];
+    } catch (e) {
+        await client.query('ROLLBACK')
+        return [dbError_toMError(e), {} as T];
+    } finally {
+        client.release();
+    }
 }
 
 
@@ -69,7 +85,7 @@ async function runTrx() {
 export async function runQuery<T>(
     qb: IQBuilder,
     config: RunQueryConfig = {}
-): Promise<[MError, T]> {
+): Promise<[Error, T]> {
     const client = await pool.connect();
     try {
         const qPackage = qb.query;

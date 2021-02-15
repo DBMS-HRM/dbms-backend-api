@@ -12,8 +12,7 @@
     "dev": "ts-node src/main.ts",
     "clean": "rm -dfr ./dist",
     "serve": "ts-node-dev --respawn --transpile-only src/main.ts",
-    "migrate": "knex migrate:latest",
-    "seed": "knex seed:run"
+    "migrate": "node ./sql/migrate.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
@@ -21,6 +20,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.9.2",
+    "js-sql-parser": "^1.4.1",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.5.1",
     "uuid": "^8.3.2"

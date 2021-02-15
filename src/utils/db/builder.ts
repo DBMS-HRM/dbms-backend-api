@@ -1,26 +1,36 @@
-import {qb_INSERT, qb_SELECT, qb_UPDATE, QBDataType, QBJobType} from "./core";
+import {_QBJob_SELECT_JOIN, qb_INSERT, qb_SELECT, qb_UPDATE, QBDataType, QBJobType} from "./core";
+
+type JoinType = "JOIN" | "LEFT JOIN" | "RIGHT JOIN"
 
 export class QBuilder {
     private table: string;
+    private alias: string;
     private type: QBJobType;
+
+    private selectionList?: string[];
+    private joinsList?: _QBJob_SELECT_JOIN[];
+    private orderByList?: string[];
+    private limitValue?: number;
+    private offsetValue?: number;
 
     private updateData!: QBDataType;
     private insertData!: QBDataType;
 
-    private selections?: string[];
+
     private whereCond?: QBDataType;
-
     private rawQuery!: string;
-    private rawQArgs?: string []
+    private rawQArgs?: string [];
 
-    constructor(table?: string) {
-        this.table = table || '';
-        this.type = QBJobType.SELECT
+    constructor(table?: string, alias: string = "") {
+        this.table = table || "";
+        this.type = QBJobType.SELECT;
+        this.alias = alias;
     }
 
-    from(table: string): QBuilder {
-        this.type = QBJobType.SELECT
-        this.table = table
+    from(table: string, alias: string = ""): QBuilder {
+        this.type = QBJobType.SELECT;
+        this.table = table;
+        this.alias = alias;
         return this;
     }
 
@@ -31,54 +41,121 @@ export class QBuilder {
 
     select(...selection: string[]): QBuilder {
         this.type = QBJobType.SELECT;
-        this.selections = selection
-        return this
+        this.selectionList = selection;
+        return this;
     }
+
+    // private _join(type: JoinType, table: string, c1: string, op: string, c2: string): QBuilder
+    // private _join(type: JoinType, table: string[], c1: string, op: string, c2: string): QBuilder
+    private _join(type: JoinType, table: string | string[], c1: string, op: string, c2: string): QBuilder {
+        if (!this.joinsList) this.joinsList = [];
+        if (typeof table == "string") {
+            this.joinsList?.push({
+                type: type,
+                table: table,
+                alias: "",
+                on: {
+                    c1, op, c2
+                }
+            });
+        } else {
+            this.joinsList?.push({
+                type: type,
+                table: table[0],
+                alias: table[1] || "",
+                on: {
+                    c1, op, c2
+                }
+            });
+        }
+        return this;
+    }
+
+    join(table: string | string[], c1: string, op: string, c2: string): QBuilder {
+        return this._join(
+            "JOIN",
+            table, c1, op, c2
+        );
+    }
+
+    leftJoin(table: string | string[], c1: string, op: string, c2: string): QBuilder {
+        return this._join(
+            "LEFT JOIN",
+            table, c1, op, c2
+        );
+    }
+
+    rightJoin(table: string | string[], c1: string, op: string, c2: string): QBuilder {
+        return this._join(
+            "RIGHT JOIN",
+            table, c1, op, c2
+        );
+    }
+
+    orderBy(...columns: string[]): QBuilder {
+        this.orderByList = columns;
+        return this;
+    }
+
+    limit(limit: number): QBuilder {
+        this.limitValue = limit;
+        return this;
+    }
+
+    offset(offset: number): QBuilder {
+        this.offsetValue = offset;
+        return this;
+    }
+
 
     insert(data: QBDataType): QBuilder {
         this.type = QBJobType.INSERT;
-        this.insertData = data
-        return this
+        this.insertData = data;
+        return this;
     }
 
     update(data: QBDataType): QBuilder {
         this.type = QBJobType.UPDATE;
-        this.updateData = data
-        return this
+        this.updateData = data;
+        return this;
     }
 
     raw(query: string, args: string[]) {
-        this.type = QBJobType.RAW
-        this.rawQuery = query
-        this.rawQArgs = args
+        this.type = QBJobType.RAW;
+        this.rawQuery = query;
+        this.rawQArgs = args;
     }
 
-    get query(): {query: string, args: string[]} {
+    get query(): { query: string, args: string[] } {
         switch (this.type) {
             case QBJobType.SELECT:
                 return qb_SELECT({
                     type: this.type,
-                    table: this.table,
-                    selection: this.selections,
-                    where: this.whereCond
-                })
+                    table: this.table, alias: this.alias,
+                    selection: this.selectionList,
+                    where: this.whereCond,
+                    joins: this.joinsList,
+                    orderBy: this.orderByList,
+                    limit: this.limitValue,
+                    offset: this.offsetValue
+                });
             case QBJobType.INSERT:
                 return qb_INSERT({
                     type: this.type,
-                    table: this.table,
+                    table: this.table, alias: this.alias,
                     insert: this.insertData
-                })
+                });
             case QBJobType.UPDATE:
                 return qb_UPDATE({
                     type: this.type,
-                    table: this.table,
+                    table: this.table, alias: this.alias,
                     update: this.updateData,
                     where: this.whereCond
-                })
+                });
             case QBJobType.RAW:
-                return {query: this.rawQuery, args: this.rawQArgs || []}
+                return {query: this.rawQuery, args: this.rawQArgs || []};
             default:
-                return {query: '', args: []}
+                return {query: "", args: []};
         }
     }
 }
