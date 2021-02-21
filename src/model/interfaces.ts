@@ -7,8 +7,7 @@ export interface AdminAccount {
     username : string;
     password : string;
     email : string;
-    status : boolean;
-    branchId : string;
+    branch : string;
     accountType : string;
 }
 
