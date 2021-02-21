@@ -10,5 +10,9 @@ rApi.use(rBuilder);
 // Endpoints
 rApi.get("/", cAbout);
 
+// Sub routers
+import rUser from "./[user]"
+rApi.use('/user', rUser)
+
 // Router
 export default rApi

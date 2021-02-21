@@ -26,7 +26,7 @@ interface AdminAccount {
     username : string;
     password : string;
     email : string;
-    accountType : string;
+    status : string;
 }
 
 interface EmployeeCompanyDetail {
@@ -60,7 +60,7 @@ interface PayGrade {
     numOfLeaves : number,
 }
 
-export default abstract class Employee{
+export default abstract class Employee {
     static job_titles = {
         HRManager : "HR Manager",
         QAEngineer : "QA Engineer",
@@ -98,7 +98,7 @@ export default abstract class Employee{
     };
 
     // Get admin account by user name
-    static getAdminAccount (username : string ) : Promise<[any, object]> {
+    static getAdminAccount (username : string ) : Promise<[any, AdminAccount]> {
         return runQuery(
             qb(TABLE.adminAccount).where({username}).limit(1)
         );

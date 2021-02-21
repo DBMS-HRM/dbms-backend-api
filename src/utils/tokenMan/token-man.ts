@@ -43,7 +43,7 @@ export class TokenMan {
     /**
      * Generate new refresh token for specific key
      * if there is a refresh token already for given key it will be replaced
-     * @param key : a string such as user id
+     * @param key : a string such as [user] id
      * @return jwt token
      */
     getRefreshToken(key: string): string {
