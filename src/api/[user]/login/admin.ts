@@ -23,7 +23,7 @@ const validateCredentials: Handler = async (req, res, next) => {
     const {username, password} = req.body;
 
     const [error, account] = await model.user.getAdminAccount(username);
-    console.log(account)
+
     if (error.code === MErr.NO_ERROR) {
         // password verification
         if (!await compare(password, account.password)) {
@@ -33,7 +33,7 @@ const validateCredentials: Handler = async (req, res, next) => {
             return;
         }
 
-        req.body.account = account; // bind userId to request
+        req.body.account = account; // bind account data to request
         next() // send pair of tokens
         return;
     }
@@ -61,14 +61,16 @@ const serveToken: Handler = async (req, res) => {
     const payload = {
         userId: account.userId,
         email: account.email,
-        status: account.status
+        status: account.status,
+        accountType: account.accountType,
+        branchId: account.branchId
     }
 
     // create token
     const accessToken = TokenMan.getAccessToken(payload);
 
     r.status.OK()
-        .data(account)
+        .data(payload)
         .token(accessToken)
         .message("Success")
         .send();

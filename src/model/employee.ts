@@ -92,14 +92,19 @@ export default abstract class Employee {
         freelance : "Freelance"
     };
 
-    // Get employee by user name
-    static getEmployeeAccount (username : string ) : Promise<[any, object]> {
+    /**
+     * SELECT Queries ------------------------------------------------------------------------------
+     */
+    static getEmployeeAccount (username : string ) : Promise<[any, EmployeeAccount]> {
         return runQuery(
             qb(TABLE.employeeAccount).where({username})
         );
     };
 
-    // Get admin account by user name
+    /**
+     * Get admin account by username
+     * @param username
+     */
     static getAdminAccount (username : string ) : Promise<[any, AdminAccount]> {
         return runQuery(
             qb(TABLE.adminAccount).where({username}),
@@ -107,7 +112,10 @@ export default abstract class Employee {
         );
     };
 
-    // Admin account
+    /**
+     * INSERT Queries ----------------------------------------------------------------------------------------
+     */
+
     static addAdminUser (adminAccountData : AdminAccount) {
         return runQuery(
             qb(TABLE.adminAccount).insert(adminAccountData)
@@ -115,13 +123,15 @@ export default abstract class Employee {
     }
 
     // Create employee account -> Not the complete data
-    static addEmployeeAccount (employeeAccountData : EmployeeAccount){
+    static addEmployeeAccount (employeeAccountData: EmployeeAccount){
         return runQuery(
             qb(TABLE.employeeAccount).insert(employeeAccountData)
         )
     };
 
-
+    /**
+     * UPDATE Queries ----------------------------------------------------------------------------------------
+     */
 
 }
 
