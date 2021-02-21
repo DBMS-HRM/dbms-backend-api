@@ -22,18 +22,18 @@ export {runQuery, runTrx} from "./conn";
 export const MErr = ErrorCode;
 
 
-// async function main() {
+async function main() {
 //     const [error, res] = await runQuery(
 //         qb('testData').where({userId: 3}),
 //         {single: false, required: true}
 //     )
-//     console.log('ERROR', error)
-//     console.log('RESULT', res)
+    // console.log('ERROR', error)
+    // console.log('RESULT', res)
+
+    return qb("userData")
+        .join("userAccount", "userAccount.userId", "=", "td.userId")
+        .where({userId: 3}).query;
+}
 //
-//     return qb("userData")
-//         .join("userAccount", "userAccount.userId", "=", "td.userId")
-//         .where({userId: 3}).query.query;
-// }
 //
-//
-// main().then(console.log).catch(console.log);
+main().then(console.log).catch(console.log);

@@ -102,22 +102,11 @@ CREATE TABLE supervisor (
 
 -- User Accounts -------------------------------------------------------------------------------------------------------
 
-CREATE TABLE user_account (
-    user_id UUID PRIMARY KEY,
+CREATE TABLE employee_account (
+    employee_id UUID PRIMARY KEY,
     username VARCHAR(20) NOT NULL,
     password VARCHAR(20) NOT NULL,
-    email_address VARCHAR(50) NOT NULL
-);
-
-
-CREATE TABLE employee_account (
-    user_id UUID PRIMARY KEY,
-    employee_id UUID NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user_account(user_id) ON DELETE RESTRICT,
+    email_address VARCHAR(50) NOT NULL,
+    status VARCHAR(20) BOOLEAN,
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
-);
-
-CREATE TABLE admin_account (
-    user_id UUID PRIMARY KEY,
-    FOREIGN KEY (user_id) REFERENCES user_account(user_id) ON DELETE RESTRICT
 );
