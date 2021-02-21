@@ -23,7 +23,7 @@ const validateCredentials: Handler = async (req, res, next) => {
     const {username, password} = req.body;
 
     const [error, account] = await model.user.getAdminAccount(username);
-
+    console.log(account)
     if (error.code === MErr.NO_ERROR) {
         // password verification
         if (!await compare(password, account.password)) {

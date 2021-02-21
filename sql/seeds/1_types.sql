@@ -33,3 +33,9 @@ INSERT INTO pay_grade
         ('Level 1'),
         ('Level 2'),
         ('Level 3');
+
+
+INSERT INTO admin_account_type
+    VALUES
+        ('Super Admin'),
+        ('Admin');

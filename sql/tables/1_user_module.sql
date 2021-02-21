@@ -11,7 +11,6 @@ DROP TABLE IF EXISTS employee_personal_detail;
 DROP TABLE IF EXISTS employee_company_detail;
 DROP TABLE IF EXISTS department;
 DROP TABLE IF EXISTS pay_grade;
-DROP TABLE IF EXISTS branch;
 DROP TABLE IF EXISTS leave_type;
 DROP TABLE IF EXISTS leave_request_state;
 DROP TABLE IF EXISTS employment_status;
@@ -38,11 +37,6 @@ CREATE TABLE  employment_status (
 );
 
 -- ---------------------------------------------------------------------------------------------------------------------
-
-CREATE TABLE branch (
-    branch_ID UUID PRIMARY KEY,
-    branch_name VARCHAR(20)
-);
 
 
 CREATE TABLE pay_grade (
@@ -105,8 +99,8 @@ CREATE TABLE supervisor (
 CREATE TABLE employee_account (
     employee_id UUID PRIMARY KEY,
     username VARCHAR(20) NOT NULL,
-    password VARCHAR(20) NOT NULL,
+    password VARCHAR(100) NOT NULL,
     email_address VARCHAR(50) NOT NULL,
-    status VARCHAR(20) BOOLEAN,
+    status BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
 );

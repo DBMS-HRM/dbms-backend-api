@@ -26,7 +26,9 @@ interface AdminAccount {
     username : string;
     password : string;
     email : string;
-    status : string;
+    status : boolean;
+    branchId : string;
+    accountType : string;
 }
 
 interface EmployeeCompanyDetail {
@@ -100,7 +102,8 @@ export default abstract class Employee {
     // Get admin account by user name
     static getAdminAccount (username : string ) : Promise<[any, AdminAccount]> {
         return runQuery(
-            qb(TABLE.adminAccount).where({username}).limit(1)
+            qb(TABLE.adminAccount).where({username}),
+            {single: true, required: true}
         );
     };
 

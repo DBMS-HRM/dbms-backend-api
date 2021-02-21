@@ -14,7 +14,6 @@ CREATE TABLE leave_type (
     leave_type VARCHAR(20) PRIMARY KEY
 );
 
-
 -- Leave Tables --------------------------------------------------------------------------------------------------------
 
 CREATE TABLE leave_request (

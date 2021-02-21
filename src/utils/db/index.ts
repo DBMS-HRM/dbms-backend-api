@@ -20,20 +20,3 @@ export {runQuery, runTrx} from "./conn";
  * Query Error Codes
  */
 export const MErr = ErrorCode;
-
-
-async function main() {
-//     const [error, res] = await runQuery(
-//         qb('testData').where({userId: 3}),
-//         {single: false, required: true}
-//     )
-    // console.log('ERROR', error)
-    // console.log('RESULT', res)
-
-    return qb("userData")
-        .join("userAccount", "userAccount.userId", "=", "td.userId")
-        .where({userId: 3}).query;
-}
-//
-//
-main().then(console.log).catch(console.log);
