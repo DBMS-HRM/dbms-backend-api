@@ -22,7 +22,6 @@ export default abstract class Employee {
         QAEngineer : "QA Engineer",
         Accountant : "Accountant",
         SoftwareEngineer : "Software Engineer"
-
     }
 
     static user_account_types = {
@@ -43,8 +42,8 @@ export default abstract class Employee {
     }
 
     static employment_status = {
-        internFullTime : "Intern Full Time",
-        internPartTime : "Inter Part Time",
+        interFullTime : "Intern Full Time",
+        interPartTime : "Intern Part Time",
         contractFullTime : "Contract Full Time",
         contractPartTime : "Contract Part Time",
         permanent : "Permanent",
