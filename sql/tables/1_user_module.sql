@@ -1,20 +1,17 @@
--- Clean Schema
-DROP TABLE IF EXISTS leave_approval_supervisor;
-DROP TABLE IF EXISTS leave_request;
-DROP TABLE IF EXISTS admin_account;
-DROP TABLE IF EXISTS employee_account;
-DROP TABLE IF EXISTS user_account;
-DROP TABLE IF EXISTS supervisor;
-DROP TABLE IF EXISTS custom_details;
-DROP TABLE IF EXISTS employee_emergency_detail;
-DROP TABLE IF EXISTS employee_personal_detail;
-DROP TABLE IF EXISTS employee_company_detail;
-DROP TABLE IF EXISTS department;
-DROP TABLE IF EXISTS pay_grade;
-DROP TABLE IF EXISTS leave_type;
-DROP TABLE IF EXISTS leave_request_state;
-DROP TABLE IF EXISTS employment_status;
+-- Clean Schema----------------------------------------------------
+
 DROP TABLE IF EXISTS job_title;
+DROP TABLE IF EXISTS employment_status;
+DROP TABLE IF EXISTS pay_grade;
+DROP TABLE IF EXISTS department;
+DROP TABLE IF EXISTS employee_company_detail;
+DROP TABLE IF EXISTS employee_personal_detail;
+DROP TABLE IF EXISTS employee_emergency_detail;
+DROP TABLE IF EXISTS phone_number;
+DROP TABLE IF EXISTS custom_details;
+DROP TABLE IF EXISTS supervisor;
+DROP TABLE IF EXISTS employee_account_type;
+DROP TABLE IF EXISTS employee_account;
 
 
 
@@ -58,11 +55,10 @@ CREATE TABLE employee_company_detail (
     pay_grade VARCHAR(20) NOT NULL,
     department_name VARCHAR(20) NOT NULL,
     FOREIGN KEY(branch_id) REFERENCES branch(branch_id) ON DELETE RESTRICT,
-    FOREIGN KEY(job_title) REFERENCES job_title(job_title),
-    FOREIGN KEY(employment_status) REFERENCES employment_status(employment_status),
-    FOREIGN KEY(pay_grade) REFERENCES pay_grade(pay_grade),
-    FOREIGN KEY(department_name) REFERENCES department(department_name)
-        
+    FOREIGN KEY(job_title) REFERENCES job_title(job_title) ON DELETE RESTRICT,
+    FOREIGN KEY(employment_status) REFERENCES employment_status(employment_status) ON DELETE RESTRICT,
+    FOREIGN KEY(pay_grade) REFERENCES pay_grade(pay_grade) ON DELETE RESTRICT,
+    FOREIGN KEY(department_name) REFERENCES department(department_name) ON DELETE RESTRICT   
 ); 
 
 CREATE TABLE employee_personal_detail (
@@ -75,10 +71,15 @@ CREATE TABLE employee_personal_detail (
 
 CREATE TABLE employee_emergency_detail (
     employee_id UUID PRIMARY KEY,
-    phone_number VARCHAR(20) NOT NULL,
     address TEXT NOT NULL ,
     email_address VARCHAR(20) NOT NULL,
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
+);
+
+CREATE TABLE phone_number (
+    employee_id UUID PRIMARY KEY,
+    phone_number VARCHAR(20) NOT NULL,
+    FOREIGN KEY (employee_id) REFERENCES employee_emergency_detail(employee_id) ON DELETE RESTRICT
 );
 
 CREATE TABLE custom_details (
@@ -96,11 +97,19 @@ CREATE TABLE supervisor (
 
 -- User Accounts -------------------------------------------------------------------------------------------------------
 
+CREATE TABLE employee_account_type (
+    type VARCHAR(20) PRIMARY KEY,
+    description TEXT
+);
+
 CREATE TABLE employee_account (
     employee_id UUID PRIMARY KEY,
     username VARCHAR(20) NOT NULL,
     password VARCHAR(100) NOT NULL,
-    email_address VARCHAR(50) NOT NULL,
+    email_address VARCHAR(100) NOT NULL,
+    account_type VARCHAR(20) NOT NULL,
     status BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
+
+    FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT,
+    FOREIGN KEY (account_type) REFERENCES employee_account_type(type) ON DELETE RESTRICT
 );

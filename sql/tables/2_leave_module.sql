@@ -1,3 +1,11 @@
+----Clean Schema--------------------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS leave_request_state;
+DROP TABLE IF EXISTS leave_type;
+DROP TABLE IF EXISTS leave_request;
+DROP TABLE IF EXISTS leave_approval_supervisor;
+
+
 -- ████████╗░█████╗░██████╗░██╗░░░░░███████╗░██████╗
 -- ╚══██╔══╝██╔══██╗██╔══██╗██║░░░░░██╔════╝██╔════╝
 -- ░░░██║░░░███████║██████╦╝██║░░░░░█████╗░░╚█████╗░
