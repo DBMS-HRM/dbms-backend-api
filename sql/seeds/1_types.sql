@@ -44,4 +44,10 @@ INSERT INTO employee_account_type
     VALUES
         ('Managerial Employee', ''),
         ('Supervisor', ''),
-        ('Employee', '')        
+        ('Employee', '');
+
+INSERT INTO branch
+    VALUES
+        ('Sri Lanka'),
+        ('Bangladesh'),
+        ('Pakistan');

@@ -10,9 +10,8 @@ DROP TABLE IF EXISTS employee_emergency_detail;
 DROP TABLE IF EXISTS phone_number;
 DROP TABLE IF EXISTS custom_details;
 DROP TABLE IF EXISTS supervisor;
-DROP TABLE IF EXISTS employee_account_type;
 DROP TABLE IF EXISTS employee_account;
-
+DROP TABLE IF EXISTS employee_account_type;
 
 
 -- ████████╗░█████╗░██████╗░██╗░░░░░███████╗░██████╗
@@ -49,12 +48,12 @@ CREATE TABLE department (
 -- Employee Details ----------------------------------------------------------------------------------------------------
 CREATE TABLE employee_company_detail (
     employee_id UUID PRIMARY KEY,
-    branch_id UUID NOT NULL,
+    branch_name VARCHAR(20) NOT NULL,
     job_title VARCHAR(25) NOT NULL,
     employment_status VARCHAR(20) NOT NULL,
     pay_grade VARCHAR(20) NOT NULL,
     department_name VARCHAR(20) NOT NULL,
-    FOREIGN KEY(branch_id) REFERENCES branch(branch_id) ON DELETE RESTRICT,
+    FOREIGN KEY(branch_name) REFERENCES branch(branch_name) ON DELETE RESTRICT,
     FOREIGN KEY(job_title) REFERENCES job_title(job_title) ON DELETE RESTRICT,
     FOREIGN KEY(employment_status) REFERENCES employment_status(employment_status) ON DELETE RESTRICT,
     FOREIGN KEY(pay_grade) REFERENCES pay_grade(pay_grade) ON DELETE RESTRICT,
