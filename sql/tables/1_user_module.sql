@@ -4,13 +4,13 @@ DROP TABLE IF EXISTS job_title;
 DROP TABLE IF EXISTS employment_status;
 DROP TABLE IF EXISTS pay_grade;
 DROP TABLE IF EXISTS department;
-DROP TABLE IF EXISTS employee_company_detail;
 DROP TABLE IF EXISTS employee_personal_detail;
 DROP TABLE IF EXISTS employee_emergency_detail;
+DROP TABLE IF EXISTS employee_account;
 DROP TABLE IF EXISTS phone_number;
 DROP TABLE IF EXISTS custom_details;
 DROP TABLE IF EXISTS supervisor;
-DROP TABLE IF EXISTS employee_account;
+DROP TABLE IF EXISTS employee_company_detail;
 DROP TABLE IF EXISTS employee_account_type;
 
 
@@ -62,7 +62,8 @@ CREATE TABLE employee_company_detail (
 
 CREATE TABLE employee_personal_detail (
     employee_id UUID PRIMARY KEY,
-    name VARCHAR(20) NOT NULL,
+    firstName VARCHAR(20) NOT NULL,
+    lastName VARCHAR(20) NOT NULL,
     date_of_birth DATE NOT NULL ,
     marital_status BOOLEAN NOT NULL,
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT

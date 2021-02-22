@@ -7,7 +7,7 @@ export interface AdminAccount {
     username : string;
     password : string;
     email : string;
-    branch : string;
+    branch_name : string;
     accountType : string;
 }
 

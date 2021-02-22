@@ -9,7 +9,7 @@ export const adminAccount_inspector = inspectBuilder(
         .isLength({min : 6}).withMessage("Password should be more than 6 characters"),
     body("email").exists().withMessage("Email is required")
         .isEmail().withMessage("Email should be a valid email address"),
-    body("branch").exists().withMessage("Password is required"),
-    body("accountType").optional().default("Admin"),
+    body("branch_name").exists().withMessage("Branch Name is required"),
+    body("accountType").optional(),
 
 )

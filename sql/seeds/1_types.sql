@@ -11,7 +11,7 @@ INSERT INTO employment_status
         ('Intern Part Time'),
         ('Contract Full Time'),
         ('Contract Part Time'),
-        ('Permenant'),
+        ('Permanent'),
         ('Freelance');
 
 INSERT INTO leave_type 
