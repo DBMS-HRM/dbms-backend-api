@@ -1,4 +1,5 @@
 import {runTrx, runQuery, MErr, qb} from "../utils/db";
+import * as interfaces from "./interfaces";
 
 const TABLE = {
     employeeAccount : "employeeAccount",
@@ -6,6 +7,7 @@ const TABLE = {
     employeeCompanyDetail: "employeeCompanyDetail",
     employeePersonalDetail : "employeePersonalDetail",
     employeeEmergencyDetail : "employeeEmergencyDetail",
+    customDetails : "customDetails",
     jobTitle : "jobTitle",
     employmentStatus : "employmentStatus",
     branch :  "branch",
@@ -13,54 +15,6 @@ const TABLE = {
     payGrade : "payGrade",
 }
 
-interface EmployeeAccount {
-    userId : string;
-    username : string;
-    password : string;
-    email : string;
-    accountType : string;
-}
-
-interface AdminAccount {
-    userId : string;
-    username : string;
-    password : string;
-    email : string;
-    status : boolean;
-    branchId : string;
-    accountType : string;
-}
-
-interface EmployeeCompanyDetail {
-    employeeId : string;
-    branchId : string;
-    jobTitle : string;
-    employmentStatus : string;
-    payGrade : string;
-    departmentName : string
-}
-
-interface Branch {
-    branchId : string;
-    branchName : string;
-}
-
-interface JobTitle {
-    jobTitle : string
-}
-
-interface EmploymentStatus {
-    employmentStatus : string;
-}
-
-interface Department{
-    departmentName : string
-}
-
-interface PayGrade {
-    payGrade : string;
-    numOfLeaves : number,
-}
 
 export default abstract class Employee {
     static job_titles = {
@@ -70,10 +24,15 @@ export default abstract class Employee {
         SoftwareEngineer : "Software Engineer"
     }
 
-    static account_types = {
-        admin : "admin",
-        managerialEmployee : "managerialEmployee",
-        supervisor : "supervisor",
+    static user_account_types = {
+        managerialEmployee : "Managerial Employee",
+        supervisor : "Supervisor",
+        employee : "Employee",
+    }
+
+    static admin_account_types = {
+        admin : "Admin",
+        superAdmin : "Super Admin"
     }
 
     static pay_grade = {
@@ -94,7 +53,7 @@ export default abstract class Employee {
     /**
      * SELECT Queries ------------------------------------------------------------------------------
      */
-    static getEmployeeAccount (username : string ) : Promise<[any, EmployeeAccount]> {
+    static getEmployeeAccount (username : string ) : Promise<[any, interfaces.EmployeeAccount]> {
         return runQuery(
             qb(TABLE.employeeAccount).where({username})
         );
@@ -104,7 +63,7 @@ export default abstract class Employee {
      * Get admin account by username
      * @param username
      */
-    static getAdminAccount (username : string ) : Promise<[any, AdminAccount]> {
+    static getAdminAccount (username : string ) : Promise<[any, interfaces.AdminAccount]> {
         return runQuery(
             qb(TABLE.adminAccount).where({username}),
             {single: true, required: true}
@@ -115,16 +74,24 @@ export default abstract class Employee {
      * INSERT Queries ----------------------------------------------------------------------------------------
      */
 
-    static addAdminUser (adminAccountData : AdminAccount) {
+    static addAdminUser (adminAccountData : interfaces.AdminAccount) {
         return runQuery(
             qb(TABLE.adminAccount).insert(adminAccountData)
         )
     }
 
-    // Create employee account -> Not the complete data
-    static addEmployeeAccount (employeeAccountData: EmployeeAccount){
-        return runQuery(
-            qb(TABLE.employeeAccount).insert(employeeAccountData)
+    static addEmployeeAccount (employeeAccountData: interfaces.EmployeeAccount,
+                               employeeCompanyData : interfaces.EmployeeCompanyDetail,
+                               employeeEmergencyData : interfaces.EmployeeEmergencyDetail,
+                               employeePersonalData : interfaces.EmployeePersonalDetail,
+                               employeeCustomData : any
+    ){
+        return runTrx(
+            qb(TABLE.employeeAccount).insert(employeeAccountData),
+            qb(TABLE.employeeCompanyDetail).insert(employeeCompanyData),
+            qb(TABLE.employeePersonalDetail).insert(employeePersonalData),
+            qb(TABLE.employeeEmergencyDetail).insert(employeeEmergencyData),
+            qb(TABLE.customDetails).insert(employeeCustomData)
         )
     };
 
