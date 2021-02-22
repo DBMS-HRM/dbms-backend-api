@@ -7,10 +7,10 @@ INSERT INTO job_title
 
 INSERT INTO employment_status 
     VALUES
-        ('Intern Fulltime'),
-        ('Intern Parttime'),
-        ('Contract Fulltime'),
-        ('Contract Parttime'),
+        ('Intern Full Time'),
+        ('Intern Part Time'),
+        ('Contract Full Time'),
+        ('Contract Part Time'),
         ('Permenant'),
         ('Freelance');
 
@@ -37,5 +37,11 @@ INSERT INTO pay_grade
 
 INSERT INTO admin_account_type
     VALUES
-        ('Super Admin'),
-        ('Admin');
+        ('Super Admin', ''),
+        ('Admin', '');
+
+INSERT INTO employee_account_type
+    VALUES
+        ('Managerial Employee', ''),
+        ('Supervisor', ''),
+        ('Employee', '')        
