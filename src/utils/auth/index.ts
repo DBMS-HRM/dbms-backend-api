@@ -8,9 +8,12 @@ import model, {MErr} from "../../model";
  */
 const inspectAuthHeader = inspectBuilder(
     header("authorization")
-        .customSanitizer((value) => value.split(" ")[1])
-        .exists().withMessage("authorization token is required")
-        .isJWT().withMessage("authorization token format is invalid")
+        .isString().withMessage("Bearer authorization header is required")
+        .customSanitizer((value) => {
+            return (String(value) || "").split(" ")[1]
+        })
+        .isString().withMessage("authorization header is invalid")
+        .isJWT().withMessage("authorization token is invalid")
 )
 
 /**
@@ -22,7 +25,7 @@ const inspectAuthHeader = inspectBuilder(
 const parsePayload: Handler = (req, res, next) => {
     const {r} = res;
 
-    const token = req.headers["authorization"]!.split(" ")[1];
+    const token = req.headers["authorization"] || '';
 
     const payload = TokenMan.verifyAccessToken(token);
     if (!payload) {
