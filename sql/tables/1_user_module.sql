@@ -56,6 +56,8 @@ CREATE TABLE employee_company_detail (
     employment_status VARCHAR(20) NOT NULL,
     pay_grade VARCHAR(20) NOT NULL,
     department_name VARCHAR(20) NOT NULL,
+    supervisor_id UUID DEFAULT NULL,
+    FOREIGN KEY(supervisor_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT,
     FOREIGN KEY(branch_name) REFERENCES branch(branch_name) ON DELETE RESTRICT,
     FOREIGN KEY(job_title) REFERENCES job_title(job_title) ON DELETE RESTRICT,
     FOREIGN KEY(employment_status) REFERENCES employment_status(employment_status) ON DELETE RESTRICT,
@@ -93,13 +95,13 @@ CREATE TABLE custom_details (
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
 );
 
-CREATE TABLE supervisor (
-    supervisor_id UUID,
-    employee_id UUID,
-    PRIMARY KEY(supervisor_id, employee_id),
-    FOREIGN KEY(supervisor_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT,
-    FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
-);
+--CREATE TABLE supervisor (
+--    supervisor_id UUID,
+--    employee_id UUID,
+--    PRIMARY KEY(supervisor_id, employee_id),
+--    FOREIGN KEY(supervisor_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT,
+--    FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
+--);
 
 -- User Accounts -------------------------------------------------------------------------------------------------------
 
@@ -119,3 +121,13 @@ CREATE TABLE employee_account (
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT,
     FOREIGN KEY (account_type) REFERENCES employee_account_type(type) ON DELETE RESTRICT
 );
+
+
+
+-- ▒█░░▒█ ░▀░ █▀▀ █░░░█ █▀▀
+-- ░▒█▒█░ ▀█▀ █▀▀ █▄█▄█ ▀▀█
+-- ░░▀▄▀░ ▀▀▀ ▀▀▀ ░▀░▀░ ▀▀▀
+
+CREATE VIEW employee_details_ea_ecd AS
+    SELECT ecd.*, ea.username, ea.email_address, ea.account_type, ea.status FROM employee_account ea
+		JOIN employee_company_detail ecd ON ea.employee_id = ecd.employee_id;
