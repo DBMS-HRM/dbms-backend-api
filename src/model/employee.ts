@@ -56,7 +56,8 @@ export default abstract class Employee {
      */
     static getEmployeeAccount (username : string ) : Promise<[any, interfaces.EmployeeAccount]> {
         return runQuery(
-            qb(TABLE.employeeAccount).where({username})
+            qb(TABLE.employeeAccount).where({username}),
+            {single: true, required: true}
         );
     };
 
