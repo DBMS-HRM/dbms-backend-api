@@ -4,7 +4,7 @@ import {ResponseBuilder} from "./resp/res-builder";
 export interface Request extends ERequest {
     user: {
         userId: string,
-        userType: "Administrator" | "Regular"
+        accountType: "Admin" | "Super Admin" | "Employee" | "Managerial Employee" | "Supervisor",
         firstName: string,
         lastName: string,
         email: string,
