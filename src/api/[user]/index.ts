@@ -6,7 +6,9 @@ import auth from "../../utils/auth";
 const rUser = Router();
 
 
-// User Login
+/**
+ * User login
+ */
 rUser.post('/login/admin', admin)
 rUser.post('/login/employee', employee)
 
@@ -26,4 +28,11 @@ import changeSupervisor from "./update/setSupervisor";
 // Set supervisor
 rUser.post('/set-supervisor',auth.managerialEmployee, changeSupervisor.setSupervisor);
 
+
+/**
+ * View Profile
+ */
+import view_profile from "./get/empoyee_profile";
+rUser.get('/my-profile',auth.employee, view_profile.employeeViewProfile);
+rUser.get('/view-profile/:employeeId',auth.managerialEmployee, view_profile.employeeViewProfile);
 export default rUser

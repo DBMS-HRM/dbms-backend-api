@@ -15,6 +15,7 @@ export function qb(table?: string, alias?: string) {
  * Query Executors
  */
 export {runQuery, runTrx} from "./conn";
+export {cleanQuery} from "./_util";
 
 /**
  * Query Error Codes

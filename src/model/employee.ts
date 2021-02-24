@@ -14,7 +14,8 @@ const TABLE = {
     department : "department",
     payGrade : "payGrade",
     phoneNumber : "phoneNumber",
-    supervisor : "Supervisor"
+    supervisor : "Supervisor",
+    employeeDetailsFull : "employeeDetailsFull",
 }
 
 
@@ -68,6 +69,16 @@ export default abstract class Employee {
     static getAdminAccount (username : string ) : Promise<[any, interfaces.AdminAccount]> {
         return runQuery(
             qb(TABLE.adminAccount).where({username}),
+            {single: true, required: true}
+        );
+    };
+
+    /**
+     * Get a view profile
+     */
+    static getEmployeeFullDetail (employeeId : string ) : Promise<[any, any]> {
+        return runQuery(
+            qb(TABLE.employeeDetailsFull).where({employeeId}),
             {single: true, required: true}
         );
     };

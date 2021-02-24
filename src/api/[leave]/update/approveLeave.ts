@@ -6,7 +6,7 @@ import {inspectBuilder,param} from "../../../utils/inspect";
  * Validation
  */
 const inspector = inspectBuilder(
-    param("employeeId").isUUID(4).withMessage("Employee id is not valid")
+    param("leaveId").exists().withMessage("Leave id is required").isUUID(4).withMessage("Leave id is not valid")
 )
 
 
@@ -18,18 +18,18 @@ const inspector = inspectBuilder(
  */
 const approve_Leave : Handler = async (req,res,next) => {
     const {r} = res;
-    const employeeId = req.params.employeeId;
+    const leaveId = req.params.leaveId;
     const leaveApproveData = {
         supervisorId : req.user.userId,
         approvedDate : new Date(),
     }
 
 
-    const [{code}] = await model.leave.approveLeave(employeeId,leaveApproveData);
+    const [{code}] = await model.leave.approveLeave(leaveId,leaveApproveData);
 
     if(code === MErr.NO_ERROR){
         r.status.OK()
-            .message("Leave request is added successfully")
+            .message("Leave request is approved")
             .send()
         return
     }else if(code === MErr.NOT_FOUND){
