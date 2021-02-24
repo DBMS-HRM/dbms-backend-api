@@ -20,19 +20,19 @@ const add_Employee : Handler = async (req,res, next) => {
     };
 
     const employeeCompanyData= {
-        userId,
+        employeeId : userId,
         ...await extract_employeeCompanyData(req),
         status : true,
     };
 
     const employeeEmergencyData= {
-        userId,
+        employeeId : userId,
         ...await extract_employeeEmergencyData(req),
         status : true,
     };
 
     const employeePersonalData= {
-        userId,
+        employeeId : userId,
         ...await extract_employeePersonalData(req),
         status : true,
     };
@@ -43,8 +43,13 @@ const add_Employee : Handler = async (req,res, next) => {
         status : true,
     };
 
+    const phoneNumber = {
+        employeeId : userId,
+        "phoneNumber" : +9477453588,
+    }
 
-    const [{code}] = await model.user.addEmployeeAccount(employeeAccountData, employeeCompanyData, employeeEmergencyData, employeePersonalData, employeeCustomData);
+
+    const [{code}] = await model.user.addEmployeeAccount(employeeAccountData, employeeCompanyData, employeeEmergencyData, employeePersonalData,phoneNumber, employeeCustomData);
     if(code === MErr.NO_ERROR){
         r.status.OK()
             .message("Employee user added successfully")

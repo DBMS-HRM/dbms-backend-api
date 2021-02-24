@@ -9,7 +9,7 @@ export const adminAccount_inspector = inspectBuilder(
         .isLength({min : 6}).withMessage("Password should be more than 6 characters"),
     body("email").exists().withMessage("Email is required")
         .isEmail().withMessage("Email should be a valid email address"),
-    body("branch_name").exists().withMessage("Branch Name is required"),
+    body("branchName").exists().withMessage("Branch Name is required"),
     body("accountType").optional(),
 
 )
@@ -22,7 +22,7 @@ export const employeeAccount_inspector = inspectBuilder(
     body("username").exists().withMessage("User name is required"),
     body("password").exists().withMessage("Password is required")
         .isLength({min : 6}).withMessage("Password should be more than 6 characters"),
-    body("email").exists().withMessage("Email is required")
+    body("emailAddress").exists().withMessage("Email is required")
         .isEmail().withMessage("Email should be a valid email address"),    
     body("accountType").optional(),
 
@@ -33,11 +33,10 @@ export const employeeAccount_inspector = inspectBuilder(
  */
 
 export const employeeCompanyData_inspector = inspectBuilder(
-    body("employeeId").exists().withMessage("Employee Id is required"),
-    body("branchId").exists().withMessage("Branch Id is required"),        
-    body("jobTitle").optional(),
-    body("employmentStatus").optional(),
-    body("payGrade").optional(),
+    body("branchName").exists().withMessage("Branch Id is required"),
+    body("jobTitle").exists().withMessage("Branch Id is required"),
+    body("employmentStatus").exists().withMessage("Branch Id is required"),
+    body("payGrade").exists().withMessage("Branch Id is required"),
     body("departmentName").exists().withMessage("Department name is required"),
 
 )
@@ -48,10 +47,7 @@ export const employeeCompanyData_inspector = inspectBuilder(
 
 export const employeeEmergencyData_inspector = inspectBuilder(
     body("employeeId").exists().withMessage("Employee Id is required"),
-    body("phoneNumber").exists().withMessage("Phone number is required"),        
     body("address").exists().withMessage("address is required"),
-    body("emailAddress").exists().withMessage("Email address is required")
-        .isEmail().withMessage("Email address should be a valid email address"),
 
 )
 

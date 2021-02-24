@@ -71,8 +71,11 @@ CREATE TABLE employee_personal_detail (
 
 CREATE TABLE employee_emergency_detail (
     employee_id UUID PRIMARY KEY,
-    address TEXT NOT NULL ,
-    email_address VARCHAR(20) NOT NULL,
+    country TEXT NOT NULL ,
+    district TEXT NOT NULL ,
+    city TEXT NOT NULL ,
+    street_1 TEXT NOT NULL ,
+    street_2 TEXT NOT NULL ,
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
 );
 
