@@ -20,15 +20,15 @@ const getPost: Handler = async (req, res) => {
     const {r} = res;
 
     // Sync model to database
-    const [{code}, posts] = //await model.post.get_Post(req.query)
+    // const [{code}, posts] = //await model.post.get_Post(req.query)
 
-    if (code === MErr.NO_ERROR) {
-        r.status.OK()
-            .message("Success")
-            .data(posts)
-            .send();
-        return;
-    }
+    // if (code === MErr.NO_ERROR) {
+    //     r.status.OK()
+    //         .message("Success")
+    //         .data(posts)
+    //         .send();
+    //     return;
+    // }
 
     r.pb.ISE().send();
 };
