@@ -45,7 +45,6 @@ const parsePayload: Handler = (req, res, next) => {
  * :: STEP 3 Builder
  * @param userType
  */
-// @ts-ignore
 type AdminAccountType = model.user.admin_account_types.superAdmin | model.user.admin_account_types.admin
 // @ts-ignore
 type UserAccountType = model.user.user_account_types.employee | model.user.user_account_types.managerialEmployee
@@ -73,8 +72,8 @@ function buildUserFilter(
  * Request Handler Chain
  */
 export default {
-    employee: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.user_account_types.employee) as EHandler],
-    managerialEmployee: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.user_account_types.managerialEmployee, model.user.user_account_types.employee) as EHandler],
-    superAdmin: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.admin_account_types.superAdmin,model.user.admin_account_types.admin) as EHandler],
-    admin: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.admin_account_types.admin) as EHandler]
+    employee: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.user_account_types.employee,model.user.user_account_types.managerialEmployee,) as EHandler],
+    managerialEmployee: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.user_account_types.managerialEmployee) as EHandler],
+    superAdmin: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.admin_account_types.superAdmin) as EHandler],
+    admin: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.admin_account_types.superAdmin,model.user.admin_account_types.admin) as EHandler]
 }

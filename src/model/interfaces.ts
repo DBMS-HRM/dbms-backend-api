@@ -88,7 +88,10 @@ export interface EmploymentStatus {
 
 export interface PayGrade {
     payGrade : string;
-    numOfLeaves : number,
+    annualLeaves : number,
+    casualLeaves : number,
+    maternityLeaves : number,
+    nopayLeaves : number,
 }
 
 /**

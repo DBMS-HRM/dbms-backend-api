@@ -29,8 +29,13 @@ const add_Leave : Handler = async (req,res,next) => {
             .message("Leave request is added successfully")
             .send()
         return
+    }else if(code === MErr.UNKNOWN){
+        r.status.OK()
+            .message("Not enough leaves")
+            .send()
+        return
     }
-    r.pb.ISE();
+    r.pb.ISE().send();
 }
 
 export default [leaveRequest_inspector, add_Leave as EHandler];
