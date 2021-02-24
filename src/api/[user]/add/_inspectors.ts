@@ -46,8 +46,11 @@ export const employeeCompanyData_inspector = inspectBuilder(
  */
 
 export const employeeEmergencyData_inspector = inspectBuilder(
-    body("employeeId").exists().withMessage("Employee Id is required"),
-    body("address").exists().withMessage("address is required"),
+    body("country").exists().withMessage("Country is required"),
+    body("district").exists().withMessage("district is required"),
+    body("city").exists().withMessage("city is required"),
+    body("street1").exists().withMessage("street is required"),
+    body("steet2").optional(),
 
 )
 
@@ -56,8 +59,8 @@ export const employeeEmergencyData_inspector = inspectBuilder(
  */
 
 export const employeePersonalData_inspector = inspectBuilder(
-    body("employeeId").exists().withMessage("Employee Id is required"),
-    body("name").exists().withMessage("Name is required"),                
+    body("firstName").exists().withMessage("First name is required"),
+    body("lastName").exists().withMessage("Last name is required"),                
     body("dateOfBirth").exists().withMessage("Date of birth is required")
         .isDate().withMessage("Date of birth should be a valid date"),
     body("maritalStatus").exists().withMessage("Marital status is required")
@@ -71,5 +74,12 @@ export const employeePersonalData_inspector = inspectBuilder(
 
 export const employeeCustomData_inspector = inspectBuilder(
     
+)
 
+/**
+ * Add Employee phone number details inspector
+ */
+
+export const phoneNumber_inspector = inspectBuilder(
+    body("phoneNumber").exists().withMessage("Phone Number is required"),
 )

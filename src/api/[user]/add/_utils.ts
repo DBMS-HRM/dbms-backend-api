@@ -35,9 +35,11 @@ export function extract_employeeCompanyData(req : any){
 
 export function extract_employeeEmergencyData(req : any){
     return{
-        phoneNumber : req.body.phoneNumber,
-        address : req.body.address,        
-        emailAddress : req.body.emailAddress,
+        country : req.body.phoneNumber,
+        district : req.body.address,        
+        city : req.body.emailAddress,
+        street1 : req.body.emailAddress,
+        street2 : req.body.emailAddress,
     }
 }
 
@@ -47,6 +49,13 @@ export function extract_employeePersonalData(req : any){
         lastName : req.body.lastName,
         dateOfBirth : req.body.dateOfBirth,
         maritalStatus : req.body.maritalStatus,
+        
+    }
+}
+
+export function extract_phoneNumber(req : any){
+    return{
+        phoneNumber : req.body.phoneNumber,
         
     }
 }

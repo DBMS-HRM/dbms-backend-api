@@ -35,8 +35,12 @@ export interface EmployeeCompanyDetail {
 
 export interface EmployeeEmergencyDetail {
     employeeId : string;
-    address : string;
-    emailAddress : string;
+    country : string;
+    district : string;
+    city : string;
+    street1 : string;
+    street2 : string;
+    
 }
 
 export interface PhoneNumber {

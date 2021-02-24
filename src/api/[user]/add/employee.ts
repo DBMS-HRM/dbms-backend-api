@@ -1,7 +1,7 @@
 import {EHandler, Handler} from "../../../utils/types";
 import model, {MErr} from "../../../model";
-import {extract_employeeAccountData, extract_employeeCompanyData, extract_employeeEmergencyData, extract_employeePersonalData, extract_employeeCustomData} from "./_utils";
-import {employeeAccount_inspector, employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector} from "./_inspectors";
+import {extract_employeeAccountData, extract_employeeCompanyData, extract_employeeEmergencyData, extract_employeePersonalData, extract_employeeCustomData, extract_phoneNumber } from "./_utils";
+import {employeeAccount_inspector, employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector, phoneNumber_inspector} from "./_inspectors";
 import { v4 as UUID } from 'uuid';
 
 /**
@@ -45,6 +45,7 @@ const add_Employee : Handler = async (req,res, next) => {
 
     const phoneNumber = {
         employeeId : userId,
+        ...await extract_phoneNumber(req),
         "phoneNumber" : +9477453588,
     }
 
@@ -72,4 +73,4 @@ const set_employeeAccountType : Handler = (req,res,next) => {
     next();
 }
 
-export default [employeeAccount_inspector, employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector, set_employeeAccountType as EHandler, add_Employee as EHandler];
+export default [employeeAccount_inspector, employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector, phoneNumber_inspector, set_employeeAccountType as EHandler, add_Employee as EHandler];
