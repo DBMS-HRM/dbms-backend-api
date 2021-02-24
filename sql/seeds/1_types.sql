@@ -28,13 +28,6 @@ INSERT INTO leave_request_state
         ('Rejected');
 
 
-INSERT INTO pay_grade 
-    VALUES
-        ('Level 1'),
-        ('Level 2'),
-        ('Level 3');
-
-
 INSERT INTO admin_account_type
     VALUES
         ('Super Admin', ''),
@@ -54,4 +47,15 @@ INSERT INTO branch
 
 INSERT INTO department
     VALUES
-        ('HR');
+        ('HR'),
+        ('Financial'),
+        ('Security'),
+        ('Quality Assurance'),
+        ('ICT');
+
+
+INSERT INTO pay_grade
+    VALUES
+        ('Level 1', 50,50,50,50),
+        ('Level 2', 50,50,50,50),
+        ('Level 3', 50,50,50,50);

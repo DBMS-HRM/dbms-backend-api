@@ -37,7 +37,10 @@ CREATE TABLE  employment_status (
 
 CREATE TABLE pay_grade (
     pay_grade VARCHAR(20) PRIMARY KEY,
-    num_of_leaves SMALLINT
+    annual_leaves INTEGER  NOT NULL DEFAULT 50,
+    casual_leaves INTEGER  NOT NULL DEFAULT 50,
+    maternity_leaves INTEGER  NOT NULL DEFAULT 50,
+    noPay_leaves INTEGER  NOT NULL DEFAULT 50
 );
 
 CREATE TABLE department (
