@@ -29,14 +29,14 @@ const get_EmployeeProfile: Handler = async (req, res,next) => {
     r.pb.ISE().send();
 };
 
-const set_employeeId = (req,res,next) => {
+const set_employeeId :Handler= (req,res,next) => {
     req.params.employeeId = req.user.userId;
     next();
     return;
 }
 
 const viewProfile = {
-    employeeViewProfile : [set_employeeId, get_EmployeeProfile as EHandler],
+    employeeViewProfile : [set_employeeId as EHandler, get_EmployeeProfile as EHandler],
     managerViewProfile : [ get_EmployeeProfile as EHandler],
 }
 
