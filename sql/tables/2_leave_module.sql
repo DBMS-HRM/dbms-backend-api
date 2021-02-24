@@ -41,5 +41,38 @@ CREATE TABLE leave_request (
 
 -- Leave count view
 CREATE VIEW employee_remaining_leaves AS
-    -- TODO : select
+    SELECT ecd.employee_id,
+
+    		pg.annual_leaves - (select count(leave_id) from leave_request
+    				where employee_id = ecd.employee_id
+    					and leave_state = 'Approved'
+    					and leave_type = 'Annual'
+    					and	date_part('year', (SELECT approved_date))) = date_part('year', (SELECT current_date)))
+    				as annual,
+
+    		pg.casual_leaves - (select count(leave_id) from leave_request
+    				where employee_id = ecd.employee_id
+    					and leave_state = 'Approved'
+    					and leave_type = 'Casual'
+    					and	date_part('year', (SELECT approved_date))) = date_part('year', (SELECT current_date)))
+    				as casual,
+
+    		pg.maternity_leaves - (select count(leave_id) from leave_request
+    				where employee_id = ecd.employee_id
+    					and leave_state = 'Approved'
+    					and leave_type = 'Maternity'
+    					and	date_part('year', (SELECT approved_date))) = date_part('year', (SELECT current_date)))
+    				as maternity,
+
+    		pg.maternity_leaves - (select count(leave_id) from leave_request
+    				where employee_id = ecd.employee_id
+    					and leave_state = 'Approved'
+    					and leave_type = 'No-pay'
+    					and	date_part('month', (SELECT approved_date))) = date_part('month', (SELECT current_date)))
+    				as nopay,
+
+    FROM employee_company_detail ecd
+    	JOIN pay_grade pg ON pg.pay_grade = ecd.pay_grade;
+
+
 

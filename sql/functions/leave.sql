@@ -1,29 +1,33 @@
 
 
 -- Run before insert leave request
-CREATE FUNCTION before_add_leave_request() RETURNS trigger AS $emp_stamp$
+CREATE FUNCTION before_add_leave_request() RETURNS trigger AS $before_leave$
+
+    DECLARE
+        remaining INTEGER;
     BEGIN
-        -- Check that empname and salary are given
-        -- employee_id
-        -- leave_type
-        IF NEW.empname IS NULL THEN
-            RAISE EXCEPTION 'empname cannot be null';
-        END IF;
-        IF NEW.salary IS NULL THEN
-            RAISE EXCEPTION '% cannot have null salary', NEW.empname;
+
+        IF NEW.leave_type = 'Annual' THEN
+            SELECT annual INTO remaining FROM employee_remaining_leaves WHERE employee_id = NEW.employee_id;
+        ELSIF NEW.leave_type = 'Casual' THEN
+            SELECT annual INTO remaining FROM employee_remaining_leaves WHERE employee_id = NEW.employee_id;
+        ELSIF NEW.leave_type = 'Maternity' THEN
+            SELECT annual INTO remaining FROM employee_remaining_leaves WHERE employee_id = NEW.employee_id;
+        ELSIF NEW.leave_type = 'No-pay' THEN
+            SELECT annual INTO remaining FROM employee_remaining_leaves WHERE employee_id = NEW.employee_id;
+        ELSE
+            RAISE EXCEPTION 'Invalid leave type';
         END IF;
 
-        -- Who works for us when she must pay for it?
-        IF NEW.salary < 0 THEN
-            RAISE EXCEPTION '% cannot have a negative salary', NEW.empname;
+        IF remaining <= 0 THEN
+            RAISE EXCEPTION 'No remaining leaves';
+        ELSE
+            RETURN NEW;
         END IF;
-
-        -- Remember who changed the payroll when
-        NEW.last_date := current_timestamp;
-        NEW.last_user := current_user;
-        RETURN NEW;
     END;
-$emp_stamp$ LANGUAGE plpgsql;
 
+$before_leave$ LANGUAGE plpgsql;
+
+-- Trigger when insert a leave request
 CREATE TRIGGER leave_request BEFORE INSERT OR UPDATE ON leave_request
     FOR EACH ROW EXECUTE PROCEDURE before_add_leave_request();

@@ -131,3 +131,13 @@ CREATE TABLE employee_account (
 CREATE VIEW employee_details_ea_ecd AS
     SELECT ecd.*, ea.username, ea.email_address, ea.account_type, ea.status FROM employee_account ea
 		JOIN employee_company_detail ecd ON ea.employee_id = ecd.employee_id;
+
+CREATE VIEW employee_details_full AS
+	SELECT *
+	    FROM employee_account ea
+		NATURAL JOIN employee_company_detail
+		NATURAL JOIN employee_personal_detail
+		NATURAL JOIN employee_emergency_detail
+		NATURAL JOIN custom_details
+		NATURAL JOIN
+			(select employee_id, json_agg(phone_number) from phone_number pn group by employee_id) as pns;
