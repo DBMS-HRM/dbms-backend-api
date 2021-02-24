@@ -1,6 +1,7 @@
 import {QBuilder} from "./builder";
 import {ErrorCode} from "./error";
-import {runQuery, runTrx} from "./conn";
+import {runQuery, runTrx} from "./conn"
+export {Error as MError} from "./error";
 
 /**
  * Query Builder

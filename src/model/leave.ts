@@ -1,4 +1,4 @@
-import {runTrx, runQuery, MErr, qb, cleanQuery} from "../utils/db";
+import {cleanQuery, MError, qb, runQuery} from "../utils/db";
 import * as interfaces from "./interfaces";
 
 const TABLE = {
