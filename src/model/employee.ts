@@ -13,6 +13,7 @@ const TABLE = {
     branch :  "branch",
     department : "department",
     payGrade : "payGrade",
+    phoneNumber : "phoneNumber"
 }
 
 
@@ -22,7 +23,6 @@ export default abstract class Employee {
         QAEngineer : "QA Engineer",
         Accountant : "Accountant",
         SoftwareEngineer : "Software Engineer"
-
     }
 
     static user_account_types = {
@@ -43,8 +43,8 @@ export default abstract class Employee {
     }
 
     static employment_status = {
-        internFullTime : "Intern Full Time",
-        internPartTime : "Inter Part Time",
+        interFullTime : "Intern Full Time",
+        interPartTime : "Intern Part Time",
         contractFullTime : "Contract Full Time",
         contractPartTime : "Contract Part Time",
         permanent : "Permanent",
@@ -86,13 +86,16 @@ export default abstract class Employee {
                                employeeCompanyData : interfaces.EmployeeCompanyDetail,
                                employeeEmergencyData : interfaces.EmployeeEmergencyDetail,
                                employeePersonalData : interfaces.EmployeePersonalDetail,
+                               phoneNumber : interfaces.PhoneNumber,
                                employeeCustomData : any
-    ){
+    )
+    {
         return runTrx(
-            qb(TABLE.employeeAccount).insert(employeeAccountData),
             qb(TABLE.employeeCompanyDetail).insert(employeeCompanyData),
+            qb(TABLE.employeeAccount).insert(employeeAccountData),
             qb(TABLE.employeePersonalDetail).insert(employeePersonalData),
             qb(TABLE.employeeEmergencyDetail).insert(employeeEmergencyData),
+            qb(TABLE.phoneNumber).insert(phoneNumber),
             qb(TABLE.customDetails).insert(employeeCustomData)
         )
     };

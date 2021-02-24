@@ -15,7 +15,7 @@ const add_AdminUser : Handler = async (req,res, next) => {
     const userId = UUID();
     const adminAccountData = {
         userId,
-        ...extract_adminAccountData(req),
+        ...await extract_adminAccountData(req),
         status : true,
     };
 
@@ -34,5 +34,13 @@ const add_AdminUser : Handler = async (req,res, next) => {
     r.pb.ISE();
 }
 
+const set_adminAccountType : Handler = (req,res,next) => {
+    if(req.body.accountType === undefined){
+        req.body.accountType = model.user.admin_account_types.admin;
+        next();
+        return;
+    }
+    next();
+}
 
-export default [adminAccount_inspector, add_AdminUser as EHandler];
+export default [adminAccount_inspector,set_adminAccountType as EHandler, add_AdminUser as EHandler];

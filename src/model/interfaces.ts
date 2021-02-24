@@ -7,7 +7,8 @@ export interface AdminAccount {
     username : string;
     password : string;
     email : string;
-    branch : string;
+    status : boolean;
+    branchName : string;
     accountType : string;
 }
 
@@ -15,16 +16,17 @@ export interface AdminAccount {
  * Employee Account interfaces
  */
 export interface EmployeeAccount {
-    userId : string;
+    employeeId : string;
     username : string;
     password : string;
-    email : string;
+    emailAddress : string;
     accountType : string;
+    status : boolean;
 }
 
 export interface EmployeeCompanyDetail {
     employeeId : string;
-    branchId : string;
+    branchName : string;
     jobTitle : string;
     employmentStatus : string;
     payGrade : string;
@@ -33,14 +35,24 @@ export interface EmployeeCompanyDetail {
 
 export interface EmployeeEmergencyDetail {
     employeeId : string;
-    phoneNumber : string;
-    address : string;
-    emailAddress : string;
+    country : string;
+    district : string;
+    city : string;
+    street_1 : string;
+    street_2 : string;
+    
 }
+
+export interface PhoneNumber {
+    employeeId : string;
+    phoneNumber : number;
+}
+
 
 export interface EmployeePersonalDetail {
     employeeId : string;
-    name : string;
+    firstName : string;
+    lastName : string;
     dateOfBirth : typeof Date;
     maritalStatus : boolean;
 }

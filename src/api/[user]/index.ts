@@ -14,6 +14,9 @@ rUser.post('/login/employee', employee)
  * Register Users
  */
 import register_admin from "./add/admin";
+import add_employee from "./add/employee"
 rUser.post('/register/admin',auth.superAdmin,register_admin );
+rUser.post('/register/managerial-employee',auth.admin,add_employee.admin_AddEmployee );
+rUser.post('/register/employee',auth.managerialEmployee,add_employee.managerialEmployee_AddEmployee);
 
 export default rUser
