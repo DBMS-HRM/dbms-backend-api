@@ -48,7 +48,7 @@ const parsePayload: Handler = (req, res, next) => {
 // @ts-ignore
 type AdminAccountType = model.user.admin_account_types.superAdmin | model.user.admin_account_types.admin
 // @ts-ignore
-type UserAccountType = model.user.user_account_types.employee | model.user.user_account_types.managerialEmployee | model.user.user_account_types.supervisor
+type UserAccountType = model.user.user_account_types.employee | model.user.user_account_types.managerialEmployee
 function buildUserFilter(
     ...accountTypes: (AdminAccountType | UserAccountType)[]
 ): EHandler {

@@ -100,7 +100,8 @@ export interface LeaveRequest {
     requestDate  : typeof Date,
     leaveState  : string,
     leaveType  : string,
-    approvedDate  : typeof Date
+    approvedDate  : typeof Date,
+    supervisorId : string
 }
 
 /**

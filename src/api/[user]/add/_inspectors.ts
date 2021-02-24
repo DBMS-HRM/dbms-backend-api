@@ -34,7 +34,7 @@ export const admin_EmployeeAccountType_inspector = inspectBuilder(
 )
 
 export const managerialEmployee_EmployeeAccountType_inspector = inspectBuilder(
-    body("accountType").isIn([model.user.user_account_types.employee, model.user.user_account_types.supervisor ]).withMessage("Account type is invalid")
+    body("accountType").isIn([model.user.user_account_types.employee ]).withMessage("Account type is invalid")
 )
 
 /**
