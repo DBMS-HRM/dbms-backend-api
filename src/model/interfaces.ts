@@ -58,6 +58,15 @@ export interface EmployeePersonalDetail {
 }
 
 /**
+ * Supervisor table
+ */
+export interface Supervisor {
+    supervisorId : string;
+    employeeId : string;
+}
+
+
+/**
  * Employee related Types
  */
 export interface Branch {
@@ -85,7 +94,14 @@ export interface PayGrade {
 /**
  * Leave related Types
  */
-
+export interface LeaveRequest {
+    leaveId  : string,
+    employeeId  : string,
+    requestDate  : typeof Date,
+    leaveState  : string,
+    leaveType  : string,
+    approvedDate  : typeof Date
+}
 
 /**
  * Report related Types

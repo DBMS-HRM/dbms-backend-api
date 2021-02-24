@@ -13,7 +13,8 @@ const TABLE = {
     branch :  "branch",
     department : "department",
     payGrade : "payGrade",
-    phoneNumber : "phoneNumber"
+    phoneNumber : "phoneNumber",
+    supervisor : "Supervisor"
 }
 
 
@@ -27,7 +28,6 @@ export default abstract class Employee {
 
     static user_account_types = {
         managerialEmployee : "Managerial Employee",
-        supervisor : "Supervisor",
         employee : "Employee",
     }
 
@@ -100,9 +100,15 @@ export default abstract class Employee {
         )
     };
 
+
     /**
      * UPDATE Queries ----------------------------------------------------------------------------------------
      */
+    static setSupervisor(employeeId : string, supervisorId : string){
+        return runQuery(
+            qb(TABLE.employeeCompanyDetail).update({supervisorId}).where({employeeId})
+        )
+    }
 
 }
 

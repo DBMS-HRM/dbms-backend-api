@@ -63,7 +63,7 @@ const serveToken: Handler = async (req, res) => {
         email: account.email,
         status: account.status,
         accountType: account.accountType,
-        branchId: account.branchId
+        branchName: account.branchName
     }
 
     // create token
