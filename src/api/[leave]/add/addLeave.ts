@@ -13,7 +13,7 @@ const leaveRequest_inspector = inspectBuilder(
 
 const add_Leave : Handler = async (req,res,next) => {
     const {r} = res;
-    console.log(req.user);
+
     const leaveRequestData = {
         leaveId : UUID(),
         employeeId : req.user.userId,

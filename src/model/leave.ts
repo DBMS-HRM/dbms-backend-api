@@ -37,4 +37,13 @@ export default abstract class LeaveModel {
         )
     }
 
+    /**
+     * Update Functions
+     */
+    static approveLeave(employeeId : string, leaveApproveData : any){
+        return runQuery(
+            qb(TABLE.leaveRequest).update(leaveApproveData).where({employeeId})
+        )
+    }
+
 }

@@ -30,7 +30,7 @@ CREATE TABLE leave_request (
     request_date DATE NOT NULL,
     leave_state VARCHAR(20) NOT NULL,
     leave_type VARCHAR(20) NOT NULL,
-    approved_date DATE NOT NULL,
+    approved_date DATE,
     supervisor_id UUID NOT NULL,
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT,
     FOREIGN KEY (leave_state) REFERENCES leave_request_state(leave_state) ON DELETE RESTRICT,
