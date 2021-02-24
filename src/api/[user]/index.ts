@@ -1,5 +1,6 @@
 import {Router} from "express";
 import admin from "./login/admin";
+import employee from "./login/employee";
 import auth from "../../utils/auth";
 
 const rUser = Router();
@@ -7,7 +8,7 @@ const rUser = Router();
 
 // User Login
 rUser.post('/login/admin', admin)
-rUser.post('/login/employee')
+rUser.post('/login/employee', employee)
 
 /**
  * Register Users
