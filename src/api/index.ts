@@ -12,7 +12,9 @@ rApi.get("/", cAbout);
 
 // Sub routers
 import rUser from "./[user]"
+import rLeave from "./[leave]";
 rApi.use('/user', rUser)
+rApi.use('/leave', rLeave)
 
 // Router
 export default rApi

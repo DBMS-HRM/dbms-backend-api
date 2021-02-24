@@ -19,4 +19,11 @@ rUser.post('/register/admin',auth.superAdmin,register_admin );
 rUser.post('/register/managerial-employee',auth.admin,add_employee.admin_AddEmployee );
 rUser.post('/register/employee',auth.managerialEmployee,add_employee.managerialEmployee_AddEmployee);
 
+/**
+ * Managerial Employee Routers
+ */
+import changeSupervisor from "./update/setSupervisor";
+// Set supervisor
+rUser.post('/set-supervisor',auth.managerialEmployee, changeSupervisor.setSupervisor);
+
 export default rUser

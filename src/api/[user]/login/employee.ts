@@ -59,9 +59,10 @@ const serveToken: Handler = async (req, res) => {
     const account = req.body.account
 
     const payload = {
-        employee_id: account.employeeId,
+        userId: account.employeeId,
         email: account.emailAddress,
         status: account.status,
+        accountType : account.accountType,
     }
 
     // create token
