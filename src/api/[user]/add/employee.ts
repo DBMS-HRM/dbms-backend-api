@@ -1,8 +1,16 @@
 import {EHandler, Handler} from "../../../utils/types";
 import model, {MErr} from "../../../model";
-import {extract_employeeAccountData, extract_employeeCompanyData, extract_employeeEmergencyData, extract_employeePersonalData, extract_employeeCustomData, extract_phoneNumber } from "./_utils";
-import {employeeAccount_inspector, employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector, phoneNumber_inspector} from "./_inspectors";
+import {extract_employeeAccountData, extract_employeeCompanyData,
+    extract_employeeEmergencyData, extract_employeePersonalData,
+    extract_employeeCustomData, extract_phoneNumber ,
+} from "./_utils";
+import {employeeAccount_inspector, employeePersonalData_inspector,
+    employeeCompanyData_inspector, employeeEmergencyData_inspector,
+    employeeCustomData_inspector, phoneNumber_inspector,
+    admin_EmployeeAccountType_inspector, managerialEmployee_EmployeeAccountType_inspector
+} from "./_inspectors";
 import { v4 as UUID } from 'uuid';
+import {inspectBuilder, body} from "../../../utils/inspect";
 
 /**
  * Add employee
@@ -14,39 +22,34 @@ const add_Employee : Handler = async (req,res, next) => {
     const {r} = res;
     const userId = UUID();
     const employeeAccountData = {
-        userId,
+        employeeId : userId,
         ...await extract_employeeAccountData(req),
         status : true,
     };
 
     const employeeCompanyData= {
         employeeId : userId,
-        ...await extract_employeeCompanyData(req),
-        status : true,
+        ...extract_employeeCompanyData(req)
     };
 
     const employeeEmergencyData= {
         employeeId : userId,
-        ...await extract_employeeEmergencyData(req),
-        status : true,
+        ...extract_employeeEmergencyData(req)
     };
 
     const employeePersonalData= {
         employeeId : userId,
-        ...await extract_employeePersonalData(req),
-        status : true,
+        ...extract_employeePersonalData(req)
     };
 
     const employeeCustomData= {
-        userId,
-        ...await extract_employeeCustomData(req),
-        status : true,
+        employeeId : userId,
+        ...extract_employeeCustomData(req)
     };
 
     const phoneNumber = {
         employeeId : userId,
-        ...await extract_phoneNumber(req),
-        "phoneNumber" : +9477453588,
+        ...extract_phoneNumber(req)
     }
 
 
@@ -64,13 +67,17 @@ const add_Employee : Handler = async (req,res, next) => {
     r.pb.ISE();
 }
 
-const set_employeeAccountType : Handler = (req,res,next) => {
-    if(req.body.accountType === undefined){
-        req.body.accountType = model.user.user_account_types.employee;
-        next();
-        return;
-    }
-    next();
+/**
+ * Check allowed account Types before add
+ * @param req
+ * @param res
+ * @param next
+ */
+
+
+const add_employee = {
+    admin_AddEmployee : [employeeAccount_inspector,admin_EmployeeAccountType_inspector,employeePersonalData_inspector, employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector, phoneNumber_inspector, add_Employee as EHandler],
+    managerialEmployee_AddEmployee : [employeeAccount_inspector, managerialEmployee_EmployeeAccountType_inspector,employeePersonalData_inspector,employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector, phoneNumber_inspector, add_Employee as EHandler],
 }
 
-export default [employeeAccount_inspector, employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector, phoneNumber_inspector, set_employeeAccountType as EHandler, add_Employee as EHandler];
+export default add_employee;

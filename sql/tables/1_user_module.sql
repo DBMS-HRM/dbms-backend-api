@@ -62,8 +62,8 @@ CREATE TABLE employee_company_detail (
 
 CREATE TABLE employee_personal_detail (
     employee_id UUID PRIMARY KEY,
-    firstName VARCHAR(20) NOT NULL,
-    lastName VARCHAR(20) NOT NULL,
+    first_name VARCHAR(20) NOT NULL,
+    last_name VARCHAR(20) NOT NULL,
     date_of_birth DATE NOT NULL ,
     marital_status BOOLEAN NOT NULL,
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
@@ -75,7 +75,7 @@ CREATE TABLE employee_emergency_detail (
     district TEXT NOT NULL ,
     city TEXT NOT NULL ,
     street_1 TEXT NOT NULL ,
-    street_2 TEXT NOT NULL ,
+    street_2 TEXT,
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
 );
 
@@ -107,9 +107,9 @@ CREATE TABLE employee_account_type (
 
 CREATE TABLE employee_account (
     employee_id UUID PRIMARY KEY,
-    username VARCHAR(20) NOT NULL,
+    username VARCHAR(20) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
-    email_address VARCHAR(100) NOT NULL,
+    email_address VARCHAR(100) NOT NULL UNIQUE,
     account_type VARCHAR(20) NOT NULL,
     status BOOLEAN DEFAULT FALSE,
 

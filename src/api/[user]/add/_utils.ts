@@ -9,23 +9,23 @@ export async function extract_adminAccountData(req : any){
         username : req.body.username,
         password : await encrypt_password(req.body.password),
         email : req.body.email,
-        branchName : req.body.branch_name,
+        branchName : req.body.branchName,
         accountType : req.body.accountType,
     }
 }
 
-export function extract_employeeAccountData(req : any){
+export async function extract_employeeAccountData(req : any){
     return{
         username : req.body.username,
-        password : req.body.password,
-        emailAddress : req.body.email,
+        password :  await encrypt_password(req.body.password),
+        emailAddress : req.body.emailAddress,
         accountType : req.body.accountType,
     }
 }
 
 export function extract_employeeCompanyData(req : any){
     return{
-        branchName : req.body.branchId,
+        branchName : req.body.branchName,
         jobTitle : req.body.jobTitle,        
         employmentStatus : req.body.employmentStatus,
         payGrade : req.body.payGrade,
@@ -36,10 +36,10 @@ export function extract_employeeCompanyData(req : any){
 export function extract_employeeEmergencyData(req : any){
     return{
         country : req.body.phoneNumber,
-        district : req.body.address,        
-        city : req.body.emailAddress,
-        street1 : req.body.emailAddress,
-        street2 : req.body.emailAddress,
+        district : req.body.district,
+        city : req.body.city,
+        street_1 : req.body.street1,
+        street_2 : req.body.street2,
     }
 }
 

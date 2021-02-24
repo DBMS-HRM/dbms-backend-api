@@ -13,6 +13,7 @@ const TABLE = {
     branch :  "branch",
     department : "department",
     payGrade : "payGrade",
+    phoneNumber : "phoneNumber"
 }
 
 
@@ -86,13 +87,14 @@ export default abstract class Employee {
                                employeePersonalData : interfaces.EmployeePersonalDetail,
                                phoneNumber : interfaces.PhoneNumber,
                                employeeCustomData : any
-    ){
+    )
+    {
         return runTrx(
-            qb(TABLE.employeeAccount).insert(employeeAccountData),
             qb(TABLE.employeeCompanyDetail).insert(employeeCompanyData),
+            qb(TABLE.employeeAccount).insert(employeeAccountData),
             qb(TABLE.employeePersonalDetail).insert(employeePersonalData),
             qb(TABLE.employeeEmergencyDetail).insert(employeeEmergencyData),
-            qb(TABLE.employeeEmergencyDetail).insert(employeeEmergencyData),
+            qb(TABLE.phoneNumber).insert(phoneNumber),
             qb(TABLE.customDetails).insert(employeeCustomData)
         )
     };

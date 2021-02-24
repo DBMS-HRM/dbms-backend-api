@@ -51,3 +51,7 @@ INSERT INTO branch
         ('Sri Lanka'),
         ('Bangladesh'),
         ('Pakistan');
+
+INSERT INTO department
+    VALUES
+        ('HR');

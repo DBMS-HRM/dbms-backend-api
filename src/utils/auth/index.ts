@@ -77,6 +77,6 @@ export default {
     employee: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.user_account_types.employee) as EHandler],
     managerialEmployee: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.user_account_types.managerialEmployee) as EHandler],
     supervisor: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.user_account_types.supervisor) as EHandler],
-    superAdmin: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.admin_account_types.superAdmin,model.user.admin_account_types.admin) as EHandler],
-    admin: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.admin_account_types.admin) as EHandler]
+    superAdmin: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.admin_account_types.superAdmin) as EHandler],
+    admin: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.admin_account_types.admin,model.user.admin_account_types.superAdmin) as EHandler]
 }

@@ -16,7 +16,7 @@ export interface AdminAccount {
  * Employee Account interfaces
  */
 export interface EmployeeAccount {
-    userId : string;
+    employeeId : string;
     username : string;
     password : string;
     emailAddress : string;
@@ -38,8 +38,8 @@ export interface EmployeeEmergencyDetail {
     country : string;
     district : string;
     city : string;
-    street1 : string;
-    street2 : string;
+    street_1 : string;
+    street_2 : string;
     
 }
 
