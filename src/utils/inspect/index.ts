@@ -32,7 +32,7 @@ export function condRoute(validator: ValidationChain, ifTrue: Handler, ifFalse: 
         if (errors.isEmpty()) {
             ifTrue(req, res, next)
         } else {
-            ifTrue(req, res, next);
+            ifFalse(req, res, next);
         }
     }
     return <EHandler>conditional_routing
