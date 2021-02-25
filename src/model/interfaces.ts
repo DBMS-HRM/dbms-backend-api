@@ -100,8 +100,8 @@ export interface PayGrade {
 export interface LeaveRequest {
     leaveId  : string,
     employeeId  : string,
-    requestDate  : typeof Date,
-    leaveState  : string,
+    requestedDate  : typeof Date,
+    leaveStatus  : string,
     leaveType  : string,
     approvedDate  : typeof Date,
     supervisorId : string

@@ -38,7 +38,7 @@ const approve_Leave : Handler = async (req,res,next) => {
             .send()
         return
     }
-    r.pb.ISE();
+    r.pb.ISE().send();
 }
 
 export default [inspector, approve_Leave as EHandler];

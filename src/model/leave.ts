@@ -4,8 +4,9 @@ import * as interfaces from "./interfaces";
 const TABLE = {
     leaveRequest : "leaveRequest",
     leaveType : "leaveType",
-    leaveRequestState : "leaveRequestState",
-    payGrade : "payGrade"
+    leaveRequestStatus : "leaveRequestStatus",
+    payGrade : "payGrade",
+    supervisorLeaveRequest : "supervisorLeaveRequest",
 }
 
 
@@ -41,7 +42,7 @@ export default abstract class LeaveModel {
         )
 
         return runQuery(
-            qb(TABLE.leaveRequest)
+            qb(TABLE.supervisorLeaveRequest)
                 .where(q)
                 // .orderBy([orderColumn1])
                 .limit(limit).offset(offset)
@@ -49,6 +50,12 @@ export default abstract class LeaveModel {
         )
     }
 
+    // Update pay grade leaves
+    static getLeaveConfig(){
+        return runQuery(
+            qb(TABLE.payGrade).select()
+        )
+    }
 
     /**
      * Insert Functions
@@ -74,7 +81,6 @@ export default abstract class LeaveModel {
             leaveConfig,
             ["payGrade", "annualLeaves", "casualLeaves", "maternityLeaves", "nopayLeaves"]
         )
-        console.log(configs);
         return runQuery(
             qb(TABLE.payGrade).update(configs).where({payGrade : configs.payGrade})
         )

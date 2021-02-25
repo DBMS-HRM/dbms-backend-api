@@ -43,7 +43,7 @@ const configLeaves : Handler = async (req,res,next) => {
             .send()
         return;
     }
-    r.pb.ISE();
+    r.pb.ISE().send();
 }
 
 export default [inspector, configLeaves as EHandler];

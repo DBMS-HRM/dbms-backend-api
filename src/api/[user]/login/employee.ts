@@ -69,8 +69,23 @@ const serveToken: Handler = async (req, res) => {
     // create token
     const accessToken = TokenMan.getAccessToken(payload);
 
+    const [{code}, employee] = await model.user.getEmployeeCP(account.employeeId);
+    if(code != MErr.NO_ERROR){
+        r.pb.ISE().send();
+        return;
+    }
+
+    const employeeData = {
+        firstName : employee.firstName,
+        lastName : employee.lastName,
+        jobTitle : employee.jobTitle,
+        branchName : employee.branchName,
+        employmentStatus : employee.employmentStatus,
+        payGrade : employee.payGrade,
+        departmentName : employee.departmentName,
+    }
     r.status.OK()
-        .data(payload)
+        .data({...payload,...employeeData})
         .token(accessToken)
         .message("Success")
         .send();

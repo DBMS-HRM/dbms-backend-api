@@ -8,7 +8,7 @@ import {inspectBuilder,query} from "../../../utils/inspect";
 const leaveRequest_inspector = inspectBuilder(
     query("leaveType").optional()
         .isIn([...Object.values(model.leave.leaveTypes)]).withMessage("Invalid leave type"),
-    query("leaveState").optional()
+    query("leaveStatus").optional()
         .isIn([...Object.values(model.leave.leaveRequestStates)]).withMessage("Invalid leave type"),
     query("fromDate").optional(),
     query("toDate").optional(),
@@ -26,7 +26,7 @@ const get_AllLeaves : Handler = async (req,res,next) => {
             .send()
         return;
     }
-    r.pb.ISE();
+    r.pb.ISE().send();
 
 }
 

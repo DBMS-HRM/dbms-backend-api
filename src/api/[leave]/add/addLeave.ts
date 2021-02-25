@@ -8,7 +8,8 @@ import {inspectBuilder,body} from "../../../utils/inspect";
  */
 const leaveRequest_inspector = inspectBuilder(
     body("leaveType").exists().withMessage("Leave type is required")
-        .isIn([...Object.values(model.leave.leaveTypes)]).withMessage("Invalid leave type")
+        .isIn([...Object.values(model.leave.leaveTypes)]).withMessage("Invalid leave type"),
+    body("leaveDate").exists().withMessage("Leave date is required")
 )
 
 const add_Leave : Handler = async (req,res,next) => {
@@ -17,8 +18,8 @@ const add_Leave : Handler = async (req,res,next) => {
     const leaveRequestData = {
         leaveId : UUID(),
         employeeId : req.user.userId,
-        requestDate : new Date(),
-        leaveState : model.leave.leaveRequestStates.pending,
+        requestedDate : new Date(req.body.leaveDate),
+        leaveStatus : model.leave.leaveRequestStates.pending,
         leaveType : req.body.leaveType
     }
     console.log(leaveRequestData);

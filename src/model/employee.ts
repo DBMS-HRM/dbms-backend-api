@@ -84,6 +84,19 @@ export default abstract class Employee {
     };
 
     /**
+     * Get employee data for avatar view
+     */
+    static getEmployeeCP(employeeId: string): Promise<[MError, any]> {
+        return runQuery(
+            qb(TABLE.employeeCompanyDetail)
+                .join(TABLE.employeePersonalDetail,
+                    "employeeCompanyDetail.employeeId","=","employeePersonalDetail.employeeId")
+                .where({"employeeCompanyDetail.employeeId": employeeId}),
+            {single: true, required: true}
+        );
+    };
+
+    /**
      * INSERT Queries ----------------------------------------------------------------------------------------
      */
 
