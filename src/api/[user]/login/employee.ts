@@ -59,6 +59,7 @@ const serveToken: Handler = async (req, res) => {
     const account = req.body.account
 
     const payload = {
+        username : account.username,
         userId: account.employeeId,
         email: account.emailAddress,
         status: account.status,
