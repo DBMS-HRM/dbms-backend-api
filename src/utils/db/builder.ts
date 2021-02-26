@@ -120,10 +120,11 @@ export class QBuilder {
         return this;
     }
 
-    raw(query: string, args: string[]) {
+    raw(query: string, args: string[]): QBuilder {
         this.type = QBJobType.RAW;
         this.rawQuery = query;
         this.rawQArgs = args;
+        return this
     }
 
     get query(): { query: string, args: string[] } {
