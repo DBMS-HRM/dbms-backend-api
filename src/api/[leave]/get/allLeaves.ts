@@ -1,6 +1,7 @@
 import {EHandler, Handler} from "../../../utils/types";
 import model, {MErr} from "../../../model";
 import {inspectBuilder,query} from "../../../utils/inspect";
+import {$check_Supervisor} from "../../[user]/handlers";
 
 /**
  * Validation
@@ -30,4 +31,7 @@ const get_AllLeaves : Handler = async (req,res,next) => {
 
 }
 
-export default [leaveRequest_inspector, get_AllLeaves as EHandler];
+
+
+export default [$check_Supervisor as EHandler,leaveRequest_inspector, get_AllLeaves as EHandler];
+

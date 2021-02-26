@@ -25,8 +25,10 @@ rUser.post('/register/employee',auth.managerialEmployee,add_employee.managerialE
  * Get employees
  */
 import get_employee from "./get/all_employees";
+import get_admin from "./get/all_admins";
 rUser.get('/get-level3',auth.managerialEmployee,get_employee.get_level3 );
-rUser.get('/get-all',auth.managerialEmployee,get_employee.get_all );
+rUser.get('/get-employees',auth.managerialEmployee,get_employee.get_all );
+rUser.get('/get-admins',auth.superAdmin,get_admin );
 
 
 /**
@@ -43,4 +45,16 @@ rUser.post('/set-supervisor',auth.managerialEmployee, changeSupervisor.setSuperv
 import view_profile from "./get/empoyee_profile";
 rUser.get('/my-profile',auth.employee, view_profile.employeeViewProfile);
 rUser.get('/view-profile/:employeeId',auth.managerialEmployee, view_profile.employeeViewProfile);
+
+
+/**
+ * Custom attributes
+ */
+import get_custom_attributes from "./get/customAttributes";
+import update_custom_attributes from "./update/customAttributes";
+rUser.get('/get-custom-attributes',auth.admin, get_custom_attributes);
+rUser.put('/update-custom-attributes',auth.admin, update_custom_attributes);
+
+
 export default rUser
+

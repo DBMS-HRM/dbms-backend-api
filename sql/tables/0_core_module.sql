@@ -1,5 +1,6 @@
 ----Clean Schema--------------------------------------------------------------
 
+DROP function IF EXISTS is_supervisor(uuid);
 DROP TABLE IF EXISTS admin_account;
 DROP TABLE IF EXISTS admin_account_type;
 

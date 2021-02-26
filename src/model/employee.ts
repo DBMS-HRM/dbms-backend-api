@@ -48,6 +48,12 @@ export default abstract class Employee {
         freelance: "Freelance"
     };
 
+    static branch_names = {
+        sriLanka : "Sri Lanka",
+        bangladesh : "Bangladesh",
+        pakistan : "Pakistan"
+    }
+
     /**
      * SELECT Queries ------------------------------------------------------------------------------
      */
@@ -76,6 +82,21 @@ export default abstract class Employee {
         return runQuery(
             qb(TABLE.employeeDetailsFull).where({employeeId}),
             {single: true, required: true}
+        );
+    };
+
+    /**
+     * Get all admins query
+     */
+    static getAllAdmins(query : any): Promise<[MError, any]> {
+        const q = cleanQuery(
+            query,
+            ["userId", "branchName", "email", "username"]
+        )
+        return runQuery(
+            qb(TABLE.adminAccount)
+                .where(q)
+                .select()
         );
     };
 

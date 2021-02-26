@@ -27,12 +27,12 @@ const inspector = inspectBuilder(
 const get_Employees: Handler = async (req, res) => {
     const {r} = res;
 
-    const [{code}, posts] = await model.user.getEmployeeCP(req.query);
+    const [{code}, users] = await model.user.getEmployeeCP(req.query);
 
     if (code === MErr.NO_ERROR) {
         r.status.OK()
             .message("Success")
-            .data(posts)
+            .data(users)
             .send();
         return;
     }

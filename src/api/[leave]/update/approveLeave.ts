@@ -1,6 +1,7 @@
 import {EHandler, Handler} from "../../../utils/types";
 import model, {MErr} from "../../../model";
 import {inspectBuilder,param} from "../../../utils/inspect";
+import {$check_Supervisor} from "../../[user]/handlers";
 
 /**
  * Validation
@@ -41,5 +42,5 @@ const approve_Leave : Handler = async (req,res,next) => {
     r.pb.ISE().send();
 }
 
-export default [inspector, approve_Leave as EHandler];
+export default [$check_Supervisor,inspector, approve_Leave as EHandler];
 
