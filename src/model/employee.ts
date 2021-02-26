@@ -1,4 +1,4 @@
-import {MError, qb, runQuery, runTrx} from "../utils/db";
+import {cleanQuery, MError, qb, runQuery, runTrx} from "../utils/db";
 import * as interfaces from "./interfaces";
 
 const TABLE = {
@@ -8,14 +8,10 @@ const TABLE = {
     employeePersonalDetail: "employeePersonalDetail",
     employeeEmergencyDetail: "employeeEmergencyDetail",
     customDetails: "customDetails",
-    jobTitle: "jobTitle",
     employmentStatus: "employmentStatus",
-    branch: "branch",
-    department: "department",
-    payGrade: "payGrade",
     phoneNumber: "phoneNumber",
-    supervisor: "Supervisor",
-    employeeDetailsFull: "employeeDetailsFull"
+    employeeDetailsFull: "employeeDetailsFull",
+    supervisorEmployees : "supervisorEmployees"
 };
 
 
@@ -84,17 +80,35 @@ export default abstract class Employee {
     };
 
     /**
-     * Get employee data for avatar view
+     * Get employee company and personal details
      */
-    static getEmployeeCP(employeeId: string): Promise<[MError, any]> {
+    static getEmployeeCP(query : any): Promise<[MError, any]> {
+        const q = cleanQuery(
+            query,
+            ["jobTitle", "payGrade", "employeeId", "departmentName", "supervisorId", "employmentStatus", "firstName","lastName"]
+        )
+        if(q.hasOwnProperty("employeeId")){
+            q["employeeCompanyDetail.employeeId"] = q["employeeId"];
+            delete q["employeeId"];
+        }
         return runQuery(
             qb(TABLE.employeeCompanyDetail)
-                .join(TABLE.employeePersonalDetail,
+                .leftJoin(TABLE.employeePersonalDetail,
                     "employeeCompanyDetail.employeeId","=","employeePersonalDetail.employeeId")
-                .where({"employeeCompanyDetail.employeeId": employeeId}),
-            {single: true, required: true}
+                .where(q)
+                .select()
         );
     };
+
+    /**
+     * Check whether supervisor or not
+     */
+    static checkSupervisor(supervisorId: string): Promise<[MError, any]> {
+        return runQuery(
+            qb().raw(`select is_supervisor($1 :: uuid)`, [supervisorId])
+        );
+    };
+
 
     /**
      * INSERT Queries ----------------------------------------------------------------------------------------

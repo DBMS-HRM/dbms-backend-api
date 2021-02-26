@@ -44,7 +44,8 @@ export const managerialEmployee_EmployeeAccountType_inspector = inspectBuilder(
 export const employeeCompanyData_inspector = inspectBuilder(
     body("branchName").exists().withMessage("Branch Id is required"),
     body("jobTitle").exists().withMessage("Branch Id is required")
-        .isIn([...Object.values(model.user.job_titles)]).withMessage("Job title is not valid"),
+        .if((value :string,{req} :any) => req.body.accountType === model.user.user_account_types.managerialEmployee)
+        .isIn([model.user.job_titles.HRManager]).withMessage("Job title is not valid"),
     body("employmentStatus").exists().withMessage("Employment status is required")
         .isIn([...Object.values(model.user.employment_status)]).withMessage("Employment status is not valid"),
     body("payGrade").exists().withMessage("Branch Id is required")
@@ -77,7 +78,6 @@ export const employeePersonalData_inspector = inspectBuilder(
         .isDate().withMessage("Date of birth should be a valid date"),
     body("maritalStatus").exists().withMessage("Marital status is required")
         .isBoolean().withMessage("Marital status should be a boolean"),
-
 )
 
 /**

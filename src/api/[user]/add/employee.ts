@@ -73,11 +73,22 @@ const add_Employee : Handler = async (req,res, next) => {
  * @param res
  * @param next
  */
-
+const $check_HRManager: Handler = (req,res,next) => {
+    const {r} = res;
+    if(req.user.jobTitle === model.user.job_titles.HRManager){
+        next();
+        return
+    }
+    else{
+        r.status.FORBIDDEN()
+            .message("Only HR managers are allowed to add employee")
+            .send()
+    }
+}
 
 const add_employee = {
     admin_AddEmployee : [employeeAccount_inspector,admin_EmployeeAccountType_inspector,employeePersonalData_inspector, employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector, phoneNumber_inspector, add_Employee as EHandler],
-    managerialEmployee_AddEmployee : [employeeAccount_inspector, managerialEmployee_EmployeeAccountType_inspector,employeePersonalData_inspector,employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector, phoneNumber_inspector, add_Employee as EHandler],
+    managerialEmployee_AddEmployee : [$check_HRManager as EHandler,employeeAccount_inspector, managerialEmployee_EmployeeAccountType_inspector,employeePersonalData_inspector,employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector, phoneNumber_inspector, add_Employee as EHandler],
 }
 
 export default add_employee;

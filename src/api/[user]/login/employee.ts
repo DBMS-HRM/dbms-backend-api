@@ -57,6 +57,11 @@ const serveToken: Handler = async (req, res) => {
 
     // creating payload model
     const account = req.body.account
+    const [{code}, employee] = await model.user.getEmployeeCP({employeeId : account.employeeId});
+    if(code != MErr.NO_ERROR){
+        r.pb.ISE().send();
+        return;
+    }
 
     const payload = {
         username : account.username,
@@ -64,17 +69,18 @@ const serveToken: Handler = async (req, res) => {
         email: account.emailAddress,
         status: account.status,
         accountType : account.accountType,
+        jobTitle : employee.jobTitle,
+        payGrade : employee.payGrade,
     }
 
     // create token
     const accessToken = TokenMan.getAccessToken(payload);
 
-    const [{code}, employee] = await model.user.getEmployeeCP(account.employeeId);
-    if(code != MErr.NO_ERROR){
+    const [err2, [res2] ] = await model.user.checkSupervisor(account.employeeId);
+    if(err2.code != MErr.NO_ERROR){
         r.pb.ISE().send();
         return;
     }
-
     const employeeData = {
         firstName : employee.firstName,
         lastName : employee.lastName,
@@ -83,6 +89,7 @@ const serveToken: Handler = async (req, res) => {
         employmentStatus : employee.employmentStatus,
         payGrade : employee.payGrade,
         departmentName : employee.departmentName,
+        supervisor : res2.isSupervisor,
     }
     r.status.OK()
         .data({...payload,...employeeData})

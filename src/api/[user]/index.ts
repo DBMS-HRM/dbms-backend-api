@@ -22,6 +22,14 @@ rUser.post('/register/managerial-employee',auth.admin,add_employee.admin_AddEmpl
 rUser.post('/register/employee',auth.managerialEmployee,add_employee.managerialEmployee_AddEmployee);
 
 /**
+ * Get employees
+ */
+import get_employee from "./get/all_employees";
+rUser.get('/get-level3',auth.managerialEmployee,get_employee.get_level3 );
+rUser.get('/get-all',auth.managerialEmployee,get_employee.get_all );
+
+
+/**
  * Managerial Employee Routers
  */
 import changeSupervisor from "./update/setSupervisor";
