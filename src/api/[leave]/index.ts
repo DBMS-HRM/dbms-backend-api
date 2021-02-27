@@ -9,6 +9,13 @@ import get_leaves from "./get/allLeaves";
 rLeave.get('/get-all',auth.employee,get_leaves);
 
 /**
+ * Remaining leaves
+ */
+import get_remaining_leaves from "./get/remainingLeaves";
+rLeave.get('/get-remaining-leaves/:employeeId', auth.employee, get_remaining_leaves.employee_RemainingLeaves);
+rLeave.get('/get-remaining-leaves', auth.employee, get_remaining_leaves.my_RemainingLeaves);
+
+/**
  * Employee Add Leave
  */
 import add_leave from './add/addLeave';

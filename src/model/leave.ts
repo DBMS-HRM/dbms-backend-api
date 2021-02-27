@@ -7,6 +7,7 @@ const TABLE = {
     leaveRequestStatus : "leaveRequestStatus",
     payGrade : "payGrade",
     supervisorLeaveRequest : "supervisorLeaveRequest",
+    employeeRemainingLeaves : "employeeRemainingLeaves"
 }
 
 
@@ -50,10 +51,17 @@ export default abstract class LeaveModel {
         )
     }
 
-    // Update pay grade leaves
+    // Get leave configs -> pay grade
     static getLeaveConfig(){
         return runQuery(
             qb(TABLE.payGrade).select()
+        )
+    }
+
+    // Get remaining leave counts per each user
+    static getRemainingLeaves(employeeId : string){
+        return runQuery(
+            qb(TABLE.employeeRemainingLeaves).where({employeeId}).select()
         )
     }
 
