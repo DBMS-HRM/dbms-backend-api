@@ -12,6 +12,7 @@ const leaveRequest_inspector = inspectBuilder(
     query("leaveStatus").optional()
         .isIn([...Object.values(model.leave.leaveRequestStates)]).withMessage("Invalid leave type"),
     query("fromDate").optional(),
+    query("employeeId").optional().isUUID().withMessage("Employee Id is not valid"),
     query("toDate").optional(),
 )
 
@@ -31,7 +32,15 @@ const get_AllLeaves : Handler = async (req,res,next) => {
 
 }
 
+const $set_employeeId : Handler = (req,res,next) => {
+    req.query.employeeId = req.user.userId;
+    next();
+}
 
 
-export default [$check_Supervisor as EHandler,leaveRequest_inspector, get_AllLeaves as EHandler];
+const get_leaves = {
+    getAllLeaves :[$check_Supervisor as EHandler,leaveRequest_inspector, get_AllLeaves as EHandler],
+    getMyLeaves :[$set_employeeId as EHandler,leaveRequest_inspector, get_AllLeaves as EHandler],
+}
+export default get_leaves;
 
