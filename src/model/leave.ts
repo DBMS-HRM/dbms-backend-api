@@ -38,7 +38,7 @@ export default abstract class LeaveModel {
 
         const q = cleanQuery(
             query,
-            ["leaveType", "leaveState", "leaveId", "employeeId", "supervisorId"]
+            ["leaveType", "leaveStatus", "leaveId", "employeeId", "supervisorId"]
         )
 
         return runQuery(
@@ -69,9 +69,9 @@ export default abstract class LeaveModel {
     /**
      * Update Functions
      */
-    static approveLeave(leaveId : string, leaveApproveData : any){
+    static changeLeaveStatus(leaveId : string, leaveRequestData : any){
         return runQuery(
-            qb(TABLE.leaveRequest).update(leaveApproveData).where({leaveId})
+            qb(TABLE.leaveRequest).update(leaveRequestData).where({leaveId})
         )
     }
 

@@ -17,8 +17,8 @@ rLeave.post('/add-leave',auth.employee,add_leave);
 /**
  * Supervisor approve leave
  */
-import approve_leave from "./update/approveLeave";
-rLeave.put('/approve-leave/:leaveId',auth.employee,approve_leave);
+import change_leave from "./update/leaveStatus";
+rLeave.put('/change-leave-status/:leaveId',auth.employee,change_leave);
 
 /**
  * Config leaves
