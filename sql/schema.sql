@@ -161,6 +161,31 @@ CREATE VIEW employee_details_full AS
 			(select employee_id, jsonb_agg(phone_number) from phone_number pn group by employee_id) as pns;
 
 
+CREATE VIEW supervisor_employees AS
+    SELECT  sup.employee_id AS supervisor_id,
+    		sup.branch_name,
+    		sup.department_name,
+    		sup.job_title,
+    		sup.pay_grade,
+            jsonb_agg(emp.employee_id) AS employee_ids
+        FROM employee_company_detail emp
+            JOIN employee_company_detail sup ON emp.supervisor_id = sup.employee_id
+                GROUP BY sup.employee_id;
+
+CREATE FUNCTION is_supervisor(emp_id UUID) RETURNS BOOLEAN AS $is_sup$
+
+    BEGIN
+
+        PERFORM employee_id FROM employee_company_detail ecd WHERE ecd.supervisor_id = emp_id;
+        IF FOUND THEN
+            RETURN True;
+        ELSE
+            RETURN False;
+        END IF;
+
+    END;
+
+$is_sup$ LANGUAGE plpgsql;
 
 
 --    █░░ █▀▀ █▀▀█ ▀█░█▀ █▀▀
@@ -240,13 +265,6 @@ CREATE VIEW employee_remaining_leaves AS
     FROM employee_company_detail ecd
     	JOIN pay_grade pg ON pg.pay_grade = ecd.pay_grade;
 
-
-CREATE VIEW supervisor_employees AS
-    SELECT  sup.employee_id AS supervisor_id,
-            jsonb_agg(emp.employee_id) AS employee_ids
-        FROM employee_company_detail emp
-            JOIN employee_company_detail sup ON emp.supervisor_id = sup.employee_id
-                GROUP BY sup.employee_id;
 
 
 -- Run before insert leave request
