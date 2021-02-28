@@ -72,6 +72,7 @@ export interface QBJob_INSERT extends QBJob {
  */
 export interface QBJob_UPDATE extends QBJob {
     update: QBDataType;
+    whereType?: "AND" | "OR" | "BETWEEN"
     where?: QBDataType;
 }
 
@@ -240,18 +241,47 @@ export function qb_UPDATE(jobData: QBJob_UPDATE) {
         args.push(jobData.update[k]);
     }
 
-    let wherePieces: string[] = [];
-    if (jobData.where) {
-        for (let k in jobData.where) {
-            wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
-            args.push(jobData.where[k]);
+    let whereClause: string = "";
+    if (!jobData.where) {
+        // do nothing
+    } else if (jobData.whereType === "BETWEEN") {
+
+        const column = toSnakeCase(jobData.where.column);
+        args.push(jobData.where.lower);
+        args.push(jobData.where.upper);
+        whereClause += ` WHERE ${column} BETWEEN $${++argCount} AND $${++argCount} `;
+
+    } else if (jobData.whereType === "AND") {
+
+        let wherePieces: string[] = [];
+        if (jobData.where) {
+            for (let k in jobData.where) {
+                wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
+                args.push(jobData.where[k]);
+            }
         }
+        whereClause += ` WHERE ${wherePieces.join(" AND ")}`;
+
+    } else if (jobData.whereType === "OR") {
+
+        let wherePieces: string[] = [];
+        if (jobData.where) {
+            for (let k in jobData.where) {
+                wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
+                args.push(jobData.where[k]);
+            }
+        }
+        whereClause += ` WHERE ${wherePieces.join(" OR ")}`;
+
     }
 
     // Build Query
+    if (updatePieces.length <= 0) {
+        return {query:"", args};
+    }
     let query = `UPDATE ${tableName} SET ${updatePieces.join(", ")}`;
-    if (wherePieces.length > 0) {
-        query += ` WHERE ${wherePieces.join(" AND ")}`;
+    if (whereClause.length > 0) {
+        query += whereClause;
     }
 
     return {query, args};

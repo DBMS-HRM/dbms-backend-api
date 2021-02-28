@@ -166,7 +166,7 @@ export class QBuilder {
                     type: this.type,
                     table: this.table, alias: this.alias,
                     update: this.updateData,
-                    // whereType: this.whereType,
+                    whereType: this.whereType,
                     where: this.whereCond
                 });
             case QBJobType.RAW:
