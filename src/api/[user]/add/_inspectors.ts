@@ -51,6 +51,7 @@ export const employeeCompanyData_inspector = inspectBuilder(
     body("payGrade").exists().withMessage("Branch Id is required")
         .isIn([...Object.values(model.user.pay_grade)]).withMessage("Pay grade is not valid"),
     body("departmentName").exists().withMessage("Department name is required"),
+    body("supervisorId").optional().isUUID().withMessage("Supervisor id is not valid")
 
 )
 

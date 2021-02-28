@@ -11,7 +11,9 @@ const TABLE = {
     employmentStatus: "employmentStatus",
     phoneNumber: "phoneNumber",
     employeeDetailsFull: "employeeDetailsFull",
-    supervisorEmployees : "supervisorEmployees"
+    supervisorEmployees : "supervisorEmployees",
+    employeeLoginDetails : "employeeLoginDetails"
+
 };
 
 
@@ -60,6 +62,13 @@ export default abstract class Employee {
     static getEmployeeAccount(username: string): Promise<[MError, interfaces.EmployeeAccount]> {
         return runQuery(
             qb(TABLE.employeeAccount).where({username}),
+            {single: true, required: true}
+        );
+    };
+
+    static getEmployeeLoginData(username: string): Promise<[MError, interfaces.EmployeeLoginDetail]> {
+        return runQuery(
+            qb(TABLE.employeeLoginDetails).where({username}),
             {single: true, required: true}
         );
     };
@@ -169,13 +178,18 @@ export default abstract class Employee {
     }
 
     static updatePhoneNumbers(employeeId : string, phoneNumbers : any){
-        return qb().raw(`call insert_phone_numbers('$1' , '$2')`, [employeeId, phoneNumbers]);
+        if(phoneNumbers == null){
+            return qb()
+        }
+        console.log(qb().raw(`call insert_phone_numbers($1 , $2)`, [employeeId, phoneNumbers.phoneNumbers]).query)
+        return qb().raw(`call insert_phone_numbers($1 , $2)`, [employeeId, phoneNumbers.phoneNumbers]);
     }
 
     static updateEmployeePersonalInfo(employeeId : string, personalData : any, emergencyData : any, phoneNumbers : any) {
+        console.log(phoneNumbers.phoneNumbers);
         return runTrx(
-            qb(TABLE.employeePersonalDetail).update(personalData).where({employeeId}),
-            qb(TABLE.employeeEmergencyDetail).update(emergencyData).where({employeeId}),
+            // qb(TABLE.employeePersonalDetail).update(personalData).where({employeeId}),
+            // qb(TABLE.employeeEmergencyDetail).update(emergencyData).where({employeeId}),
             this.updatePhoneNumbers(employeeId, phoneNumbers)
         );
     }

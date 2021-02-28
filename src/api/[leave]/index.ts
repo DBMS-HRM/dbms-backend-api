@@ -6,14 +6,14 @@ const rLeave = Router();
  * Query data
  */
 import get_leaves from "./get/allLeaves";
-rLeave.get('/get-all',auth.employee,get_leaves.getAllLeaves);
+rLeave.get('/get-all',auth.supervisor,get_leaves.getAllLeaves);
 rLeave.get('/get-my-all',auth.employee,get_leaves.getMyLeaves);
 
 /**
  * Remaining leaves
  */
 import get_remaining_leaves from "./get/remainingLeaves";
-rLeave.get('/get-remaining-leaves/:employeeId', auth.employee, get_remaining_leaves.employee_RemainingLeaves);
+rLeave.get('/get-remaining-leaves/:employeeId', auth.supervisor, get_remaining_leaves.employee_RemainingLeaves);
 rLeave.get('/get-remaining-leaves', auth.employee, get_remaining_leaves.my_RemainingLeaves);
 
 /**
@@ -26,7 +26,7 @@ rLeave.post('/add-leave',auth.employee,add_leave);
  * Supervisor approve leave
  */
 import change_leave from "./update/leaveStatus";
-rLeave.put('/change-leave-status/:leaveId',auth.employee,change_leave);
+rLeave.put('/change-leave-status/:leaveId',auth.supervisor,change_leave);
 
 /**
  * Config leaves

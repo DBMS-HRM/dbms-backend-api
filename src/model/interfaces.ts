@@ -30,7 +30,8 @@ export interface EmployeeCompanyDetail {
     jobTitle : string;
     employmentStatus : string;
     payGrade : string;
-    departmentName : string
+    departmentName : string,
+    supervisorId : string
 }
 
 export interface EmployeeEmergencyDetail {
@@ -55,6 +56,26 @@ export interface EmployeePersonalDetail {
     lastName : string;
     dateOfBirth : typeof Date;
     maritalStatus : boolean;
+}
+
+export interface EmployeeLoginDetail {
+    username : string,
+    password : string,
+    emailAddress : string,
+    accountType : string,
+    status : boolean,
+    employeeId : string;
+    branchName : string;
+    jobTitle : string;
+    employmentStatus : string;
+    payGrade : string;
+    departmentName : string,
+    supervisorId : string,
+    firstName : string,
+    lastName : string,
+    dateOfBirth : typeof Date,
+    maritalStatus : boolean,
+    isSupervisor : boolean
 }
 
 /**

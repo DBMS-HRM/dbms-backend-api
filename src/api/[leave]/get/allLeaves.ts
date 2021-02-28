@@ -1,7 +1,6 @@
 import {EHandler, Handler} from "../../../utils/types";
 import model, {MErr} from "../../../model";
 import {inspectBuilder,query} from "../../../utils/inspect";
-import {$check_Supervisor} from "../../[user]/handlers";
 
 /**
  * Validation
@@ -40,7 +39,7 @@ const $set_employeeId : Handler = (req,res,next) => {
 
 
 const get_leaves = {
-    getAllLeaves :[$check_Supervisor as EHandler,leaveRequest_inspector, get_AllLeaves as EHandler],
+    getAllLeaves :[leaveRequest_inspector, get_AllLeaves as EHandler],
     getMyLeaves :[$set_employeeId as EHandler,leaveRequest_inspector, get_AllLeaves as EHandler],
 }
 export default get_leaves;

@@ -30,6 +30,7 @@ export function extract_employeeCompanyData(req : any){
         employmentStatus : req.body.employmentStatus,
         payGrade : req.body.payGrade,
         departmentName : req.body.departmentName,
+        supervisorId : req.body.supervisorId,
     }
 }
 
