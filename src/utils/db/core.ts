@@ -50,6 +50,7 @@ export interface _QBJob_SELECT_JOIN {
  */
 export interface QBJob_SELECT extends QBJob {
     selection?: string[];
+    whereType?: "AND" | "OR" | "BETWEEN"
     where?: QBDataType;
 
     joins?: _QBJob_SELECT_JOIN[]
@@ -125,13 +126,40 @@ export function qb_SELECT(jobData: QBJob_SELECT): { query: string, args: string[
     }
 
 
-    let wherePieces: string[] = [];
-    if (jobData.where) {
-        for (let k in jobData.where) {
-            wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
-            args.push(jobData.where[k]);
+    let whereClause: string = "";
+    if (!jobData.where) {
+        // do nothing
+    } else if (jobData.whereType === "BETWEEN") {
+
+        const column = toSnakeCase(jobData.where.column);
+        args.push(jobData.where.lower);
+        args.push(jobData.where.upper);
+        whereClause += ` WHERE ${column} BETWEEN $${++argCount} AND $${++argCount} `;
+
+    } else if (jobData.whereType === "AND") {
+
+        let wherePieces: string[] = [];
+        if (jobData.where) {
+            for (let k in jobData.where) {
+                wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
+                args.push(jobData.where[k]);
+            }
         }
+        whereClause += ` WHERE ${wherePieces.join(" AND ")}`;
+
+    } else if (jobData.whereType === "OR") {
+
+        let wherePieces: string[] = [];
+        if (jobData.where) {
+            for (let k in jobData.where) {
+                wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
+                args.push(jobData.where[k]);
+            }
+        }
+        whereClause += ` WHERE ${wherePieces.join(" OR ")}`;
+
     }
+
 
     let orderByPieces: string[] = [];
     if (jobData.orderBy && jobData.orderBy.length > 0) {
@@ -147,8 +175,8 @@ export function qb_SELECT(jobData: QBJob_SELECT): { query: string, args: string[
             query += ` ${j}`;
         }
     }
-    if (wherePieces.length > 0) {
-        query += ` WHERE ${wherePieces.join(" AND ")}`;
+    if (whereClause.length > 0) {
+        query += whereClause;
     }
     if (orderByPieces.length > 0) {
         query += ` ${orderByPieces.join(", ")}`;
