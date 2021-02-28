@@ -1,4 +1,4 @@
-import {_QBJob_SELECT_JOIN, qb_INSERT, qb_SELECT, qb_UPDATE, QBDataType, QBJobType} from "./core";
+import {_QBJob_SELECT_JOIN, qb_DELETE, qb_INSERT, qb_SELECT, qb_UPDATE, QBDataType, QBJobType} from "./core";
 
 type JoinType = "JOIN" | "LEFT JOIN" | "RIGHT JOIN"
 
@@ -134,6 +134,11 @@ export class QBuilder {
         return this;
     }
 
+    delete(): QBuilder {
+        this.type = QBJobType.DELETE;
+        return this;
+    }
+
     raw(query: string, args: string[]): QBuilder {
         this.type = QBJobType.RAW;
         this.rawQuery = query;
@@ -166,6 +171,13 @@ export class QBuilder {
                     type: this.type,
                     table: this.table, alias: this.alias,
                     update: this.updateData,
+                    whereType: this.whereType,
+                    where: this.whereCond
+                });
+            case QBJobType.DELETE:
+                return qb_DELETE({
+                    type: this.type,
+                    table: this.table, alias: this.alias,
                     whereType: this.whereType,
                     where: this.whereCond
                 });
