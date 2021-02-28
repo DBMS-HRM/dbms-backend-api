@@ -172,6 +172,12 @@ CREATE VIEW supervisor_employees AS
             JOIN employee_company_detail sup ON emp.supervisor_id = sup.employee_id
                 GROUP BY sup.employee_id;
 
+CREATE VIEW employee_login_details AS
+	SELECT *, is_supervisor(employee_id)
+		FROM employee_account ea
+		JOIN employee_company_detail ecd USING(employee_id)
+		JOIN employee_personal_detail epd USING(employee_id);
+
 CREATE FUNCTION is_supervisor(emp_id UUID) RETURNS BOOLEAN AS $is_sup$
 
     BEGIN
