@@ -1,7 +1,6 @@
 import {EHandler, Handler} from "../../../utils/types";
 import model, {MErr} from "../../../model";
 import {inspectBuilder,param} from "../../../utils/inspect";
-import {$check_Supervisor} from "../../[user]/handlers";
 
 const inspector = inspectBuilder(
     param("employeeId").exists().withMessage("Employee Id is required")
@@ -36,6 +35,6 @@ const $set_employeeId : Handler = (req,res,next) => {
 
 const get_remaining_leaves = {
     my_RemainingLeaves : [ $set_employeeId as EHandler,get_LeaveConfigs as EHandler],
-    employee_RemainingLeaves : [ $check_Supervisor as EHandler,inspector,get_LeaveConfigs as EHandler],
+    employee_RemainingLeaves : [ inspector,get_LeaveConfigs as EHandler],
 }
 export default get_remaining_leaves;

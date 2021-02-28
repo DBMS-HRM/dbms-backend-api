@@ -4,6 +4,10 @@ import model, {MErr} from "../../../model";
 import * as inspectors from "./_inspectors";
 import * as reqData from "./_utils";
 
+/**
+ * Change phone numbers format
+ * @param req
+ */
 
 /**
  * :: STEP 2
@@ -13,9 +17,9 @@ const update_EmployeePersonalData: Handler = async (req, res) => {
     const {r} = res;
     const employeeId = req.user.userId;
     const [{code}] = await model.user.updateEmployeePersonalInfo(
-        employeeId,reqData.extract_employeePersonalData,
-        reqData.extract_employeeEmergencyData,
-        reqData.extract_phoneNumber
+        employeeId,reqData.extract_employeePersonalData(req),
+        reqData.extract_employeeEmergencyData(req),
+        reqData.extract_phoneNumber(req)
     );
 
     if (code === MErr.NO_ERROR) {
@@ -33,11 +37,11 @@ const update_EmployeeFullData: Handler = async (req, res) => {
     const employeeId = req.params.employeeId;
     const [{code}] = await model.user.updateEmployeeInfo(
         employeeId,
-        reqData.extract_employeeCompanyData,
-        reqData.extract_employeeEmergencyData,
-        reqData.extract_employeePersonalData,
-        reqData.extract_employeeCustomData,
-        reqData.extract_phoneNumber
+        reqData.extract_employeeCompanyData(req),
+        reqData.extract_employeeEmergencyData(req),
+        reqData.extract_employeePersonalData(req),
+        reqData.extract_employeeCustomData(req),
+        reqData.extract_phoneNumber(req)
     );
 
     if (code === MErr.NO_ERROR) {

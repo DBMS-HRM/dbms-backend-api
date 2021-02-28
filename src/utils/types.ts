@@ -9,7 +9,9 @@ export interface Request extends ERequest {
         lastName: string,
         email: string,
         jobTitle : string,
-        payGrade : string
+        payGrade : string,
+        isSupervisor : boolean,
+        branchName : string
     }
 }
 

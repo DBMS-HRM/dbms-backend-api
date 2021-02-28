@@ -22,7 +22,7 @@ const validateCredentials: Handler = async (req, res, next) => {
     const {r} = res;
     const {username, password} = req.body;
 
-    const [error, account] = await model.user.getEmployeeAccount(username);
+    const [error, account] = await model.user.getEmployeeLoginData(username);
 
     if (error.code === MErr.NO_ERROR) {
         // password verification
@@ -57,11 +57,6 @@ const serveToken: Handler = async (req, res) => {
 
     // creating payload model
     const account = req.body.account
-    const [{code}, employee] = await model.user.getEmployeeCP({employeeId : account.employeeId});
-    if(code != MErr.NO_ERROR){
-        r.pb.ISE().send();
-        return;
-    }
 
     const payload = {
         username : account.username,
@@ -69,27 +64,24 @@ const serveToken: Handler = async (req, res) => {
         email: account.emailAddress,
         status: account.status,
         accountType : account.accountType,
-        jobTitle : employee.jobTitle,
-        payGrade : employee.payGrade,
+        jobTitle : account.jobTitle,
+        payGrade : account.payGrade,
+        isSupervisor : account.isSupervisor,
+        branchName: account.branchName
     }
-
+    console.log("Payload : ",payload);
     // create token
     const accessToken = TokenMan.getAccessToken(payload);
 
-    const [err2, [res2] ] = await model.user.checkSupervisor(account.employeeId);
-    if(err2.code != MErr.NO_ERROR){
-        r.pb.ISE().send();
-        return;
-    }
     const employeeData = {
-        firstName : employee.firstName,
-        lastName : employee.lastName,
-        jobTitle : employee.jobTitle,
-        branchName : employee.branchName,
-        employmentStatus : employee.employmentStatus,
-        payGrade : employee.payGrade,
-        departmentName : employee.departmentName,
-        supervisor : res2.isSupervisor,
+        firstName : account.firstName,
+        lastName : account.lastName,
+        jobTitle : account.jobTitle,
+        branchName : account.branchName,
+        employmentStatus : account.employmentStatus,
+        payGrade : account.payGrade,
+        departmentName : account.departmentName,
+        supervisor : account.isSupervisor,
     }
     r.status.OK()
         .data({...payload,...employeeData})
