@@ -7,7 +7,8 @@ const TABLE = {
     leaveRequestStatus : "leaveRequestStatus",
     payGrade : "payGrade",
     supervisorLeaveRequest : "supervisorLeaveRequest",
-    employeeRemainingLeaves : "employeeRemainingLeaves"
+    employeeRemainingLeaves : "employeeRemainingLeaves",
+    supervisorEmployeesMv : "supervisorEmployeesMv"
 }
 
 
