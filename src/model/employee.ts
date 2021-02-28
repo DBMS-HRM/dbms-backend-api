@@ -13,7 +13,8 @@ const TABLE = {
     employeeDetailsFull: "employeeDetailsFull",
     supervisorEmployees : "supervisorEmployees",
     employeeLoginDetails : "employeeLoginDetails",
-    customAttribute : "customAttribute"
+    customAttribute : "customAttribute",
+    supervisorEmployeeMv : "supervisorEmployeeMv"
 
 };
 
@@ -149,6 +150,29 @@ export default abstract class Employee {
             qb(TABLE.employeeCompanyDetail)
                 .leftJoin(TABLE.employeePersonalDetail,
                     "employeeCompanyDetail.employeeId","=","employeePersonalDetail.employeeId")
+                .where(q)
+                .select()
+        );
+    };
+
+    /**
+     * Get employee company and personal details
+     */
+    static getLevel3Employee(query : any): Promise<[MError, any]> {
+        const q = cleanQuery(
+            query,
+            ["jobTitle", "payGrade", "employeeId", "departmentName", "employmentStatus", "firstName","lastName"]
+        )
+        if(q.hasOwnProperty("employeeId")){
+            q["employeeCompanyDetail.employeeId"] = q["employeeId"];
+            delete q["employeeId"];
+        }
+        return runQuery(
+            qb(TABLE.employeeCompanyDetail)
+                .leftJoin(TABLE.employeePersonalDetail,
+                    "employeeCompanyDetail.employeeId","=","employeePersonalDetail.employeeId")
+                .leftJoin(TABLE.supervisorEmployeeMv,
+                    "employeeCompanyDetail.employeeId","=","supervisorEmployeeMv.supervisorId")
                 .where(q)
                 .select()
         );

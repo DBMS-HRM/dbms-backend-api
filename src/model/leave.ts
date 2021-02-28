@@ -8,7 +8,6 @@ const TABLE = {
     payGrade : "payGrade",
     supervisorLeaveRequest : "supervisorLeaveRequest",
     employeeRemainingLeaves : "employeeRemainingLeaves",
-    supervisorEmployeesMv : "supervisorEmployeesMv"
 }
 
 
