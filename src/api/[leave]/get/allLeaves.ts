@@ -13,6 +13,7 @@ const leaveRequest_inspector = inspectBuilder(
         .isIn([...Object.values(model.leave.leaveRequestStates)]).withMessage("Invalid leave type"),
     query("fromDate").optional(),
     query("employeeId").optional().isUUID().withMessage("Employee Id is not valid"),
+    query("leaveId").optional().isUUID().withMessage("Leave Id is not valid"),
     query("toDate").optional(),
 )
 
