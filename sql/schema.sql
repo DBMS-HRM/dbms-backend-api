@@ -135,8 +135,9 @@ CREATE TABLE employee_emergency_detail (
 );
 
 CREATE TABLE phone_number (
-    employee_id UUID PRIMARY KEY,
-    phone_number VARCHAR(20) NOT NULL,
+    employee_id UUID,
+    phone_number VARCHAR(20),
+    PRIMARY KEY (employee_id, phone_number),
     FOREIGN KEY (employee_id) REFERENCES employee_emergency_detail(employee_id) ON DELETE RESTRICT
 );
 
@@ -178,6 +179,7 @@ CREATE VIEW employee_login_details AS
 		JOIN employee_company_detail ecd USING(employee_id)
 		JOIN employee_personal_detail epd USING(employee_id);
 
+
 CREATE FUNCTION is_supervisor(emp_id UUID) RETURNS BOOLEAN AS $is_sup$
 
     BEGIN
@@ -192,6 +194,20 @@ CREATE FUNCTION is_supervisor(emp_id UUID) RETURNS BOOLEAN AS $is_sup$
     END;
 
 $is_sup$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE PROCEDURE set_phone_numbers(emp_id UUID, phone_numbers JSON)
+LANGUAGE plpgsql
+AS $pn$
+	DECLARE
+		_pn VARCHAR(20);
+	BEGIN
+		DELETE FROM phone_number WHERE employee_id = emp_id;
+		FOR _pn IN SELECT * FROM (SELECT json_array_elements_text(phone_numbers)) pn
+		loop
+			INSERT INTO phone_number VALUES (emp_id, _pn::VARCHAR(20));
+		END loop ;
+	END ;
+$pn$;
 
 
 --    █░░ █▀▀ █▀▀█ ▀█░█▀ █▀▀
