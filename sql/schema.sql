@@ -246,7 +246,7 @@ CREATE VIEW supervisor_leave_request As
            lr.leave_status,
            lr.leave_type,
            lr.requested_date,
-           lr.approved_date
+           lr.reviewed_date
         FROM employee_company_detail ecd
             NATURAL JOIN employee_personal_detail epd
             JOIN leave_request lr ON lr.employee_id = ecd.employee_id;
