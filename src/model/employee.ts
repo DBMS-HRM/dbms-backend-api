@@ -168,5 +168,33 @@ export default abstract class Employee {
         );
     }
 
+    static updatePhoneNumbers(employeeId : string, phoneNumbers : any){
+        return qb().raw(`call insert_phone_numbers('$1' , '$2')`, [employeeId, phoneNumbers]);
+    }
+
+    static updateEmployeePersonalInfo(employeeId : string, personalData : any, emergencyData : any, phoneNumbers : any) {
+        return runTrx(
+            qb(TABLE.employeePersonalDetail).update(personalData).where({employeeId}),
+            qb(TABLE.employeeEmergencyDetail).update(emergencyData).where({employeeId}),
+            this.updatePhoneNumbers(employeeId, phoneNumbers)
+        );
+    }
+
+    static updateEmployeeInfo(employeeId: string,
+                              employeeCompanyData: any,
+                              employeeEmergencyData: any,
+                              employeePersonalData: any,
+                              employeeCustomData: any,
+                              phoneNumbers : any
+                              ) {
+        return runTrx(
+            qb(TABLE.employeeCompanyDetail).update(employeeCompanyData).where({employeeId}),
+            qb(TABLE.employeePersonalDetail).update(employeePersonalData).where({employeeId}),
+            qb(TABLE.employeeEmergencyDetail).update(employeeEmergencyData).where({employeeId}),
+            qb(TABLE.customDetails).update(employeeCustomData).where({employeeId}),
+            this.updatePhoneNumbers(employeeId, phoneNumbers)
+        );
+    }
+
 }
 

@@ -6,7 +6,8 @@ const rLeave = Router();
  * Query data
  */
 import get_leaves from "./get/allLeaves";
-rLeave.get('/get-all',auth.employee,get_leaves);
+rLeave.get('/get-all',auth.employee,get_leaves.getAllLeaves);
+rLeave.get('/get-my-all',auth.employee,get_leaves.getMyLeaves);
 
 /**
  * Remaining leaves

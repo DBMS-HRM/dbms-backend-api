@@ -43,7 +43,7 @@ export const managerialEmployee_EmployeeAccountType_inspector = inspectBuilder(
 
 export const employeeCompanyData_inspector = inspectBuilder(
     body("branchName").exists().withMessage("Branch Id is required"),
-    body("jobTitle").exists().withMessage("Branch Id is required")
+    body("jobTitle").exists().withMessage("Branch Name is required")
         .if((value :string,{req} :any) => req.body.accountType === model.user.user_account_types.managerialEmployee)
         .isIn([model.user.job_titles.HRManager]).withMessage("Job title is not valid"),
     body("employmentStatus").exists().withMessage("Employment status is required")
@@ -93,5 +93,6 @@ export const employeeCustomData_inspector = inspectBuilder(
  */
 
 export const phoneNumber_inspector = inspectBuilder(
-    body("phoneNumber").exists().withMessage("Phone Number is required"),
+    body("phoneNumbers").exists().withMessage("Phone Number is required")
+        .isArray().withMessage("Phone numbers should be array"),
 )

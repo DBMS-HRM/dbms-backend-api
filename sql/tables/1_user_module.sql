@@ -85,8 +85,9 @@ CREATE TABLE employee_emergency_detail (
 );
 
 CREATE TABLE phone_number (
-    employee_id UUID PRIMARY KEY,
+    employee_id UUID NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
+    CONSTRAINT employee_phone PRIMARY KEY (employee_id, phone_number),
     FOREIGN KEY (employee_id) REFERENCES employee_emergency_detail(employee_id) ON DELETE RESTRICT
 );
 

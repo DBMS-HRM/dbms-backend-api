@@ -24,9 +24,9 @@ const change_LeaveStatus : Handler = async (req,res,next) => {
     const leaveId = req.params.leaveId;
     let leaveApproveData : any = {
         supervisorId : req.user.userId,
+        reviewedDate : new Date()
     }
     if(req.body.leaveStatus === model.leave.leaveRequestStates.approved){
-        leaveApproveData.approvedDate  = new Date();
         leaveApproveData.leaveStatus = model.leave.leaveRequestStates.approved;
     }else if(req.body.leaveStatus === model.leave.leaveRequestStates.rejected){
         leaveApproveData.leaveStatus = model.leave.leaveRequestStates.rejected;

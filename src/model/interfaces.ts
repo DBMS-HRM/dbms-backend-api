@@ -103,7 +103,7 @@ export interface LeaveRequest {
     requestedDate  : typeof Date,
     leaveStatus  : string,
     leaveType  : string,
-    approvedDate  : typeof Date,
+    reviewedDate  : typeof Date,
     supervisorId : string
 }
 

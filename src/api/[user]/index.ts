@@ -46,6 +46,12 @@ import view_profile from "./get/empoyee_profile";
 rUser.get('/my-profile',auth.employee, view_profile.employeeViewProfile);
 rUser.get('/view-profile/:employeeId',auth.managerialEmployee, view_profile.employeeViewProfile);
 
+/**
+ * Update profile
+ */
+import update_employee_data from "./update/employeeData";
+rUser.put('/my-profile',auth.employee, update_employee_data.personalData);
+rUser.put('/view-profile/:employeeId',auth.managerialEmployee, update_employee_data.fullData);
 
 /**
  * Custom attributes

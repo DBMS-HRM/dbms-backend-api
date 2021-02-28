@@ -4,25 +4,6 @@ import {encrypt_password} from "../../../utils/hasher";
  * @param req : Express Request
  */
 
-export async function extract_adminAccountData(req : any){
-    return{
-        username : req.body.username,
-        password : await encrypt_password(req.body.password),
-        email : req.body.email,
-        branchName : req.body.branchName,
-        accountType : req.body.accountType,
-    }
-}
-
-export async function extract_employeeAccountData(req : any){
-    return{
-        username : req.body.username,
-        password :  await encrypt_password(req.body.password),
-        emailAddress : req.body.emailAddress,
-        accountType : req.body.accountType,
-    }
-}
-
 export function extract_employeeCompanyData(req : any){
     return{
         branchName : req.body.branchName,
@@ -55,7 +36,7 @@ export function extract_employeePersonalData(req : any){
 
 export function extract_phoneNumber(req : any){
     return{
-        phoneNumbers : req.body.phoneNumber,
+        phoneNumbers : req.body.phoneNumbers,
         
     }
 }
