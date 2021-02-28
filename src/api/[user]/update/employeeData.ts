@@ -8,22 +8,6 @@ import * as reqData from "./_utils";
  * Change phone numbers format
  * @param req
  */
-const $returnPhoneArray = (req : any) => {
-    if(req.body.phoneNumbers === undefined){
-        return null;
-    }
-    console.log(req.body.phoneNumbers);
-    const phoneNumbers = req.body.phoneNumbers;
-    console.log(Object.values(phoneNumbers));
-    let out = "{";
-    phoneNumbers.forEach((mobile : any, index : number) => {
-        out += Object.values(mobile) + ","
-    })
-    out.substring(0,phoneNumbers.length-1)
-    out += "}"
-    console.log(out);
-    return out;
-}
 
 /**
  * :: STEP 2
@@ -32,12 +16,10 @@ const $returnPhoneArray = (req : any) => {
 const update_EmployeePersonalData: Handler = async (req, res) => {
     const {r} = res;
     const employeeId = req.user.userId;
-    const phoneNumbers = $returnPhoneArray(req);
-    console.log("Phone number", phoneNumbers);
     const [{code}] = await model.user.updateEmployeePersonalInfo(
         employeeId,reqData.extract_employeePersonalData(req),
         reqData.extract_employeeEmergencyData(req),
-        phoneNumbers
+        reqData.extract_phoneNumber(req)
     );
 
     if (code === MErr.NO_ERROR) {
@@ -59,7 +41,7 @@ const update_EmployeeFullData: Handler = async (req, res) => {
         reqData.extract_employeeEmergencyData(req),
         reqData.extract_employeePersonalData(req),
         reqData.extract_employeeCustomData(req),
-        $returnPhoneArray(req)
+        reqData.extract_phoneNumber(req)
     );
 
     if (code === MErr.NO_ERROR) {

@@ -57,9 +57,10 @@ rUser.put('/view-profile/:employeeId',auth.managerialEmployee, update_employee_d
  * Custom attributes
  */
 import get_custom_attributes from "./get/customAttributes";
-import update_custom_attributes from "./update/customAttributes";
+import put_custom_attributes from "./update/customAttributes";
 rUser.get('/get-custom-attributes',auth.admin, get_custom_attributes);
-rUser.put('/update-custom-attributes',auth.admin, update_custom_attributes);
+rUser.put('/update-custom-attributes',auth.admin, put_custom_attributes.update_attributes);
+rUser.put('/update-custom-attributes',auth.admin, put_custom_attributes.delete_attributes);
 
 
 export default rUser

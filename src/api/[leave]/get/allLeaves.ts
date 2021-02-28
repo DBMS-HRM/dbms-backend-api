@@ -37,10 +37,16 @@ const $set_employeeId : Handler = (req,res,next) => {
     next();
 }
 
+const $set_supervisorId : Handler = (req,res,next) => {
+    req.query.employeeId = req.user.userId;
+    next();
+}
+
 
 const get_leaves = {
     getAllLeaves :[leaveRequest_inspector, get_AllLeaves as EHandler],
-    getMyLeaves :[$set_employeeId as EHandler,leaveRequest_inspector, get_AllLeaves as EHandler],
+    employeeMyLeaves :[$set_employeeId as EHandler,leaveRequest_inspector, get_AllLeaves as EHandler],
+    supervisorLeaves :[$set_employeeId as EHandler,leaveRequest_inspector, get_AllLeaves as EHandler],
 }
 export default get_leaves;
 

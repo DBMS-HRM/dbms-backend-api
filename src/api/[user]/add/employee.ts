@@ -48,14 +48,18 @@ const add_Employee : Handler = async (req,res, next) => {
     };
     const phoneNumbers = extract_phoneNumber(req);
 
-    // ToDo: [{employeeId : phoneNumber},{employeeId : phoneNumber}]
     const phoneNumber = {
         employeeId : userId,
         ...extract_phoneNumber(req)
     }
 
 
-    const [{code}] = await model.user.addEmployeeAccount(employeeAccountData, employeeCompanyData, employeeEmergencyData, employeePersonalData,phoneNumber, employeeCustomData);
+    const [{code}] = await model.user.addEmployeeAccount(employeeAccountData,
+        employeeCompanyData,
+        employeeEmergencyData,
+        employeePersonalData,
+        phoneNumber,
+        employeeCustomData);
     if(code === MErr.NO_ERROR){
         r.status.OK()
             .message("Employee user added successfully")
@@ -89,8 +93,15 @@ const $check_HRManager: Handler = (req,res,next) => {
 }
 
 const add_employee = {
-    admin_AddEmployee : [employeeAccount_inspector,admin_EmployeeAccountType_inspector,employeePersonalData_inspector, employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector, phoneNumber_inspector, add_Employee as EHandler],
-    managerialEmployee_AddEmployee : [$check_HRManager as EHandler,employeeAccount_inspector, managerialEmployee_EmployeeAccountType_inspector,employeePersonalData_inspector,employeeCompanyData_inspector, employeeEmergencyData_inspector, employeeCustomData_inspector, phoneNumber_inspector, add_Employee as EHandler],
+    admin_AddEmployee : [phoneNumber_inspector,employeeAccount_inspector,admin_EmployeeAccountType_inspector,
+        employeePersonalData_inspector, employeeCompanyData_inspector,
+        employeeEmergencyData_inspector, employeeCustomData_inspector,
+         add_Employee as EHandler],
+    managerialEmployee_AddEmployee : [$check_HRManager as EHandler,
+        employeeAccount_inspector, managerialEmployee_EmployeeAccountType_inspector,
+        employeePersonalData_inspector,employeeCompanyData_inspector,
+        employeeEmergencyData_inspector, employeeCustomData_inspector,
+        phoneNumber_inspector, add_Employee as EHandler],
 }
 
 export default add_employee;

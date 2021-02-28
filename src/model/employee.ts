@@ -12,7 +12,8 @@ const TABLE = {
     phoneNumber: "phoneNumber",
     employeeDetailsFull: "employeeDetailsFull",
     supervisorEmployees : "supervisorEmployees",
-    employeeLoginDetails : "employeeLoginDetails"
+    employeeLoginDetails : "employeeLoginDetails",
+    customAttribute : "customAttribute"
 
 };
 
@@ -112,6 +113,27 @@ export default abstract class Employee {
     /**
      * Get employee company and personal details
      */
+    static getEmployeeFullReport(query : any): Promise<[MError, any]> {
+        const q = cleanQuery(
+            query,
+            ["jobTitle", "payGrade", "employeeId", "departmentName", "supervisorId", "employmentStatus", "firstName","lastName"]
+        )
+        if(q.hasOwnProperty("employeeId")){
+            q["employeeCompanyDetail.employeeId"] = q["employeeId"];
+            delete q["employeeId"];
+        }
+        return runQuery(
+            qb(TABLE.employeeCompanyDetail)
+                .leftJoin(TABLE.employeePersonalDetail,
+                    "employeeCompanyDetail.employeeId","=","employeePersonalDetail.employeeId")
+                .where(q)
+                .select()
+        );
+    };
+
+    /**
+     * Get employee company and personal details
+     */
     static getEmployeeCP(query : any): Promise<[MError, any]> {
         const q = cleanQuery(
             query,
@@ -154,7 +176,7 @@ export default abstract class Employee {
                               employeeCompanyData: interfaces.EmployeeCompanyDetail,
                               employeeEmergencyData: interfaces.EmployeeEmergencyDetail,
                               employeePersonalData: interfaces.EmployeePersonalDetail,
-                              phoneNumber: interfaces.PhoneNumber,
+                              phoneNumber: any,
                               employeeCustomData: any
     ) {
         return runTrx(
@@ -162,8 +184,8 @@ export default abstract class Employee {
             qb(TABLE.employeeAccount).insert(employeeAccountData),
             qb(TABLE.employeePersonalDetail).insert(employeePersonalData),
             qb(TABLE.employeeEmergencyDetail).insert(employeeEmergencyData),
-            qb(TABLE.phoneNumber).insert(phoneNumber),
-            qb(TABLE.customDetails).insert(employeeCustomData)
+            qb(TABLE.customDetails).insert(employeeCustomData),
+            this.setPhoneNumbers(phoneNumber.employeeId, phoneNumber)
         );
     };
 
@@ -177,20 +199,25 @@ export default abstract class Employee {
         );
     }
 
-    static updatePhoneNumbers(employeeId : string, phoneNumbers : any){
+    static setPhoneNumbers(employeeId : string, phoneNumbers : any){
         if(phoneNumbers == null){
             return qb()
         }
-        console.log(qb().raw(`call insert_phone_numbers($1 , $2)`, [employeeId, phoneNumbers.phoneNumbers]).query)
-        return qb().raw(`call insert_phone_numbers($1 , $2)`, [employeeId, phoneNumbers.phoneNumbers]);
+        const mobiles = phoneNumbers.phoneNumbers;
+        console.log("Mobile", mobiles);
+        console.log(qb().raw(`call set_phone_numbers($1 , $2)`, [employeeId, mobiles]).query)
+        return qb().raw(`call set_phone_numbers($1 , $2)`, [employeeId, mobiles]);
     }
 
     static updateEmployeePersonalInfo(employeeId : string, personalData : any, emergencyData : any, phoneNumbers : any) {
-        console.log(phoneNumbers.phoneNumbers);
+        const personalD = cleanQuery(personalData);
+        const emergencyD = cleanQuery(emergencyData);
+        const phoneD = cleanQuery(phoneNumbers);
+        console.log(qb(TABLE.employeePersonalDetail).update(personalD).where({employeeId}).query)
         return runTrx(
-            // qb(TABLE.employeePersonalDetail).update(personalData).where({employeeId}),
-            // qb(TABLE.employeeEmergencyDetail).update(emergencyData).where({employeeId}),
-            this.updatePhoneNumbers(employeeId, phoneNumbers)
+            qb(TABLE.employeePersonalDetail).update(personalD).where({employeeId}),
+            qb(TABLE.employeeEmergencyDetail).update(emergencyD).where({employeeId}),
+            this.setPhoneNumbers(employeeId, phoneD)
         );
     }
 
@@ -200,13 +227,15 @@ export default abstract class Employee {
                               employeePersonalData: any,
                               employeeCustomData: any,
                               phoneNumbers : any
-                              ) {
+                              )
+    {
+
         return runTrx(
-            qb(TABLE.employeeCompanyDetail).update(employeeCompanyData).where({employeeId}),
-            qb(TABLE.employeePersonalDetail).update(employeePersonalData).where({employeeId}),
-            qb(TABLE.employeeEmergencyDetail).update(employeeEmergencyData).where({employeeId}),
-            qb(TABLE.customDetails).update(employeeCustomData).where({employeeId}),
-            this.updatePhoneNumbers(employeeId, phoneNumbers)
+            qb(TABLE.employeeCompanyDetail).update(cleanQuery(employeeCompanyData)).where({employeeId}),
+            qb(TABLE.employeePersonalDetail).update(cleanQuery(employeePersonalData)).where({employeeId}),
+            qb(TABLE.employeeEmergencyDetail).update(cleanQuery(employeeEmergencyData)).where({employeeId}),
+            qb(TABLE.customDetails).update(cleanQuery(employeeCustomData)).where({employeeId}),
+            this.setPhoneNumbers(employeeId, cleanQuery(phoneNumbers))
         );
     }
 

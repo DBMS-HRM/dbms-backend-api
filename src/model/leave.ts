@@ -34,8 +34,8 @@ export default abstract class LeaveModel {
 
         let [orderColumn1, order1] = ["requestDate","desc"];
         (query.orderBy1 != undefined) ? [orderColumn1, order1] = JSON.parse(query.orderBy1) : [orderColumn1, order1];
-        // const fromDate = query.fromDate || "2021-02-01";
-        // const toDate = query.toDate || new Date();
+        const fromDate = query.fromDate || "2021-02-01";
+        const toDate = query.toDate || new Date();
 
         const q = cleanQuery(
             query,
@@ -45,9 +45,26 @@ export default abstract class LeaveModel {
         return runQuery(
             qb(TABLE.supervisorLeaveRequest)
                 .where(q)
+                .whereBetween("requestedDate",fromDate, toDate)
                 // .orderBy([orderColumn1])
                 .limit(limit).offset(offset)
                 .select()
+        )
+    }
+
+    static get_LeaveReport(query: any): Promise<[MError, interfaces.LeaveRequest[]]> {
+        const fromDate = query.fromDate || "2021-02-01";
+        const toDate = query.toDate || new Date();
+
+        return runQuery(
+            qb().raw('select \n' +
+                '\tdepartment_name ,\n' +
+                '\tleave_type ,\n' +
+                '\tcount(*) as total_leaves\n' +
+                '\tfrom supervisor_leave_request slr\n' +
+                '\twhere\n' +
+                '\trequested_date between $1 and $2\n' +
+                '\tgroup by department_name, leave_type',[fromDate, toDate])
         )
     }
 

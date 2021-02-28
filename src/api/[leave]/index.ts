@@ -7,7 +7,7 @@ const rLeave = Router();
  */
 import get_leaves from "./get/allLeaves";
 rLeave.get('/get-all',auth.supervisor,get_leaves.getAllLeaves);
-rLeave.get('/get-my-all',auth.employee,get_leaves.getMyLeaves);
+rLeave.get('/get-my-all',auth.employee,get_leaves.employeeMyLeaves);
 
 /**
  * Remaining leaves
