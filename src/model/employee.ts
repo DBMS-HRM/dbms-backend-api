@@ -39,7 +39,9 @@ export default abstract class Employee {
     static pay_grade = {
         level1: "Level 1",
         level2: "Level 2",
-        level3: "Level 3"
+        level3: "Level 3",
+        level4: "Level 4",
+        level5: "Level 5",
     };
 
     static employment_status = {

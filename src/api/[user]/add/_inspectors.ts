@@ -15,14 +15,6 @@ export const adminAccount_inspector = inspectBuilder(
 
 )
 
-/**
- * Add Employee phone number details inspector
- */
-
-export const phoneNumber_inspector = inspectBuilder(
-    body("phoneNumbers").exists().withMessage("Phone number is required")
-        .isArray().withMessage("Phone number is not valid")
-)
 
 /**
  * Add Employee account inspector
@@ -60,11 +52,11 @@ export const employeeCompanyData_inspector = inspectBuilder(
     body("payGrade").exists().withMessage("Branch Id is required")
         .isIn([...Object.values(model.user.pay_grade)]).withMessage("Pay grade is not valid"),
     body("departmentName").exists().withMessage("Department name is required"),
-    body("supervisorId").optional().isUUID().withMessage("Supervisor id is not valid")
+    body("supervisorId")
         .if((value :string,{req} :any) =>
             req.body.payGrade != model.user.pay_grade.level3 &&
             req.body.accountType != model.user.user_account_types.managerialEmployee)
-        .exists().withMessage("Supervisor id is required"),
+        .exists().withMessage("Supervisor id is required").isUUID().withMessage("Supervisor id is not valid"),
 
 )
 
