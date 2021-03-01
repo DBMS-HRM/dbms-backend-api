@@ -192,7 +192,7 @@ CREATE VIEW employee_details_full AS
 		NATURAL JOIN employee_emergency_detail
 		NATURAL JOIN employee_custom_details
 		NATURAL JOIN
-			(select employee_id, jsonb_agg(phone_number) from phone_number pn group by employee_id) as pns;
+			(select employee_id, jsonb_agg(phone_number) as phone_numbers from phone_number pn group by employee_id) as pns;
 
 
 CREATE VIEW supervisor_employees AS
