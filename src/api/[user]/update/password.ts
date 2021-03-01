@@ -47,7 +47,7 @@ const update_PasswordAdmin: Handler = async (req, res) => {
     const userId = req.params.userId;
     const newPassword = req.body.newPassword;
 
-    const [{code}] = await model.user.changePasswordEmployee(
+    const [{code}] = await model.user.changePasswordAdmin(
         userId,newPassword
     );
 

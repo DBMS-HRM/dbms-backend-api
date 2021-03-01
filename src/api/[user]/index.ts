@@ -53,15 +53,6 @@ import update_employee_data from "./update/employeeData";
 rUser.put('/my-profile',auth.employee, update_employee_data.personalData);
 rUser.put('/view-profile/:employeeId',auth.managerialEmployee, update_employee_data.fullData);
 
-/**
- * Custom attributes
- */
-import get_custom_attributes from "./get/customAttributes";
-import put_custom_attributes from "./update/customAttributes";
-rUser.get('/get-custom-attributes',auth.admin, get_custom_attributes);
-rUser.put('/update-custom-attributes',auth.admin, put_custom_attributes.update_attributes);
-rUser.put('/update-custom-attributes',auth.admin, put_custom_attributes.delete_attributes);
-
 
 /**
  * Change Password
@@ -71,6 +62,17 @@ rUser.put('/update-employee-password',auth.employee, change_password.changeEmplo
 rUser.put('/update-admin-password',auth.employee, change_password.changeAdminMyPassword);
 rUser.put('/forgot-admin-password/:userId', change_password.forgotAdminPassword);
 rUser.put('/forgot-employee-password/:userId', change_password.forgotAdminPassword);
+
+/**
+ * Custom attributes
+ */
+import get_custom_attributes from "./get/customAttributes";
+import put_custom_attributes from "./update/customAttributes";
+rUser.get('/get-custom-attributes',auth.admin, get_custom_attributes);
+rUser.post('/insert-custom-attributes',auth.admin, put_custom_attributes.insert_attributes);
+rUser.delete('/delete-custom-attributes',auth.admin, put_custom_attributes.delete_attributes);
+
+
 
 export default rUser
 

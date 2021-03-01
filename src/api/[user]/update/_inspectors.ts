@@ -7,7 +7,8 @@ import model from "../../../model";
  */
 
 export const employeeCompanyData_inspector = inspectBuilder(
-    body("branchName").optional().isString().withMessage("Branch Name should ba valid"),
+    body("branchName").optional().isString().withMessage("Branch Name should ba valid")
+        .isIn([...Object.values(model.user.branch_names)]).withMessage("Branch Name is not valid"),
     body("jobTitle").optional()
         .if((value :string,{req} :any) => req.body.accountType === model.user.user_account_types.managerialEmployee)
         .isIn([model.user.job_titles.HRManager]).withMessage("Job title is not valid"),
@@ -15,7 +16,8 @@ export const employeeCompanyData_inspector = inspectBuilder(
         .isIn([...Object.values(model.user.employment_status)]).withMessage("Employment status is not valid"),
     body("payGrade").optional()
         .isIn([...Object.values(model.user.pay_grade)]).withMessage("Pay grade is not valid"),
-    body("departmentName").optional(),
+    body("departmentName").optional()
+        .isIn([...Object.values(model.user.department_names)]).withMessage("Department Name is not valid"),
 
 )
 

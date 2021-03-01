@@ -7,14 +7,14 @@ const TABLE = {
     employeeCompanyDetail: "employeeCompanyDetail",
     employeePersonalDetail: "employeePersonalDetail",
     employeeEmergencyDetail: "employeeEmergencyDetail",
-    customDetails: "customDetails",
+    employeeCustomDetail: "employeeCustomDetails",
     employmentStatus: "employmentStatus",
     phoneNumber: "phoneNumber",
     employeeDetailsFull: "employeeDetailsFull",
     supervisorEmployees : "supervisorEmployees",
     employeeLoginDetails : "employeeLoginDetails",
-    customAttribute : "customAttribute",
-    supervisorEmployeeMv : "supervisorEmployeeMv"
+    supervisorEmployeeMv : "supervisorEmployeeMv",
+    customColumn : "customColumn",
 
 };
 
@@ -58,6 +58,14 @@ export default abstract class User {
         sriLanka : "Sri Lanka",
         bangladesh : "Bangladesh",
         pakistan : "Pakistan"
+    }
+
+    static department_names = {
+        HR : "HR",
+        Security : "Security",
+        Financial : "Financial",
+        ICT : "ICT",
+        QualityAssurance : "Quality Assurance",
     }
 
     /**
@@ -194,25 +202,26 @@ export default abstract class User {
     };
 
     /**
-     * Check whether supervisor or not
+     * Get custom attributes
      */
-    static checkSupervisor(supervisorId: string): Promise<[MError, any]> {
+    // Insert custom attributes
+    static getCustomAttributes(){
         return runQuery(
-            qb().raw(`select is_supervisor($1 :: uuid)`, [supervisorId])
-        );
-    };
-
+            qb(TABLE.customColumn).select()
+        )
+    }
 
     /**
      * INSERT Queries ----------------------------------------------------------------------------------------
      */
-
+    // Add admin account
     static addAdminUser(adminAccountData: interfaces.AdminAccount) {
         return runQuery(
             qb(TABLE.adminAccount).insert(adminAccountData)
         );
     }
 
+    // Add employee account
     static addEmployeeAccount(employeeAccountData: interfaces.EmployeeAccount,
                               employeeCompanyData: interfaces.EmployeeCompanyDetail,
                               employeeEmergencyData: interfaces.EmployeeEmergencyDetail,
@@ -221,11 +230,11 @@ export default abstract class User {
                               employeeCustomData: any
     ) {
         return runTrx(
-            // qb(TABLE.employeeCompanyDetail).insert(employeeCompanyData),
-            // qb(TABLE.employeeAccount).insert(employeeAccountData),
-            // qb(TABLE.employeePersonalDetail).insert(employeePersonalData),
-            // qb(TABLE.employeeEmergencyDetail).insert(employeeEmergencyData),
-            // qb(TABLE.customDetails).insert(employeeCustomData),
+            qb(TABLE.employeeCompanyDetail).insert(employeeCompanyData),
+            qb(TABLE.employeeAccount).insert(employeeAccountData),
+            qb(TABLE.employeePersonalDetail).insert(employeePersonalData),
+            qb(TABLE.employeeEmergencyDetail).insert(employeeEmergencyData),
+            qb(TABLE.employeeCustomDetail).insert(employeeCustomData),
             this.setPhoneNumbers(phoneNumber.employeeId, phoneNumber)
         );
     };
@@ -234,12 +243,14 @@ export default abstract class User {
     /**
      * UPDATE Queries ----------------------------------------------------------------------------------------
      */
+    // Set supervisor
     static setSupervisor(employeeId: string, supervisorId: string) {
         return runQuery(
             qb(TABLE.employeeCompanyDetail).update({supervisorId}).where({employeeId})
         );
     }
 
+    // Update phone numbers
     static setPhoneNumbers(employeeId : string, phoneNumbers : any){
         if(phoneNumbers == null){
             return qb()
@@ -248,6 +259,7 @@ export default abstract class User {
         return qb().raw(`call set_phone_numbers($1 , $2)`, [employeeId, mobiles]);
     }
 
+    // Update employee personal info
     static updateEmployeePersonalInfo(employeeId : string, personalData : any,
                                       emergencyData : any, phoneNumbers : any) {
         const personalD = cleanQuery(personalData);
@@ -260,6 +272,7 @@ export default abstract class User {
         );
     }
 
+    // Update employee by managerial employee
     static updateEmployeeInfo(employeeId: string,
                               employeeCompanyData: any,
                               employeeEmergencyData: any,
@@ -273,10 +286,11 @@ export default abstract class User {
             qb(TABLE.employeeCompanyDetail).update(cleanQuery(employeeCompanyData)).where({employeeId}),
             qb(TABLE.employeePersonalDetail).update(cleanQuery(employeePersonalData)).where({employeeId}),
             qb(TABLE.employeeEmergencyDetail).update(cleanQuery(employeeEmergencyData)).where({employeeId}),
-            qb(TABLE.customDetails).update(cleanQuery(employeeCustomData)).where({employeeId}),
+            qb(TABLE.employeeCustomDetail).update(cleanQuery(employeeCustomData)).where({employeeId}),
             this.setPhoneNumbers(employeeId, cleanQuery(phoneNumbers))
         );
     }
+
 
     static changePasswordEmployee(employeeId : string,newPassword : string){
         return runQuery(
@@ -290,6 +304,22 @@ export default abstract class User {
         )
     }
 
+    /**
+     * Change employee custom attributes
+     */
+    // Insert custom attributes
+    static insertCustomAttributes(customColumns : interfaces.CustomColumn){
+        return runQuery(
+            qb(TABLE.customColumn).insert(customColumns)
+        )
+    }
+
+    // Delete custom attributes
+    static deleteCustomAttributes(customColumn : string){
+        return runQuery(
+            qb(TABLE.customColumn).delete().where({customColumn})
+        )
+    }
 
 }
 

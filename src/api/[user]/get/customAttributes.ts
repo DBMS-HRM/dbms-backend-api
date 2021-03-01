@@ -1,5 +1,4 @@
 import {EHandler, Handler} from "../../../utils/types";
-import {inspectBuilder, query} from "../../../utils/inspect";
 import model, {MErr} from "../../../model";
 
 
@@ -10,12 +9,12 @@ import model, {MErr} from "../../../model";
 const get_CustomAttributes: Handler = async (req, res) => {
     const {r} = res;
 
-    const [{code}, admins] = await model.user.getAllAdmins(req.query);
+    const [{code}, customColumns] = await model.user.getCustomAttributes();
 
     if (code === MErr.NO_ERROR) {
         r.status.OK()
             .message("Success")
-            .data(admins)
+            .data(customColumns)
             .send();
         return;
     }
@@ -26,7 +25,6 @@ const get_CustomAttributes: Handler = async (req, res) => {
 /**
  * Validation chain
  */
-
 
 
 export default [ get_CustomAttributes as EHandler];

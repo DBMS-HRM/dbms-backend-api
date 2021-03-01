@@ -10,7 +10,8 @@ export const adminAccount_inspector = inspectBuilder(
         .isLength({min : 6}).withMessage("Password should be more than 6 characters"),
     body("email").exists().withMessage("Email is required")
         .isEmail().withMessage("Email should be a valid email address"),
-    body("branchName").exists().withMessage("Branch Name is required"),
+    body("branchName").exists().withMessage("Branch Name is required")
+        .isIn([...Object.values(model.user.branch_names)]).withMessage("Branch Name is not valid"),
     body("accountType").optional(),
 
 )
@@ -43,16 +44,23 @@ export const managerialEmployee_EmployeeAccountType_inspector = inspectBuilder(
  */
 
 export const employeeCompanyData_inspector = inspectBuilder(
-    body("branchName").exists().withMessage("Branch Id is required"),
+    body("branchName").exists().withMessage("Branch Id is required")
+        .isIn([...Object.values(model.user.branch_names)])
+        .withMessage("Branch Name is not valid"),
     body("jobTitle").exists().withMessage("Branch Name is required")
         .if((value :string,{req} :any) =>
             req.body.accountType === model.user.user_account_types.managerialEmployee)
-        .isIn([model.user.job_titles.HRManager]).withMessage("Job title is not valid"),
+        .isIn([model.user.job_titles.HRManager])
+        .withMessage("Job title is not valid"),
     body("employmentStatus").exists().withMessage("Employment status is required")
-        .isIn([...Object.values(model.user.employment_status)]).withMessage("Employment status is not valid"),
+        .isIn([...Object.values(model.user.employment_status)])
+        .withMessage("Employment status is not valid"),
     body("payGrade").exists().withMessage("Branch Id is required")
-        .isIn([...Object.values(model.user.pay_grade)]).withMessage("Pay grade is not valid"),
-    body("departmentName").exists().withMessage("Department name is required"),
+        .isIn([...Object.values(model.user.pay_grade)])
+        .withMessage("Pay grade is not valid"),
+    body("departmentName").exists().withMessage("Department name is required")
+        .isIn([...Object.values(model.user.department_names)])
+        .withMessage("Department Name is not valid"),
     body("supervisorId")
         .if((value :string,{req} :any) =>
             req.body.payGrade != model.user.pay_grade.level3 &&

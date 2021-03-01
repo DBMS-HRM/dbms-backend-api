@@ -5,32 +5,38 @@ import model, {MErr} from "../../../model";
 /**
  * Validations
  */
-const update_inspector = inspectBuilder(
-    body("attributeName").exists().withMessage("Attribute name is required"),
-    body("type").exists().withMessage("Attribute type is required"),
+const insert_inspector = inspectBuilder(
+    body("customColumn").exists().withMessage("Custom column name is required"),
+    body("dataType").exists().withMessage("Data type is required")
+        .isIn(["TEXT","NUMBER"]).withMessage("Not a valid data type"),
     body("defaultValue").exists().withMessage("Default value is required"),
 )
 
 const delete_inspector = inspectBuilder(
-    body("attributeName").exists().withMessage("Attribute name is required"),
+    body("customColumn").exists().withMessage("Attribute name is required"),
 )
 
 /**
  * :: STEP 2
  * Get All Posts
  */
-const update_CustomAttributes: Handler = async (req, res) => {
+const insert_CustomColumn: Handler = async (req, res) => {
     const {r} = res;
 
-    // const [{code}] = await model.user.(req.query);
+    const customColumnData = {
+        customColumn : req.body.customColumn,
+        dataType : req.body.dataType,
+        defaultValue : req.body.defaultValue
+    }
 
-    // if (code === MErr.NO_ERROR) {
-    //     r.status.OK()
-    //         .message("Success")
-    //         .send();
-    //     return;
-    // }
+    const [{code}] = await model.user.insertCustomAttributes(customColumnData);
 
+    if (code === MErr.NO_ERROR) {
+        r.status.OK()
+            .message("Success")
+            .send();
+        return;
+    }
     r.pb.ISE().send();
 };
 
@@ -39,18 +45,17 @@ const update_CustomAttributes: Handler = async (req, res) => {
  * @param req
  * @param res
  */
-const delete_CustomAttributes: Handler = async (req, res) => {
+const delete_CustomColumn: Handler = async (req, res) => {
     const {r} = res;
 
-    // const [{code}] = await model.user.(req.query);
+    const [{code}] = await model.user.deleteCustomAttributes(req.body.customColumn);
 
-    // if (code === MErr.NO_ERROR) {
-    //     r.status.OK()
-    //         .message("Success")
-    //         .send();
-    //     return;
-    // }
-
+    if (code === MErr.NO_ERROR) {
+        r.status.OK()
+            .message("Success")
+            .send();
+        return;
+    }
     r.pb.ISE().send();
 };
 /**
@@ -58,8 +63,8 @@ const delete_CustomAttributes: Handler = async (req, res) => {
  */
 
 const custom_attributes = {
-    update_attributes : [ update_inspector,update_CustomAttributes as EHandler],
-    delete_attributes : [ delete_inspector,delete_CustomAttributes as EHandler],
+    insert_attributes : [ insert_inspector,insert_CustomColumn as EHandler],
+    delete_attributes : [ delete_inspector,delete_CustomColumn as EHandler],
 
 }
 
