@@ -59,16 +59,19 @@ const get_EmployeeWithSubordinateCounts: Handler = async (req, res) => {
 /**
  * Validation chain
  */
-const $set_level3 : Handler = (req,res,next) => {
-    req.query.payGrade = model.user.pay_grade.level3;
+
+
+const $set_SupervisorId : Handler = (req,res,next) => {
+    req.query.supervisorId = req.user.userId;
     next();
     return;
 }
 
 
 const get_employee = {
-    get_employees_sc : [inspector,$set_level3 as EHandler, get_EmployeeWithSubordinateCounts as EHandler],
+    get_employees_sc : [inspector, get_EmployeeWithSubordinateCounts as EHandler],
     get_all : [inspector, get_Employees as EHandler],
+    get_subordinates : [inspector,$set_SupervisorId as EHandler, get_Employees as EHandler],
 }
 
 export default get_employee;
