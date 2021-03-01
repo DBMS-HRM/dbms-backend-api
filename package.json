@@ -11,7 +11,7 @@
     "start": "node ./dist/main.js",
     "dev": "ts-node src/main.ts",
     "clean": "rm -dfr ./dist",
-    "serve": "ts-node-dev --respawn --transpile-only src/main.ts",
+    "serve": "ts-node-dev --respawn --transpile-only --rs src/main.ts",
     "migrate": "node ./sql/migrate.js"
   },
   "dependencies": {

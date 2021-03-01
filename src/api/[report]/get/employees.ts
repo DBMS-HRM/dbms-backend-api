@@ -15,9 +15,7 @@ const inspector = inspectBuilder(
     query("jobTitle").optional().isString().withMessage("Invalid job title")
         .isIn([Object.values(model.user.job_titles)]).withMessage("Invalid pay grade"),
     query("employmentStatus").optional().isString().withMessage("Invalid employment status")
-        .isIn([Object.values(model.user.employment_status)]).withMessage("Invalid pay grade"),
-    query("firstName").optional().isString().withMessage("Invalid first name"),
-    query("lastName").optional().isString().withMessage("Invalid last name"),
+        .isIn([Object.values(model.user.employment_status)]).withMessage("Invalid pay grade")
 );
 
 /**
@@ -27,7 +25,7 @@ const inspector = inspectBuilder(
 const get_Employees: Handler = async (req, res) => {
     const {r} = res;
 
-    const [{code}, users] = await model.user.getEmployeeCP(req.query);
+    const [{code}, users] = await model.user.getEmployeeFullReport(req.query);
 
     if (code === MErr.NO_ERROR) {
         r.status.OK()
@@ -40,35 +38,10 @@ const get_Employees: Handler = async (req, res) => {
     r.pb.ISE().send();
 };
 
-const get_Level3Employees: Handler = async (req, res) => {
-    const {r} = res;
-
-    const [{code}, users] = await model.user.getLevel3Employee(req.query);
-
-    if (code === MErr.NO_ERROR) {
-        r.status.OK()
-            .message("Success")
-            .data(users)
-            .send();
-        return;
-    }
-
-    r.pb.ISE().send();
-};
 
 /**
  * Validation chain
  */
-const $set_level3 : Handler = (req,res,next) => {
-    req.query.payGrade = model.user.pay_grade.level3;
-    next();
-    return;
-}
 
 
-const get_employee = {
-    get_level3 : [inspector,$set_level3 as EHandler, get_Level3Employees as EHandler],
-    get_all : [inspector, get_Employees as EHandler],
-}
-
-export default get_employee;
+export default [inspector, get_Employees as EHandler];

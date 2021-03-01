@@ -92,7 +92,7 @@ export async function runQuery<T>(
         const {rows} = await client.query(qPackage.query, qPackage.args);
 
         const data = (config.single)? objToCamelCase(rows[0]): arrToCamelCase(rows)
-        console.log(config.required, data, data.length )
+        // console.log(config.required, data, data.length )
         if (config.required && config.single && (!data || Object.keys(data).length === 0)) {
             return [NotFound, {} as T]
         }

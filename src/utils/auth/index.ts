@@ -45,16 +45,15 @@ const parsePayload: Handler = (req, res, next) => {
  * :: STEP 3 Builder
  * @param userType
  */
-// @ts-ignore
-type AdminAccountType = model.user.admin_account_types.superAdmin | model.user.admin_account_types.admin
-// @ts-ignore
-type UserAccountType = model.user.user_account_types.employee | model.user.user_account_types.managerialEmployee | model.user.user_account_types.supervisor
+type AdminAccountType = typeof model.user.admin_account_types.superAdmin | typeof model.user.admin_account_types.admin
+type UserAccountType = typeof model.user.user_account_types.employee | typeof model.user.user_account_types.managerialEmployee
 function buildUserFilter(
     ...accountTypes: (AdminAccountType | UserAccountType)[]
 ): EHandler {
     const handler: Handler = (req, res, next) => {
         const { r } = res
-
+        console.log("User tupeeee :", req.user.accountType)
+        console.log("User tupeeee :", accountTypes)
         // @ts-ignore
         if (accountTypes.includes(req.user.accountType)) {
             next();
@@ -69,14 +68,27 @@ function buildUserFilter(
     return handler as EHandler
 }
 
+const $is_Supervisor : Handler = async (req, res, next) => {
+    const {r} = res;
+
+    if(!req.user.isSupervisor){
+        r.status.FORBIDDEN()
+            .message("Only supervisors are allowed")
+            .send()
+        return;
+    }
+    next();
+    return;
+}
+
 
 /**
  * Request Handler Chain
  */
 export default {
-    employee: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.user_account_types.employee) as EHandler],
+    employee: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.user_account_types.employee,model.user.user_account_types.managerialEmployee,) as EHandler],
+    supervisor: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.user_account_types.employee) as EHandler,$is_Supervisor as EHandler],
     managerialEmployee: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.user_account_types.managerialEmployee) as EHandler],
-    supervisor: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.user_account_types.supervisor) as EHandler],
-    superAdmin: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.admin_account_types.superAdmin,model.user.admin_account_types.admin) as EHandler],
-    admin: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.admin_account_types.admin) as EHandler]
+    superAdmin: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.admin_account_types.superAdmin) as EHandler],
+    admin: [inspectAuthHeader, parsePayload as EHandler, buildUserFilter(model.user.admin_account_types.superAdmin,model.user.admin_account_types.admin) as EHandler]
 }

@@ -1,6 +1,7 @@
 import {QBuilder} from "./builder";
 import {ErrorCode} from "./error";
-import {runQuery, runTrx} from "./conn";
+import {runQuery, runTrx} from "./conn"
+export {Error as MError} from "./error";
 
 /**
  * Query Builder
@@ -15,6 +16,7 @@ export function qb(table?: string, alias?: string) {
  * Query Executors
  */
 export {runQuery, runTrx} from "./conn";
+export {cleanQuery} from "./_util";
 
 /**
  * Query Error Codes

@@ -21,3 +21,19 @@ export function inspectBuilder(...validators: ValidationChain[]): EHandler {
     //@ts-ignore
     return [...validators, parseValidatorResult as EHandler]
 }
+
+
+
+export function condRoute(validator: ValidationChain, ifTrue: Handler, ifFalse: Handler): EHandler {
+    const conditional_routing: Handler = (req, res, next) => {
+        const clone = {...req}
+        validator(req, res, () => {})
+        const errors: Result = validationResult(clone)
+        if (errors.isEmpty()) {
+            ifTrue(req, res, next)
+        } else {
+            ifFalse(req, res, next);
+        }
+    }
+    return <EHandler>conditional_routing
+}

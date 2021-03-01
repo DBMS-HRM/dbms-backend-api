@@ -59,11 +59,12 @@ const serveToken: Handler = async (req, res) => {
     const account = req.body.account
 
     const payload = {
+        username : account.username,
         userId: account.userId,
         email: account.email,
         status: account.status,
         accountType: account.accountType,
-        branchId: account.branchId
+        branchName: account.branchName
     }
 
     // create token

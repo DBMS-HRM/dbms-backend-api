@@ -1,6 +1,8 @@
-import Employee from "./employee";
+import User from "./user";
+import LeaveModel from "./leave";
 export {MErr} from "../utils/db";
 
 export default {
-    user: Employee
+    user: User,
+    leave : LeaveModel
 }

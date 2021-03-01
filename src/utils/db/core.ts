@@ -50,6 +50,7 @@ export interface _QBJob_SELECT_JOIN {
  */
 export interface QBJob_SELECT extends QBJob {
     selection?: string[];
+    whereType?: "AND" | "OR" | "BETWEEN"
     where?: QBDataType;
 
     joins?: _QBJob_SELECT_JOIN[]
@@ -71,6 +72,16 @@ export interface QBJob_INSERT extends QBJob {
  */
 export interface QBJob_UPDATE extends QBJob {
     update: QBDataType;
+    whereType?: "AND" | "OR" | "BETWEEN"
+    where?: QBDataType;
+}
+
+
+/**
+ * QB Job Data for DELETE Query
+ */
+export interface QBJob_DELETE extends QBJob {
+    whereType?: "AND" | "OR" | "BETWEEN"
     where?: QBDataType;
 }
 
@@ -125,13 +136,40 @@ export function qb_SELECT(jobData: QBJob_SELECT): { query: string, args: string[
     }
 
 
-    let wherePieces: string[] = [];
-    if (jobData.where) {
-        for (let k in jobData.where) {
-            wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
-            args.push(jobData.where[k]);
+    let whereClause: string = "";
+    if (!jobData.where || Object.keys(jobData.where).length === 0) {
+        // do nothing
+    } else if (jobData.whereType === "BETWEEN") {
+
+        const column = toSnakeCase(jobData.where.column);
+        args.push(jobData.where.lower);
+        args.push(jobData.where.upper);
+        whereClause += ` WHERE ${column} BETWEEN $${++argCount} AND $${++argCount} `;
+
+    } else if (jobData.whereType === "AND") {
+
+        let wherePieces: string[] = [];
+        if (jobData.where) {
+            for (let k in jobData.where) {
+                wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
+                args.push(jobData.where[k]);
+            }
         }
+        whereClause += ` WHERE ${wherePieces.join(" AND ")}`;
+
+    } else if (jobData.whereType === "OR") {
+
+        let wherePieces: string[] = [];
+        if (jobData.where) {
+            for (let k in jobData.where) {
+                wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
+                args.push(jobData.where[k]);
+            }
+        }
+        whereClause += ` WHERE ${wherePieces.join(" OR ")}`;
+
     }
+
 
     let orderByPieces: string[] = [];
     if (jobData.orderBy && jobData.orderBy.length > 0) {
@@ -147,8 +185,8 @@ export function qb_SELECT(jobData: QBJob_SELECT): { query: string, args: string[
             query += ` ${j}`;
         }
     }
-    if (wherePieces.length > 0) {
-        query += ` WHERE ${wherePieces.join(" AND ")}`;
+    if (whereClause.length > 0) {
+        query += whereClause;
     }
     if (orderByPieces.length > 0) {
         query += ` ${orderByPieces.join(", ")}`;
@@ -212,21 +250,107 @@ export function qb_UPDATE(jobData: QBJob_UPDATE) {
         args.push(jobData.update[k]);
     }
 
-    let wherePieces: string[] = [];
-    if (jobData.where) {
-        for (let k in jobData.where) {
-            wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
-            args.push(jobData.where[k]);
+    let whereClause: string = "";
+    if (!jobData.where || Object.keys(jobData.where).length === 0) {
+        // do nothing
+    } else if (jobData.whereType === "BETWEEN") {
+
+        const column = toSnakeCase(jobData.where.column);
+        args.push(jobData.where.lower);
+        args.push(jobData.where.upper);
+        whereClause += ` WHERE ${column} BETWEEN $${++argCount} AND $${++argCount} `;
+
+    } else if (jobData.whereType === "AND") {
+
+        let wherePieces: string[] = [];
+        if (jobData.where) {
+            for (let k in jobData.where) {
+                wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
+                args.push(jobData.where[k]);
+            }
         }
+        whereClause += ` WHERE ${wherePieces.join(" AND ")}`;
+
+    } else if (jobData.whereType === "OR") {
+
+        let wherePieces: string[] = [];
+        if (jobData.where) {
+            for (let k in jobData.where) {
+                wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
+                args.push(jobData.where[k]);
+            }
+        }
+        whereClause += ` WHERE ${wherePieces.join(" OR ")}`;
+
     }
 
     // Build Query
+    if (updatePieces.length <= 0) {
+        return {query:"", args};
+    }
     let query = `UPDATE ${tableName} SET ${updatePieces.join(", ")}`;
-    if (wherePieces.length > 0) {
-        query += ` WHERE ${wherePieces.join(" AND ")}`;
+    if (whereClause.length > 0) {
+        query += whereClause;
     }
 
     return {query, args};
 }
 
+/**
+ * Build DELETE query
+ * @param jobData
+ */
+export function qb_DELETE(jobData: QBJob_DELETE) {
+
+    // Preparing Data
+    const tableName = toSnakeCase(jobData.table);
+
+    // Argument binding list for query
+    const args: string[] = [];
+    let argCount = 0;
+
+    let whereClause: string = "";
+    if (!jobData.where || Object.keys(jobData.where).length === 0) {
+        // do nothing
+    } else if (jobData.whereType === "BETWEEN") {
+
+        const column = toSnakeCase(jobData.where.column);
+        args.push(jobData.where.lower);
+        args.push(jobData.where.upper);
+        whereClause += ` WHERE ${column} BETWEEN $${++argCount} AND $${++argCount} `;
+
+    } else if (jobData.whereType === "AND") {
+
+        let wherePieces: string[] = [];
+        if (jobData.where) {
+            for (let k in jobData.where) {
+                wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
+                args.push(jobData.where[k]);
+            }
+        }
+        whereClause += ` WHERE ${wherePieces.join(" AND ")}`;
+
+    } else if (jobData.whereType === "OR") {
+
+        let wherePieces: string[] = [];
+        if (jobData.where) {
+            for (let k in jobData.where) {
+                wherePieces.push(`${toSnakeCase(k)} = $${++argCount}`);
+                args.push(jobData.where[k]);
+            }
+        }
+        whereClause += ` WHERE ${wherePieces.join(" OR ")}`;
+
+    }
+
+
+    // Build Query
+    let query = `DELETE FROM ${tableName}${jobData.alias ? " " + jobData.alias : ""}`;
+    if (whereClause.length > 0) {
+        query += whereClause;
+    }
+
+    return {query, args};
+
+}
 

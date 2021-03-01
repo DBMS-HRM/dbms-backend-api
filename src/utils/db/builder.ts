@@ -1,4 +1,4 @@
-import {_QBJob_SELECT_JOIN, qb_INSERT, qb_SELECT, qb_UPDATE, QBDataType, QBJobType} from "./core";
+import {_QBJob_SELECT_JOIN, qb_DELETE, qb_INSERT, qb_SELECT, qb_UPDATE, QBDataType, QBJobType} from "./core";
 
 type JoinType = "JOIN" | "LEFT JOIN" | "RIGHT JOIN"
 
@@ -16,8 +16,9 @@ export class QBuilder {
     private updateData!: QBDataType;
     private insertData!: QBDataType;
 
-
+    private whereType?: 'AND' | 'OR' | 'BETWEEN';
     private whereCond?: QBDataType;
+
     private rawQuery!: string;
     private rawQArgs?: string [];
 
@@ -35,7 +36,20 @@ export class QBuilder {
     }
 
     where(and: QBDataType): QBuilder {
+        this.whereType = 'AND'
         this.whereCond = and;
+        return this;
+    }
+
+    whereOr(or: QBDataType): QBuilder {
+        this.whereType = 'OR'
+        this.whereCond = or;
+        return this;
+    }
+
+    whereBetween(column: string, lower: any, upper: any): QBuilder {
+        this.whereType = 'BETWEEN'
+        this.whereCond = {column, lower, upper};
         return this;
     }
 
@@ -120,10 +134,16 @@ export class QBuilder {
         return this;
     }
 
-    raw(query: string, args: string[]) {
+    delete(): QBuilder {
+        this.type = QBJobType.DELETE;
+        return this;
+    }
+
+    raw(query: string, args: string[]): QBuilder {
         this.type = QBJobType.RAW;
         this.rawQuery = query;
         this.rawQArgs = args;
+        return this
     }
 
     get query(): { query: string, args: string[] } {
@@ -133,6 +153,7 @@ export class QBuilder {
                     type: this.type,
                     table: this.table, alias: this.alias,
                     selection: this.selectionList,
+                    whereType: this.whereType,
                     where: this.whereCond,
                     joins: this.joinsList,
                     orderBy: this.orderByList,
@@ -150,6 +171,14 @@ export class QBuilder {
                     type: this.type,
                     table: this.table, alias: this.alias,
                     update: this.updateData,
+                    whereType: this.whereType,
+                    where: this.whereCond
+                });
+            case QBJobType.DELETE:
+                return qb_DELETE({
+                    type: this.type,
+                    table: this.table, alias: this.alias,
+                    whereType: this.whereType,
                     where: this.whereCond
                 });
             case QBJobType.RAW:
