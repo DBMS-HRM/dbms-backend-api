@@ -8,9 +8,15 @@ const rReport = Router();
  * Get reports
  */
 import get_leaves from "./get/leaves";
-import get_employee from "./get/employees";
+
 rReport.get('/get-leaves',auth.managerialEmployee,get_leaves )
-rReport.get('/get-employees',auth.managerialEmployee,get_employee )
+
+
+/**
+ * Get employee reports
+ */
+import get_employee_reports from "./get/employees";
+rReport.get('/get-employees',auth.managerialEmployee,get_employee_reports.defaultHeadings )
 
 export default rReport;
 

@@ -36,6 +36,11 @@ const insert_CustomColumn: Handler = async (req, res) => {
             .message("Success")
             .send();
         return;
+    }else if (code === MErr.DUPLICATE_ENTRY) {
+        r.status.ERROR()
+            .message("Duplicate Entry")
+            .send();
+        return;
     }
     r.pb.ISE().send();
 };

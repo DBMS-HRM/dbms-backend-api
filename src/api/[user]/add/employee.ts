@@ -45,7 +45,6 @@ const add_Employee : Handler = async (req,res, next) => {
         employeeId : userId,
         ...extract_employeeCustomData(req)
     };
-    const phoneNumbers = extract_phoneNumber(req);
 
     const phoneNumber = {
         employeeId : userId,
