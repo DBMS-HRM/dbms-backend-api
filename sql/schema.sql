@@ -3,26 +3,45 @@
 --    █░░ █░░ █▀▀ █▄▄█ █▄▄▀ 　 ▀▀█ █░░ █▀▀█ █▀▀ █░▀░█ █▄▄█
 --    ▀▀▀ ▀▀▀ ▀▀▀ ▀░░▀ ▀░▀▀ 　 ▀▀▀ ▀▀▀ ▀░░▀ ▀▀▀ ▀░░░▀ ▀░░▀
 
-DROP TABLE IF EXISTS job_title;
-DROP TABLE IF EXISTS employment_status;
-DROP TABLE IF EXISTS pay_grade;
-DROP TABLE IF EXISTS department;
-DROP TABLE IF EXISTS employee_personal_detail;
-DROP TABLE IF EXISTS employee_emergency_detail;
-DROP TABLE IF EXISTS employee_account;
-DROP TABLE IF EXISTS phone_number;
+-- Leave Module
+DROP TRIGGER IF EXISTS before_leave_request;
+DROP FUNCTION IF EXISTS before_add_leave_request;
+
+DROP VIEW IF EXISTS employee_remaining_leaves;
+DROP VIEW IF EXISTS supervisor_leave_request;
+
+DROP TABLE IF EXISTS leave_request;
+DROP TABLE IF EXISTS leave_type;
+DROP TABLE IF EXISTS leave_request_state;
+
+-- Employee Module
+DROP PROCEDURE IF EXISTS set_phone_numbers;
+DROP VIEW IF EXISTS employee_login_details;
+DROP FUNCTION IF EXISTS is_supervisor;
+
+DROP VIEW IF EXISTS supervisor_employees;
+DROP VIEW IF EXISTS employee_details_full;
+DROP VIEW IF EXISTS employee_details_ea_ecd;
+
 DROP TABLE IF EXISTS custom_details;
-DROP TABLE IF EXISTS supervisor;
+DROP TABLE IF EXISTS phone_number;
+DROP TABLE IF EXISTS employee_emergency_detail;
+DROP TABLE IF EXISTS employee_personal_detail;
+DROP TABLE IF EXISTS employee_account;
 DROP TABLE IF EXISTS employee_company_detail;
 DROP TABLE IF EXISTS employee_account_type;
+DROP TABLE IF EXISTS employment_status;
 
+-- Admin Module
 DROP TABLE IF EXISTS admin_account;
 DROP TABLE IF EXISTS admin_account_type;
 
-DROP TABLE IF EXISTS leave_approval_supervisor;
-DROP TABLE IF EXISTS leave_request;
-DROP TABLE IF EXISTS leave_request_state;
-DROP TABLE IF EXISTS leave_type;
+-- Core
+DROP TABLE IF EXISTS pay_grade;
+DROP TABLE IF EXISTS job_title;
+DROP TABLE IF EXISTS department;
+DROP TABLE IF EXISTS branch;
+
 
 
 --    █▀▀ █▀▀█ █▀▀█ █▀▀
@@ -48,6 +67,7 @@ CREATE TABLE pay_grade (
     maternity_leaves INTEGER  NOT NULL DEFAULT 50,
     nopay_leaves INTEGER  NOT NULL DEFAULT 50
 );
+
 
 
 --    █▀▀█ █▀▀▄ █▀▄▀█ ░▀░ █▀▀▄
@@ -151,6 +171,7 @@ CREATE VIEW employee_details_ea_ecd AS
     SELECT ecd.*, ea.username, ea.email_address, ea.account_type, ea.status FROM employee_account ea
 		JOIN employee_company_detail ecd ON ea.employee_id = ecd.employee_id;
 
+
 CREATE VIEW employee_details_full AS
 	SELECT *
 	    FROM employee_account ea
@@ -173,12 +194,6 @@ CREATE VIEW supervisor_employees AS
             JOIN employee_company_detail sup ON emp.supervisor_id = sup.employee_id
                 GROUP BY sup.employee_id;
 
-CREATE VIEW employee_login_details AS
-	SELECT *, is_supervisor(employee_id)
-		FROM employee_account ea
-		JOIN employee_company_detail ecd USING(employee_id)
-		JOIN employee_personal_detail epd USING(employee_id);
-
 
 CREATE FUNCTION is_supervisor(emp_id UUID) RETURNS BOOLEAN AS $is_sup$
 
@@ -195,7 +210,15 @@ CREATE FUNCTION is_supervisor(emp_id UUID) RETURNS BOOLEAN AS $is_sup$
 
 $is_sup$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE PROCEDURE set_phone_numbers(emp_id UUID, phone_numbers JSON)
+
+CREATE VIEW employee_login_details AS
+	SELECT *, is_supervisor(employee_id)
+		FROM employee_account ea
+		JOIN employee_company_detail ecd USING(employee_id)
+		JOIN employee_personal_detail epd USING(employee_id);
+
+
+CREATE PROCEDURE set_phone_numbers(emp_id UUID, phone_numbers JSON)
 LANGUAGE plpgsql
 AS $pn$
 	DECLARE
