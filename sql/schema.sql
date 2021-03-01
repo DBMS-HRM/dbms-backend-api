@@ -166,6 +166,59 @@ CREATE TABLE custom_details (
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
 );
 
+-- Data types which are allowed for custom columns
+--      TEXT    - VARCHAR(255)
+--      NUMBER  - DECIMAL
+-- * default value always should be a text. when data type is numeric it is converted internally
+CREATE TYPE column_datatype AS ENUM ('TEXT', 'NUMBER');
+
+CREATE TABLE custom_column (
+    custom_column VARCHAR(100) PRIMARY KEY,
+    data_type COLUMN_DATATYPE, -- 'TEXT' or 'NUMBER'
+    default_value VARCHAR(255)
+);
+
+
+-- Run before insert leave request
+CREATE FUNCTION add_new_column() RETURNS trigger AS $before_leave$
+
+    DECLARE
+        remaining INTEGER;
+    BEGIN
+
+        -- Check whether supervisor is correct
+        IF NEW.supervisor_id IS NOT NULL THEN
+            IF (select supervisor_id from employee_company_detail ecd
+               	    where employee_id = NEW.employee_id) != NEW.supervisor_id THEN
+                RAISE EXCEPTION 'Unauthorized supervisor id';
+            END IF;
+        END IF;
+
+        IF NEW.leave_type = 'Annual' THEN
+            SELECT annual INTO remaining FROM employee_remaining_leaves WHERE employee_id = NEW.employee_id;
+        ELSIF NEW.leave_type = 'Casual' THEN
+            SELECT annual INTO remaining FROM employee_remaining_leaves WHERE employee_id = NEW.employee_id;
+        ELSIF NEW.leave_type = 'Maternity' THEN
+            SELECT annual INTO remaining FROM employee_remaining_leaves WHERE employee_id = NEW.employee_id;
+        ELSIF NEW.leave_type = 'No-pay' THEN
+            SELECT annual INTO remaining FROM employee_remaining_leaves WHERE employee_id = NEW.employee_id;
+        ELSE
+            RAISE EXCEPTION 'Invalid leave type';
+        END IF;
+
+        IF remaining <= 0 THEN
+            RAISE EXCEPTION 'No remaining leaves';
+        ELSE
+            RETURN NEW;
+        END IF;
+    END;
+
+$before_leave$ LANGUAGE plpgsql;
+
+-- Trigger when insert a leave request
+CREATE TRIGGER add_new_column BEFORE INSERT ON custom_column
+    FOR EACH ROW EXECUTE PROCEDURE before_add_leave_request();
+
 
 CREATE VIEW employee_details_ea_ecd AS
     SELECT ecd.*, ea.username, ea.email_address, ea.account_type, ea.status FROM employee_account ea
@@ -196,7 +249,6 @@ CREATE VIEW supervisor_employees AS
 
 
 CREATE FUNCTION is_supervisor(emp_id UUID) RETURNS BOOLEAN AS $is_sup$
-
     BEGIN
 
         PERFORM employee_id FROM employee_company_detail ecd WHERE ecd.supervisor_id = emp_id;
@@ -207,7 +259,6 @@ CREATE FUNCTION is_supervisor(emp_id UUID) RETURNS BOOLEAN AS $is_sup$
         END IF;
 
     END;
-
 $is_sup$ LANGUAGE plpgsql;
 
 
@@ -231,6 +282,7 @@ AS $pn$
 		END loop ;
 	END ;
 $pn$;
+
 
 
 --    █░░ █▀▀ █▀▀█ ▀█░█▀ █▀▀
