@@ -58,6 +58,10 @@ export default abstract class LeaveModel {
     );
   }
 
+  /**
+   * Leave report
+   * @param query
+   */
   static get_LeaveReport(
     query: any
   ): Promise<[MError, interfaces.LeaveRequest[]]> {
