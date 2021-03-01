@@ -207,6 +207,26 @@ CREATE VIEW supervisor_employees AS
                 GROUP BY sup.employee_id;
 
 
+CREATE VIEW supervisor_details AS
+    SELECT
+            ecd.employee_id,
+            ecd.branch_name,
+            ecd.department_name,
+            ecd.employment_status,
+            ecd.job_title,
+            ecd.pay_grade,
+            epd.first_name,
+            epd.last_name,
+            epd.marital_status,
+            COUNT(ecd2.employee_id) as subordinate_count
+        FROM employee_company_detail ecd
+        JOIN employee_personal_detail epd USING(employee_id)
+        LEFT JOIN employee_company_detail ecd2
+            ON ecd2.supervisor_id = ecd.employee_id
+                WHERE ecd.pay_grade != 'Level 1' OR ecd.pay_grade != 'Level 2'
+                GROUP BY ecd.employee_id, epd.first_name, epd.last_name, epd.marital_status;
+
+
 CREATE FUNCTION is_supervisor(emp_id UUID) RETURNS BOOLEAN AS $is_sup$
     BEGIN
 
