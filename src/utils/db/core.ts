@@ -137,7 +137,7 @@ export function qb_SELECT(jobData: QBJob_SELECT): { query: string, args: string[
 
 
     let whereClause: string = "";
-    if (!jobData.where) {
+    if (!jobData.where || Object.keys(jobData.where).length === 0) {
         // do nothing
     } else if (jobData.whereType === "BETWEEN") {
 
@@ -251,7 +251,7 @@ export function qb_UPDATE(jobData: QBJob_UPDATE) {
     }
 
     let whereClause: string = "";
-    if (!jobData.where) {
+    if (!jobData.where || Object.keys(jobData.where).length === 0) {
         // do nothing
     } else if (jobData.whereType === "BETWEEN") {
 
@@ -310,7 +310,7 @@ export function qb_DELETE(jobData: QBJob_DELETE) {
     let argCount = 0;
 
     let whereClause: string = "";
-    if (!jobData.where) {
+    if (!jobData.where || Object.keys(jobData.where).length === 0) {
         // do nothing
     } else if (jobData.whereType === "BETWEEN") {
 
