@@ -61,11 +61,7 @@ export const employeeCompanyData_inspector = inspectBuilder(
     body("departmentName").exists().withMessage("Department name is required")
         .isIn([...Object.values(model.user.department_names)])
         .withMessage("Department Name is not valid"),
-    body("supervisorId")
-        .if((value :string,{req} :any) =>
-            req.body.payGrade != model.user.pay_grade.level3 &&
-            req.body.accountType != model.user.user_account_types.managerialEmployee)
-        .exists().withMessage("Supervisor id is required").isUUID().withMessage("Supervisor id is not valid"),
+    body("supervisorId").isUUID().withMessage("Supervisor id is not valid"),
 
 )
 

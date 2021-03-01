@@ -102,7 +102,7 @@ const $check_Password_Employee : Handler = async (req,res, next) => {
 
 const $check_Password_Admin : Handler = async (req,res, next) => {
     const {r} = res;
-    const [{code}, user] = await model.user.getAdminAccount(req.params.userId);
+    const [{code}, user] = await model.user.getAdminAccountByUserId(req.params.userId);
     if(code === MErr.NOT_FOUND){
         r.status.NOT_FOUND()
             .message("User not found")

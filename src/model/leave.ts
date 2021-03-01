@@ -31,15 +31,15 @@ export default abstract class LeaveModel {
     query: any
   ): Promise<[MError, interfaces.LeaveRequest[]]> {
 
-    const limit = query.limit || 100; //
+    const limit = query.limit || 1000; //
     const offset = query.offset || 0; //
 
-    let [orderColumn1, order1] = ["requestDate", "desc"];
-    query.orderBy1 != undefined
-      ? ([orderColumn1, order1] = JSON.parse(query.orderBy1))
-      : [orderColumn1, order1];
-    const fromDate = query.fromDate || "2021-02-01";
-    const toDate = query.toDate || "2025-05-06";
+    // let [orderColumn1, order1] = ["requestDate", "desc"];
+    // query.orderBy1 != undefined
+    //   ? ([orderColumn1, order1] = JSON.parse(query.orderBy1))
+    //   : [orderColumn1, order1];
+    // const fromDate = query.fromDate || "2021-02-01";
+    // const toDate = query.toDate || "2025-05-06";
 
     const q = cleanQuery(query, [
       "leaveType", "jobTitle",
@@ -49,18 +49,9 @@ export default abstract class LeaveModel {
       "supervisorId",
         "departmentName", "branchName", "reviewedDate"
     ]);
-  console.log(qb(TABLE.supervisorLeaveRequest)
-      .where(q)
-      // .whereBetween("fromDate", fromDate, toDate)
-      // .orderBy([orderColumn1])
-      .limit(limit)
-      .offset(offset)
-      .select().query)
     return runQuery(
       qb(TABLE.supervisorLeaveRequest)
         .where(q)
-        .whereBetween("fromDate", fromDate, toDate)
-        // .orderBy([orderColumn1])
         .limit(limit)
         .offset(offset)
         .select()

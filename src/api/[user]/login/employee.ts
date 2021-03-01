@@ -67,19 +67,17 @@ const serveToken: Handler = async (req, res) => {
         jobTitle : account.jobTitle,
         payGrade : account.payGrade,
         isSupervisor : account.isSupervisor,
-        branchName: account.branchName
+        branchName: account.branchName,
+        supervisorId : account.supervisorId
     }
-    console.log("Payload : ",payload);
+
     // create token
     const accessToken = TokenMan.getAccessToken(payload);
 
     const employeeData = {
         firstName : account.firstName,
         lastName : account.lastName,
-        jobTitle : account.jobTitle,
-        branchName : account.branchName,
         employmentStatus : account.employmentStatus,
-        payGrade : account.payGrade,
         departmentName : account.departmentName,
         supervisor : account.isSupervisor,
     }

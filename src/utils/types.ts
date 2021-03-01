@@ -11,7 +11,8 @@ export interface Request extends ERequest {
         jobTitle : string,
         payGrade : string,
         isSupervisor : boolean,
-        branchName : string
+        branchName : string,
+        supervisorId : string,
     }
 }
 

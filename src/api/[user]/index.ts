@@ -26,7 +26,7 @@ rUser.post('/register/employee',auth.managerialEmployee,add_employee.managerialE
  */
 import get_employee from "./get/all_employees";
 import get_admin from "./get/all_admins";
-rUser.get('/get-level3',auth.managerialEmployee,get_employee.get_level3 );
+rUser.get('/get-supervisors',auth.managerialEmployee,get_employee.get_employees_sc );
 rUser.get('/get-employees',auth.managerialEmployee,get_employee.get_all );
 rUser.get('/get-admins',auth.superAdmin,get_admin );
 
