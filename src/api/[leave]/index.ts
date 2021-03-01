@@ -17,7 +17,7 @@ rLeave.get('/get-remaining-leaves/:employeeId', auth.supervisor, get_remaining_l
 rLeave.get('/get-remaining-leaves', auth.employee, get_remaining_leaves.my_RemainingLeaves);
 
 /**
- * Employee Add Leave
+ * User Add Leave
  */
 import add_leave from './add/addLeave';
 rLeave.post('/add-leave',auth.employee,add_leave);

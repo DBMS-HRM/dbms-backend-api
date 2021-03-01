@@ -45,7 +45,7 @@ export default abstract class LeaveModel {
         return runQuery(
             qb(TABLE.supervisorLeaveRequest)
                 .where(q)
-                .whereBetween("requestedDate",fromDate, toDate)
+                .whereBetween("fromDate",fromDate, toDate)
                 // .orderBy([orderColumn1])
                 .limit(limit).offset(offset)
                 .select()
@@ -63,7 +63,7 @@ export default abstract class LeaveModel {
                 '\tcount(*) as total_leaves\n' +
                 '\tfrom supervisor_leave_request slr\n' +
                 '\twhere\n' +
-                '\trequested_date between $1 and $2\n' +
+                '\tfrom_date between $1 and $2\n' +
                 '\tgroup by department_name, leave_type',[fromDate, toDate])
         )
     }

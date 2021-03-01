@@ -10,7 +10,6 @@ import {employeeAccount_inspector, employeePersonalData_inspector,
     admin_EmployeeAccountType_inspector, managerialEmployee_EmployeeAccountType_inspector
 } from "./_inspectors";
 import { v4 as UUID } from 'uuid';
-import {inspectBuilder, body} from "../../../utils/inspect";
 
 /**
  * Add employee
@@ -62,15 +61,16 @@ const add_Employee : Handler = async (req,res, next) => {
         employeeCustomData);
     if(code === MErr.NO_ERROR){
         r.status.OK()
-            .message("Employee user added successfully")
+            .message("User user added successfully")
             .send()
-        return
+        return;
     }else if(code === MErr.DUPLICATE_ENTRY){
         r.status.BAD_REQ()
             .message("Username or email has been already taken")
             .send()
+        return;
     }
-    r.pb.ISE();
+    r.pb.ISE().send();
 }
 
 /**

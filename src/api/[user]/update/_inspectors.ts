@@ -3,7 +3,7 @@ import model from "../../../model";
 
 
 /**
- * Update Employee company details inspector
+ * Update User company details inspector
  */
 
 export const employeeCompanyData_inspector = inspectBuilder(
@@ -20,7 +20,7 @@ export const employeeCompanyData_inspector = inspectBuilder(
 )
 
 /**
- * Add Employee emergency details inspector
+ * Add User emergency details inspector
  */
 
 export const employeeEmergencyData_inspector = inspectBuilder(
@@ -33,7 +33,7 @@ export const employeeEmergencyData_inspector = inspectBuilder(
 )
 
 /**
- * Add Employee personal details inspector
+ * Add User personal details inspector
  */
 
 export const employeePersonalData_inspector = inspectBuilder(
@@ -47,7 +47,7 @@ export const employeePersonalData_inspector = inspectBuilder(
 
 
 /**
- * Add Employee custom details inspector
+ * Add User custom details inspector
  */
 
 export const employeeCustomData_inspector = inspectBuilder(
@@ -55,7 +55,7 @@ export const employeeCustomData_inspector = inspectBuilder(
 )
 
 /**
- * Add Employee phone number details inspector
+ * Add User phone number details inspector
  */
 
 export const phoneNumber_inspector = inspectBuilder(

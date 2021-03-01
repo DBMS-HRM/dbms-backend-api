@@ -17,7 +17,7 @@ export const adminAccount_inspector = inspectBuilder(
 
 
 /**
- * Add Employee account inspector
+ * Add User account inspector
  */
 
 export const employeeAccount_inspector = inspectBuilder(
@@ -39,13 +39,14 @@ export const managerialEmployee_EmployeeAccountType_inspector = inspectBuilder(
 )
 
 /**
- * Add Employee company details inspector
+ * Add User company details inspector
  */
 
 export const employeeCompanyData_inspector = inspectBuilder(
     body("branchName").exists().withMessage("Branch Id is required"),
     body("jobTitle").exists().withMessage("Branch Name is required")
-        .if((value :string,{req} :any) => req.body.accountType === model.user.user_account_types.managerialEmployee)
+        .if((value :string,{req} :any) =>
+            req.body.accountType === model.user.user_account_types.managerialEmployee)
         .isIn([model.user.job_titles.HRManager]).withMessage("Job title is not valid"),
     body("employmentStatus").exists().withMessage("Employment status is required")
         .isIn([...Object.values(model.user.employment_status)]).withMessage("Employment status is not valid"),
@@ -61,7 +62,7 @@ export const employeeCompanyData_inspector = inspectBuilder(
 )
 
 /**
- * Add Employee emergency details inspector
+ * Add User emergency details inspector
  */
 
 export const employeeEmergencyData_inspector = inspectBuilder(
@@ -74,7 +75,7 @@ export const employeeEmergencyData_inspector = inspectBuilder(
 )
 
 /**
- * Add Employee personal details inspector
+ * Add User personal details inspector
  */
 
 export const employeePersonalData_inspector = inspectBuilder(
@@ -87,7 +88,7 @@ export const employeePersonalData_inspector = inspectBuilder(
 )
 
 /**
- * Add Employee custom details inspector
+ * Add User custom details inspector
  */
 
 export const employeeCustomData_inspector = inspectBuilder(

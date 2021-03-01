@@ -32,7 +32,7 @@ rUser.get('/get-admins',auth.superAdmin,get_admin );
 
 
 /**
- * Managerial Employee Routers
+ * Managerial User Routers
  */
 import changeSupervisor from "./update/setSupervisor";
 // Set supervisor
@@ -62,6 +62,15 @@ rUser.get('/get-custom-attributes',auth.admin, get_custom_attributes);
 rUser.put('/update-custom-attributes',auth.admin, put_custom_attributes.update_attributes);
 rUser.put('/update-custom-attributes',auth.admin, put_custom_attributes.delete_attributes);
 
+
+/**
+ * Change Password
+ */
+import change_password from "./update/password";
+rUser.put('/update-employee-password',auth.employee, change_password.changeEmployeeMyPassword);
+rUser.put('/update-admin-password',auth.employee, change_password.changeAdminMyPassword);
+rUser.put('/forgot-admin-password/:userId', change_password.forgotAdminPassword);
+rUser.put('/forgot-employee-password/:userId', change_password.forgotAdminPassword);
 
 export default rUser
 

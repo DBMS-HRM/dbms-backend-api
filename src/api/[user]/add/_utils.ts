@@ -57,7 +57,6 @@ export function extract_employeePersonalData(req : any){
 export function extract_phoneNumber(req : any){
     return{
         phoneNumbers : req.body.phoneNumbers,
-        
     }
 }
 

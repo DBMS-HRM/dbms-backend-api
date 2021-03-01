@@ -13,7 +13,7 @@ export interface AdminAccount {
 }
 
 /**
- * Employee Account interfaces
+ * User Account interfaces
  */
 export interface EmployeeAccount {
     employeeId : string;
@@ -88,7 +88,7 @@ export interface Supervisor {
 
 
 /**
- * Employee related Types
+ * User related Types
  */
 export interface Branch {
     branchId : string;
@@ -124,8 +124,10 @@ export interface LeaveRequest {
     requestedDate  : typeof Date,
     leaveStatus  : string,
     leaveType  : string,
-    reviewedDate  : typeof Date,
-    supervisorId : string
+    supervisorId : string,
+    fromDate  : typeof Date,
+    toDate  : typeof Date,
+
 }
 
 /**

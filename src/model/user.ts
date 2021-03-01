@@ -19,7 +19,7 @@ const TABLE = {
 };
 
 
-export default abstract class Employee {
+export default abstract class User {
     static job_titles = {
         HRManager: "HR Manager",
         QAEngineer: "QA Engineer",
@@ -70,6 +70,14 @@ export default abstract class Employee {
         );
     };
 
+    // Get employee by user id
+    static getEmployeeAccountByUserId(employeeId: string): Promise<[MError, interfaces.EmployeeAccount]> {
+        return runQuery(
+            qb(TABLE.employeeAccount).where({employeeId}),
+            {single: true, required: true}
+        );
+    };
+
     static getEmployeeLoginData(username: string): Promise<[MError, interfaces.EmployeeLoginDetail]> {
         return runQuery(
             qb(TABLE.employeeLoginDetails).where({username}),
@@ -84,6 +92,13 @@ export default abstract class Employee {
     static getAdminAccount(username: string): Promise<[MError, interfaces.AdminAccount]> {
         return runQuery(
             qb(TABLE.adminAccount).where({username}),
+            {single: true, required: true}
+        );
+    };
+
+    static getAdminAccountByUserId(userId: string): Promise<[MError, interfaces.AdminAccount]> {
+        return runQuery(
+            qb(TABLE.adminAccount).where({userId}),
             {single: true, required: true}
         );
     };
@@ -206,11 +221,11 @@ export default abstract class Employee {
                               employeeCustomData: any
     ) {
         return runTrx(
-            qb(TABLE.employeeCompanyDetail).insert(employeeCompanyData),
-            qb(TABLE.employeeAccount).insert(employeeAccountData),
-            qb(TABLE.employeePersonalDetail).insert(employeePersonalData),
-            qb(TABLE.employeeEmergencyDetail).insert(employeeEmergencyData),
-            qb(TABLE.customDetails).insert(employeeCustomData),
+            // qb(TABLE.employeeCompanyDetail).insert(employeeCompanyData),
+            // qb(TABLE.employeeAccount).insert(employeeAccountData),
+            // qb(TABLE.employeePersonalDetail).insert(employeePersonalData),
+            // qb(TABLE.employeeEmergencyDetail).insert(employeeEmergencyData),
+            // qb(TABLE.customDetails).insert(employeeCustomData),
             this.setPhoneNumbers(phoneNumber.employeeId, phoneNumber)
         );
     };
@@ -230,16 +245,14 @@ export default abstract class Employee {
             return qb()
         }
         const mobiles = phoneNumbers.phoneNumbers;
-        console.log("Mobile", mobiles);
-        console.log(qb().raw(`call set_phone_numbers($1 , $2)`, [employeeId, mobiles]).query)
         return qb().raw(`call set_phone_numbers($1 , $2)`, [employeeId, mobiles]);
     }
 
-    static updateEmployeePersonalInfo(employeeId : string, personalData : any, emergencyData : any, phoneNumbers : any) {
+    static updateEmployeePersonalInfo(employeeId : string, personalData : any,
+                                      emergencyData : any, phoneNumbers : any) {
         const personalD = cleanQuery(personalData);
         const emergencyD = cleanQuery(emergencyData);
         const phoneD = cleanQuery(phoneNumbers);
-        console.log(qb(TABLE.employeePersonalDetail).update(personalD).where({employeeId}).query)
         return runTrx(
             qb(TABLE.employeePersonalDetail).update(personalD).where({employeeId}),
             qb(TABLE.employeeEmergencyDetail).update(emergencyD).where({employeeId}),
@@ -264,6 +277,19 @@ export default abstract class Employee {
             this.setPhoneNumbers(employeeId, cleanQuery(phoneNumbers))
         );
     }
+
+    static changePasswordEmployee(employeeId : string,newPassword : string){
+        return runQuery(
+            qb(TABLE.employeeAccount).update({password : newPassword}).where({employeeId})
+        )
+    }
+
+    static changePasswordAdmin(userId : string,newPassword : string){
+        return runQuery(
+            qb(TABLE.adminAccount).update({password : newPassword}).where({userId})
+        )
+    }
+
 
 }
 
