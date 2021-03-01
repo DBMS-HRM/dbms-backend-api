@@ -223,7 +223,7 @@ CREATE VIEW supervisor_details AS
         JOIN employee_personal_detail epd USING(employee_id)
         LEFT JOIN employee_company_detail ecd2
             ON ecd2.supervisor_id = ecd.employee_id
-                WHERE ecd.pay_grade != 'Level 1' OR ecd.pay_grade != 'Level 2'
+                WHERE ecd.pay_grade != 'Level 1' AND ecd.pay_grade != 'Level 2'
                 GROUP BY ecd.employee_id, epd.first_name, epd.last_name, epd.marital_status;
 
 
