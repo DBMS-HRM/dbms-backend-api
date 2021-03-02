@@ -26,14 +26,22 @@ const get_EmployeeReport: Handler = async (req, res) => {
             code = err1.code; report = res1;
             break;
         case model.report.default_group_by.payGrade:
-            // code block
+            const [err2, res2] = await model.report.reportGroupByPayGrade(branchName);
+            code = err2.code; report = res2;
             break;
         case model.report.default_group_by.jobTitle:
-            // code block
+            const [err3, res3] = await model.report.reportGroupByJobTitle(branchName);
+            code = err3.code; report = res3;
+            break;
+        case model.report.default_group_by.employmentStatus:
+            const [err4, res4] = await model.report.reportGroupByEmploymentStatus(branchName);
+            code = err4.code; report = res4;
             break;
         default :
+            const [err5, res5] = await model.report.reportGroupByCustomAttributes(branchName, req.query.heading);
+            code = err5.code; report = res5;
+            break;
     }
-
     if (code === MErr.NO_ERROR) {
         r.status.OK()
             .message("Success")

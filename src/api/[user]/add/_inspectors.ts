@@ -54,13 +54,11 @@ export const managerialEmployee_EmployeeAccountType_inspector = inspectBuilder(
 
 export const employeeCompanyData_inspector = inspectBuilder(
     body("branchName").exists().withMessage("Branch Id is required")
-        .isIn([...Object.values(model.user.branch_names)])
-        .withMessage("Branch Name is not valid")
         .custom((value : string, {req}) => {
-            if(value != req.user.branchName){
+            if(value !== req.user.branchName){
                 throw new Error('You can not add employee to other branches')
             }
-        }),
+        }).withMessage("You can not add employee to different branch"),
     body("jobTitle").exists().withMessage("Branch Name is required")
         .if((value :string,{req} :any) =>
             req.body.accountType === model.user.user_account_types.managerialEmployee)
