@@ -6,7 +6,7 @@ import {extract_employeeAccountData, extract_employeeCompanyData,
 } from "./_utils";
 import {employeeAccount_inspector, employeePersonalData_inspector,
     employeeCompanyData_inspector, employeeEmergencyData_inspector,
-    employeeCustomData_inspector,
+    employeeCustomData_inspector,employeePhoneNumber_inspector,
     admin_EmployeeAccountType_inspector, managerialEmployee_EmployeeAccountType_inspector
 } from "./_inspectors";
 import { v4 as UUID } from 'uuid';
@@ -43,9 +43,8 @@ const add_Employee : Handler = async (req,res, next) => {
 
     const employeeCustomData= {
         employeeId : userId,
-        ...extract_employeeCustomData(req)
+        ...extract_employeeCustomData(req).customData
     };
-    const phoneNumbers = extract_phoneNumber(req);
 
     const phoneNumber = {
         employeeId : userId,
@@ -100,7 +99,7 @@ const add_employee = {
     managerialEmployee_AddEmployee : [$check_HRManager as EHandler,
         employeeAccount_inspector, managerialEmployee_EmployeeAccountType_inspector,
         employeePersonalData_inspector,employeeCompanyData_inspector,
-        employeeEmergencyData_inspector, employeeCustomData_inspector,
+        employeeEmergencyData_inspector,employeePhoneNumber_inspector, employeeCustomData_inspector,
         add_Employee as EHandler],
 }
 

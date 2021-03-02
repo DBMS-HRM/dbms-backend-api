@@ -12,6 +12,7 @@ export function extract_employeeCompanyData(req : any){
         employmentStatus : req.body.employmentStatus,
         payGrade : req.body.payGrade,
         departmentName : req.body.departmentName,
+        supervisorId : req.body.supervisorId,
     }
 }
 
@@ -44,7 +45,6 @@ export function extract_phoneNumber(req : any){
 
 export function extract_employeeCustomData(req : any){
     return{
-        
-        
+        customData: req.body.customData
     }
 }

@@ -24,7 +24,7 @@ const add_Leave : Handler = async (req,res,next) => {
         leaveStatus : model.leave.leaveRequestStates.pending,
         leaveType : req.body.leaveType
     }
-    console.log(leaveRequestData);
+
     const [{code}] = await model.leave.addLeave(leaveRequestData);
 
     if(code === MErr.NO_ERROR){
@@ -41,4 +41,16 @@ const add_Leave : Handler = async (req,res,next) => {
     r.pb.ISE().send();
 }
 
-export default [leaveRequest_inspector, add_Leave as EHandler];
+const $check_forSupervisor : Handler = (req,res,next) => {
+    const {r} = res;
+    if(req.user.supervisorId === undefined ||req.user.supervisorId === null ){
+        r.status.FORBIDDEN()
+            .message("You should have supervisor to request for a leave, Please contact HR manager")
+            .send()
+        return;
+    }
+    next();
+    return;
+}
+
+export default [$check_forSupervisor as EHandler,leaveRequest_inspector, add_Leave as EHandler];

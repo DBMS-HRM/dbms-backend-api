@@ -52,8 +52,6 @@ function buildUserFilter(
 ): EHandler {
     const handler: Handler = (req, res, next) => {
         const { r } = res
-        console.log("User tupeeee :", req.user.accountType)
-        console.log("User tupeeee :", accountTypes)
         // @ts-ignore
         if (accountTypes.includes(req.user.accountType)) {
             next();

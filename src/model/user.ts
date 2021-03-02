@@ -14,6 +14,7 @@ const TABLE = {
     supervisorEmployees : "supervisorEmployees",
     employeeLoginDetails : "employeeLoginDetails",
     supervisorEmployeeMv : "supervisorEmployeeMv",
+    supervisorDetailsView : "supervisorDetails",
     customColumn : "customColumn",
 
 };
@@ -142,7 +143,8 @@ export default abstract class User {
     static getEmployeeFullReport(query : any): Promise<[MError, any]> {
         const q = cleanQuery(
             query,
-            ["jobTitle", "payGrade", "employeeId", "departmentName", "supervisorId", "employmentStatus", "firstName","lastName"]
+            ["jobTitle", "payGrade", "employeeId", "departmentName", "branchName",
+                "supervisorId", "employmentStatus", "firstName","lastName"]
         )
         if(q.hasOwnProperty("employeeId")){
             q["employeeCompanyDetail.employeeId"] = q["employeeId"];
@@ -163,7 +165,8 @@ export default abstract class User {
     static getEmployeeCP(query : any): Promise<[MError, any]> {
         const q = cleanQuery(
             query,
-            ["jobTitle", "payGrade", "employeeId", "departmentName", "supervisorId", "employmentStatus", "firstName","lastName"]
+            ["jobTitle", "payGrade", "employeeId", "departmentName","branchName",
+                "supervisorId", "employmentStatus", "firstName","lastName"]
         )
         if(q.hasOwnProperty("employeeId")){
             q["employeeCompanyDetail.employeeId"] = q["employeeId"];
@@ -181,21 +184,17 @@ export default abstract class User {
     /**
      * Get employee company and personal details
      */
-    static getLevel3Employee(query : any): Promise<[MError, any]> {
+    static getEmployeesWithSubordinateCounts(query : any): Promise<[MError, any]> {
         const q = cleanQuery(
             query,
-            ["jobTitle", "payGrade", "employeeId", "departmentName", "employmentStatus", "firstName","lastName"]
+            ["jobTitle", "payGrade", "employeeId",
+                "departmentName", "employmentStatus",
+                "firstName","lastName",
+                "branchName"
+            ]
         )
-        if(q.hasOwnProperty("employeeId")){
-            q["employeeCompanyDetail.employeeId"] = q["employeeId"];
-            delete q["employeeId"];
-        }
         return runQuery(
-            qb(TABLE.employeeCompanyDetail)
-                .leftJoin(TABLE.employeePersonalDetail,
-                    "employeeCompanyDetail.employeeId","=","employeePersonalDetail.employeeId")
-                .leftJoin(TABLE.supervisorEmployeeMv,
-                    "employeeCompanyDetail.employeeId","=","supervisorEmployeeMv.supervisorId")
+            qb(TABLE.supervisorDetailsView)
                 .where(q)
                 .select()
         );

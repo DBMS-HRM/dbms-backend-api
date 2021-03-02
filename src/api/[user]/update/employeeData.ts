@@ -40,7 +40,7 @@ const update_EmployeeFullData: Handler = async (req, res) => {
         reqData.extract_employeeCompanyData(req),
         reqData.extract_employeeEmergencyData(req),
         reqData.extract_employeePersonalData(req),
-        reqData.extract_employeeCustomData(req),
+        reqData.extract_employeeCustomData(req).customData,
         reqData.extract_phoneNumber(req)
     );
 
@@ -60,12 +60,23 @@ const update_EmployeeFullData: Handler = async (req, res) => {
 
 const employeePersonalData_inspectors = [
     inspectors.employeePersonalData_inspector,inspectors.employeeCompanyData_inspector,
-    inspectors.employeeEmergencyData_inspector, inspectors.employeeCustomData_inspector,
-    inspectors.phoneNumber_inspector
+    inspectors.employeeEmergencyData_inspector, inspectors.employeeCustomData_inspector
 ];
 
+const $check_level1 : Handler = (req,res,next) => {
+    const {r} = res;
+    if(req.user.payGrade === model.user.pay_grade.level1){
+        r.status.FORBIDDEN()
+            .message("Level 1 employees are not allowed")
+            .send()
+        return
+    }
+    next();
+    return;
+}
+
 const update_employee_data = {
-    personalData : [ inspectors.employeePersonalData_inspector,inspectors.employeeEmergencyData_inspector,update_EmployeePersonalData as EHandler],
+    personalData : [ $check_level1 as EHandler,inspectors.employeePersonalData_inspector,inspectors.employeeEmergencyData_inspector,update_EmployeePersonalData as EHandler],
     fullData : [ ...employeePersonalData_inspectors,update_EmployeeFullData as EHandler],
 }
 
