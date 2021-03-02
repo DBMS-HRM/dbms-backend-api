@@ -42,7 +42,6 @@ const get_Employees: Handler = async (req, res) => {
 
 const get_EmployeeWithSubordinateCounts: Handler = async (req, res) => {
     const {r} = res;
-
     const [{code}, users] = await model.user.getEmployeesWithSubordinateCounts(req.query);
 
     if (code === MErr.NO_ERROR) {
@@ -67,10 +66,17 @@ const $set_SupervisorId : Handler = (req,res,next) => {
     return;
 }
 
+const $set_BranchName : Handler = (req,res,next) => {
+    req.query.branchName = req.user.branchName;
+    next();
+    return;
+}
+
+
 
 const get_employee = {
-    get_employees_sc : [inspector, get_EmployeeWithSubordinateCounts as EHandler],
-    get_all : [inspector, get_Employees as EHandler],
+    get_employees_sc : [inspector, $set_BranchName as EHandler,get_EmployeeWithSubordinateCounts as EHandler],
+    get_all : [inspector,$set_BranchName as EHandler, get_Employees as EHandler],
     get_subordinates : [inspector,$set_SupervisorId as EHandler, get_Employees as EHandler],
 }
 

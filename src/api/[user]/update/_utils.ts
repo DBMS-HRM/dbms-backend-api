@@ -45,7 +45,6 @@ export function extract_phoneNumber(req : any){
 
 export function extract_employeeCustomData(req : any){
     return{
-        
-        
+        customData: req.body.customData
     }
 }

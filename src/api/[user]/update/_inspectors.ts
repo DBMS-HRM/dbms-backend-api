@@ -8,7 +8,12 @@ import model from "../../../model";
 
 export const employeeCompanyData_inspector = inspectBuilder(
     body("branchName").optional().isString().withMessage("Branch Name should ba valid")
-        .isIn([...Object.values(model.user.branch_names)]).withMessage("Branch Name is not valid"),
+        .isIn([...Object.values(model.user.branch_names)]).withMessage("Branch Name is not valid")
+        .custom((value : string, {req}) => {
+            if(value != req.user.branchName){
+                throw new Error('You can not change branch name to other branches')
+            }
+        }),
     body("jobTitle").optional()
         .if((value :string,{req} :any) => req.body.accountType === model.user.user_account_types.managerialEmployee)
         .isIn([model.user.job_titles.HRManager]).withMessage("Job title is not valid"),

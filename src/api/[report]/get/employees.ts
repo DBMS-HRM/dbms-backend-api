@@ -8,7 +8,7 @@ import {MError} from "../../../utils/db";
  * Validate Request
  */
 const inspector = inspectBuilder(
-    query("heading").optional().isString().withMessage("Invalid heading"),
+    query("heading").exists().isString().withMessage("Invalid heading"),
 );
 
 /**

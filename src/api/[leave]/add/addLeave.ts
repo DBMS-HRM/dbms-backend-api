@@ -45,7 +45,7 @@ const $check_forSupervisor : Handler = (req,res,next) => {
     const {r} = res;
     if(req.user.supervisorId === undefined ||req.user.supervisorId === null ){
         r.status.FORBIDDEN()
-            .message("You should have supervisor to request for a leave")
+            .message("You should have supervisor to request for a leave, Please contact HR manager")
             .send()
         return;
     }

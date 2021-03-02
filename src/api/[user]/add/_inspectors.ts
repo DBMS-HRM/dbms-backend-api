@@ -55,7 +55,12 @@ export const managerialEmployee_EmployeeAccountType_inspector = inspectBuilder(
 export const employeeCompanyData_inspector = inspectBuilder(
     body("branchName").exists().withMessage("Branch Id is required")
         .isIn([...Object.values(model.user.branch_names)])
-        .withMessage("Branch Name is not valid"),
+        .withMessage("Branch Name is not valid")
+        .custom((value : string, {req}) => {
+            if(value != req.user.branchName){
+                throw new Error('You can not add employee to other branches')
+            }
+        }),
     body("jobTitle").exists().withMessage("Branch Name is required")
         .if((value :string,{req} :any) =>
             req.body.accountType === model.user.user_account_types.managerialEmployee)
@@ -70,7 +75,7 @@ export const employeeCompanyData_inspector = inspectBuilder(
     body("departmentName").exists().withMessage("Department name is required")
         .isIn([...Object.values(model.user.department_names)])
         .withMessage("Department Name is not valid"),
-    body("supervisorId").isUUID().withMessage("Supervisor id is not valid"),
+    body("supervisorId").optional().isUUID().withMessage("Supervisor id is not valid"),
 
 )
 
@@ -98,6 +103,15 @@ export const employeePersonalData_inspector = inspectBuilder(
         .isDate().withMessage("Date of birth should be a valid date"),
     body("maritalStatus").exists().withMessage("Marital status is required")
         .isBoolean().withMessage("Marital status should be a boolean"),
+)
+
+
+/**
+ * Add User custom details inspector
+ */
+
+export const employeePhoneNumber_inspector = inspectBuilder(
+    body("phoneNumbers").exists().withMessage("Mobile number is required")
 )
 
 /**
