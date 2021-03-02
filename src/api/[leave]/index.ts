@@ -35,7 +35,7 @@ rLeave.put('/change-leave-status/:leaveId',auth.supervisor,change_leave);
 import config_leaves from "./update/configLeaves";
 import get_leave_configs from "./get/leaveConfigs";
 rLeave.put('/config-leaves',auth.admin,config_leaves);
-rLeave.get('/config-leaves',auth.admin,get_leave_configs);
+rLeave.get('/config-leaves',auth.all,get_leave_configs);
 
 export default rLeave;
 
