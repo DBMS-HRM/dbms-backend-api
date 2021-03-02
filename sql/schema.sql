@@ -123,6 +123,12 @@ CREATE TABLE employee_company_detail (
     FOREIGN KEY(department_name) REFERENCES department(department_name) ON DELETE RESTRICT
 );
 
+
+CREATE INDEX idx_ecd_branch_name ON employee_company_detail (branch_name);
+CREATE INDEX idx_ecd_department_name ON employee_company_detail (department_name);
+CREATE INDEX idx_ecd_supervisor_id ON employee_company_detail (supervisor_id);
+
+
 CREATE TABLE employee_account (
     employee_id UUID PRIMARY KEY,
     username VARCHAR(20) NOT NULL UNIQUE,
@@ -134,6 +140,10 @@ CREATE TABLE employee_account (
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT,
     FOREIGN KEY (account_type) REFERENCES employee_account_type(type) ON DELETE RESTRICT
 );
+
+
+CREATE INDEX idx_ea_status ON employee_account (status);
+
 
 CREATE TABLE employee_personal_detail (
     employee_id UUID PRIMARY KEY,
@@ -329,7 +339,7 @@ CREATE TRIGGER remove_old_column BEFORE DELETE ON custom_column
     FOR EACH ROW EXECUTE PROCEDURE remove_old_column();
 
 
-CREATE OR replace FUNCTION before_update_com_details() RETURNS trigger AS $$
+CREATE OR REPLACE FUNCTION before_update_com_details() RETURNS trigger AS $$
 
     DECLARE
        	sup_sup_id UUID;
@@ -389,6 +399,11 @@ CREATE TABLE leave_request (
     FOREIGN KEY (leave_type) REFERENCES leave_type(leave_type) ON DELETE RESTRICT,
     FOREIGN KEY (supervisor_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
 );
+
+
+CREATE INDEX idx_lr_employee_id ON leave_request (employee_id);
+CREATE INDEX idx_lr_leave_status ON leave_request (leave_status);
+CREATE INDEX idx_lr_leave_type ON leave_request (leave_type);
 
 
 CREATE VIEW supervisor_leave_request As
