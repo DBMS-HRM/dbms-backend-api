@@ -13,6 +13,7 @@ export const employeeCompanyData_inspector = inspectBuilder(
             if(value != req.user.branchName){
                 throw new Error('You can not change branch name to other branches')
             }
+            return true;
         }),
     body("jobTitle").optional()
         .if((value :string,{req} :any) => req.body.accountType === model.user.user_account_types.managerialEmployee)

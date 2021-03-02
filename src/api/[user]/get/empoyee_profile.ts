@@ -12,7 +12,7 @@ const get_EmployeeProfile: Handler = async (req, res,next) => {
     const employeeId = req.params.employeeId;
     const [{code}, user] = await model.user.getEmployeeFullDetail(employeeId)
     delete user['password'];
-    if(code === MErr.NO_ERROR){r
+    if(code === MErr.NO_ERROR){
         r.status.OK()
             .message("Successful")
             .data(user)
