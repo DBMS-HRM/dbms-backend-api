@@ -27,16 +27,25 @@ export const employeeAccount_inspector = inspectBuilder(
         .isLength({min : 6}).withMessage("Password should be more than 6 characters"),
     body("emailAddress").exists().withMessage("Email is required")
         .isEmail().withMessage("Email should be a valid email address"),    
-    body("accountType").exists().withMessage("Account Type is required"),
+    body("accountType").exists().withMessage("Account Type is required")
 
 )
 
 export const admin_EmployeeAccountType_inspector = inspectBuilder(
-    body("accountType").isIn([model.user.user_account_types.managerialEmployee]).withMessage("Account type is invalid")
+    body("accountType").isIn([model.user.user_account_types.managerialEmployee])
+        .withMessage("Account type is invalid"),
+    body("jobTitle").exists().withMessage("Branch Name is required")
+        .isIn([model.user.job_titles.HRManager])
+        .withMessage("Job title is not valid"),
 )
 
 export const managerialEmployee_EmployeeAccountType_inspector = inspectBuilder(
-    body("accountType").isIn([model.user.user_account_types.employee ]).withMessage("Account type is invalid")
+    body("accountType").isIn(Object.values(model.user.user_account_types )).withMessage("Account type is invalid"),
+    body("jobTitle").exists().withMessage("Branch Name is required")
+        .not()
+        .isIn([model.user.job_titles.HRManager])
+        .withMessage("Job title is not valid"),
+
 )
 
 /**
