@@ -1,7 +1,7 @@
 import {EHandler, Handler} from "../../../utils/types";
 import {inspectBuilder, query} from "../../../utils/inspect";
 import model, {MErr} from "../../../model";
-import {MError} from "../../../utils/db";
+import {toSnakeCase} from "../../../utils/db/typo";
 
 /**
  * :: STEP 1
@@ -38,7 +38,8 @@ const get_EmployeeReport: Handler = async (req, res) => {
             code = err4.code; report = res4;
             break;
         default :
-            const [err5, res5] = await model.report.reportGroupByCustomAttributes(branchName, req.query.heading);
+            // @ts-ignore
+            const [err5, res5] = await model.report.reportGroupByCustomAttributes(branchName, toSnakeCase(req.query.heading));
             code = err5.code; report = res5;
             break;
     }

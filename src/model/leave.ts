@@ -62,23 +62,22 @@ export default abstract class LeaveModel {
    * Leave report
    * @param query
    */
-  static get_LeaveReport(
-    query: any
-  ): Promise<[MError, interfaces.LeaveRequest[]]> {
-    const fromDate = query.fromDate || "2021-02-01";
-    const toDate = query.toDate || new Date();
-
+  static get_LeaveReport( query: any ): Promise<[MError, interfaces.LeaveRequest[]]> {
+    const fromDate = query.fromDate || "2020-02-01";
+    const toDate = query.toDate || "2040-02-01";
+    const branchName = query.branchName;
     return runQuery(
       qb().raw(
-        "select \n" +
-          "\tdepartment_name ,\n" +
-          "\tleave_type ,\n" +
-          "\tcount(*) as total_leaves\n" +
-          "\tfrom supervisor_leave_request slr\n" +
-          "\twhere\n" +
-          "\tfrom_date between $1 and $2\n" +
-          "\tgroup by department_name, leave_type",
-        [fromDate, toDate]
+        `SELECT rr.department_name, 
+        json_agg(jsonb_build_object(leave_type, leave_count)) AS leave_count FROM 
+        (SELECT ecd.department_name, lr.leave_type, SUM(real_difference($1::DATE, 
+        lr.from_date, lr.to_date, $2::DATE)) AS leave_count
+            FROM leave_request lr
+            JOIN employee_company_detail ecd USING (employee_id)
+                WHERE ecd.branch_name = $3
+                GROUP BY ecd.department_name, lr.leave_type) rr
+                    GROUP BY rr.department_name`,
+        [fromDate, toDate , branchName]
       )
     );
   }

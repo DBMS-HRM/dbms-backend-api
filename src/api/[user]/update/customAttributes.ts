@@ -1,6 +1,7 @@
 import {EHandler, Handler} from "../../../utils/types";
 import {inspectBuilder, body} from "../../../utils/inspect";
 import model, {MErr} from "../../../model";
+import {toCamelCase, toSnakeCase} from "../../../utils/db/typo";
 
 /**
  * Validations
@@ -16,6 +17,7 @@ const delete_inspector = inspectBuilder(
     body("customColumn").exists().withMessage("Attribute name is required"),
 )
 
+
 /**
  * :: STEP 2
  * Get All Posts
@@ -24,7 +26,7 @@ const insert_CustomColumn: Handler = async (req, res) => {
     const {r} = res;
 
     const customColumnData = {
-        customColumn : req.body.customColumn,
+        customColumn : toSnakeCase(req.body.customColumn),
         dataType : req.body.dataType,
         defaultValue : req.body.defaultValue
     }
@@ -53,7 +55,7 @@ const insert_CustomColumn: Handler = async (req, res) => {
 const delete_CustomColumn: Handler = async (req, res) => {
     const {r} = res;
 
-    const [{code}] = await model.user.deleteCustomAttributes(req.body.customColumn);
+    const [{code}] = await model.user.deleteCustomAttributes(toSnakeCase(req.body.customColumn));
 
     if (code === MErr.NO_ERROR) {
         r.status.OK()
