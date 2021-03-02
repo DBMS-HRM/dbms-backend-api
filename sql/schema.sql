@@ -429,7 +429,7 @@ CREATE VIEW employee_remaining_leaves AS
 
 
 -- Run before insert leave request
-CREATE FUNCTION before_add_leave_request() RETURNS trigger AS $before_leave$
+CREATE OR REPLACE FUNCTION before_add_leave_request() RETURNS trigger AS $before_leave$
 
     DECLARE
         remaining INTEGER;
@@ -444,7 +444,7 @@ CREATE FUNCTION before_add_leave_request() RETURNS trigger AS $before_leave$
         END IF;
 
        	IF NEW.leave_status IS NOT NULL THEN
-            IF OLD.leave_status != 'Pending' THEN
+            IF (OLD.leave_status != NEW.leave_status) AND OLD.leave_status != 'Pending' THEN
                 RAISE EXCEPTION 'Cannot change status from Approved or Rejected';
             END IF;
         END IF;
@@ -461,7 +461,7 @@ CREATE FUNCTION before_add_leave_request() RETURNS trigger AS $before_leave$
             RAISE EXCEPTION 'Invalid leave type';
         END IF;
 
-        IF remaining <= 0 THEN
+        IF remaining < ((1 + (NEW.to_date - NEW.from_date)) - COALESCE(1 + (OLD.to_date - OLD.from_date), 0)) THEN
             RAISE EXCEPTION 'No remaining leaves';
         ELSE
             RETURN NEW;
