@@ -9,8 +9,10 @@ const rUser = Router();
 /**
  * User login
  */
+import logout from "./login/logout";
 rUser.post('/login/admin', admin)
 rUser.post('/login/employee', employee)
+rUser.post('/logout', logout)
 
 /**
  * Register Users
