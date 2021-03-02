@@ -191,8 +191,9 @@ CREATE VIEW employee_details_full AS
 		NATURAL JOIN employee_personal_detail
 		NATURAL JOIN employee_emergency_detail
 		NATURAL JOIN employee_custom_details
-		NATURAL JOIN
-			(select employee_id, jsonb_agg(phone_number) as phone_numbers from phone_number pn group by employee_id) as pns;
+		LEFT JOIN
+			(select employee_id, jsonb_agg(phone_number) as phone_numbers
+			    from phone_number pn group by employee_id) as pns USING(employee_id);
 
 
 CREATE VIEW supervisor_employees AS
@@ -473,3 +474,25 @@ $before_leave$ LANGUAGE plpgsql;
 -- Trigger when insert a leave request
 CREATE TRIGGER before_leave_request BEFORE INSERT OR UPDATE ON leave_request
     FOR EACH ROW EXECUTE PROCEDURE before_add_leave_request();
+
+-- Utils
+CREATE OR REPLACE FUNCTION real_difference(_lower DATE, _from DATE, _to DATE, _upper DATE) RETURNS INTEGER AS $$
+
+    DECLARE
+        diff INTEGER;
+    BEGIN
+	   IF (_lower < _from) AND (_to < _upper) THEN
+	    	diff := coalesce(1 + _to - _from, 0);
+	   ELSIF (_from < _lower) AND (_to < _upper) THEN
+	    	diff := coalesce(1 + _to - _lower, 0);
+	   ELSIF (_lower < _from) AND (_upper < _to) THEN
+	    	diff := coalesce(1 + _upper - _from, 0);
+	   ELSIF (_from < lower) AND (_upper < _to)
+	    	diff := coalesce(1 + _upper - _lower, 0);
+	   ELSE
+	   		diff := 0;
+	   END IF;
+	   RETURN diff;
+    END;
+
+$$ LANGUAGE plpgsql;
