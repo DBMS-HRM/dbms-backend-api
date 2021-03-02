@@ -88,8 +88,8 @@ export const employeeEmergencyData_inspector = inspectBuilder(
     body("country").exists().withMessage("Country is required"),
     body("district").exists().withMessage("district is required"),
     body("city").exists().withMessage("city is required"),
-    body("street1").exists().withMessage("street is required"),
-    body("street1").optional(),
+    body("street_1").exists().withMessage("street is required"),
+    body("street_2").optional(),
 
 )
 

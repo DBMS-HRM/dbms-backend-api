@@ -35,8 +35,8 @@ export const employeeEmergencyData_inspector = inspectBuilder(
     body("country").optional().isString().withMessage("Country is not valid"),
     body("district").optional().isString().withMessage("district is not valid"),
     body("city").optional().isString().withMessage("city is not valid"),
-    body("street1").optional().isString().withMessage("street1 is not valid"),
-    body("street2").optional().isString().withMessage("Street 2 is not valid")
+    body("street_1").optional().isString().withMessage("street1 is not valid"),
+    body("street_2").optional().isString().withMessage("Street 2 is not valid")
 
 )
 
