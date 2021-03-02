@@ -263,6 +263,11 @@ AS $pn$
 	END ;
 $pn$;
 
+CREATE MATERIALIZED VIEW meta_data AS
+	SELECT 'pay_grades' as meta_name, jsonb_agg(row_to_json(pg)) as meta_data FROM pay_grade pg GROUP BY meta_name
+	UNION SELECT 'branches' as meta_name, jsonb_agg(row_to_json(b)) as meta_data FROM branch b GROUP BY meta_name
+	UNION SELECT 'departments' as meta_name, jsonb_agg(row_to_json(d)) as meta_data FROM department d GROUP BY meta_name
+	UNION SELECT 'custom_columns' as meta_name, jsonb_agg(row_to_json(cc)) as meta_data FROM custom_column cc GROUP BY meta_name;
 
 -- custom attribute triggers
 -- Run after new insertion to custom_column
@@ -286,6 +291,7 @@ CREATE FUNCTION add_new_column() RETURNS trigger AS $$
 	   	RAISE NOTICE '%', _query;
 		EXECUTE _query;
 
+        REFRESH MATERIALIZED VIEW meta_data;
 	   	RETURN NEW;
     END;
 
@@ -308,10 +314,12 @@ CREATE FUNCTION remove_old_column() RETURNS trigger AS $$
 	   	RAISE NOTICE '%', _query;
 		EXECUTE _query;
 
+        REFRESH MATERIALIZED VIEW meta_data;
 	   	RETURN OLD;
     END;
 
 $$ LANGUAGE plpgsql;
+
 
 
 CREATE TRIGGER add_new_column AFTER INSERT ON custom_column
@@ -496,3 +504,5 @@ CREATE OR REPLACE FUNCTION real_difference(_lower DATE, _from DATE, _to DATE, _u
     END;
 
 $$ LANGUAGE plpgsql;
+
+
