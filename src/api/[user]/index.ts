@@ -45,7 +45,7 @@ rUser.post('/set-supervisor',auth.managerialEmployee, changeSupervisor.setSuperv
  */
 import view_profile from "./get/empoyee_profile";
 rUser.get('/my-profile',auth.employee, view_profile.employeeViewProfile);
-rUser.get('/view-profile/:employeeId',auth.managerialEmployee, view_profile.employeeViewProfile);
+rUser.get('/view-profile/:employeeId',auth.managerialEmployee, view_profile.managerViewProfile);
 
 /**
  * Update profile
