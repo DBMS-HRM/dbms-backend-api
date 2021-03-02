@@ -45,7 +45,7 @@ rUser.post('/set-supervisor',auth.managerialEmployee, changeSupervisor.setSuperv
  */
 import view_profile from "./get/empoyee_profile";
 rUser.get('/my-profile',auth.employee, view_profile.employeeViewProfile);
-rUser.get('/view-profile/:employeeId',auth.managerialEmployee, view_profile.employeeViewProfile);
+rUser.get('/view-profile/:employeeId',auth.managerialEmployee, view_profile.managerViewProfile);
 
 /**
  * Update profile
@@ -69,7 +69,7 @@ rUser.put('/forgot-employee-password/:userId', change_password.forgotAdminPasswo
  */
 import get_custom_attributes from "./get/customAttributes";
 import put_custom_attributes from "./update/customAttributes";
-rUser.get('/get-custom-attributes',auth.admin, get_custom_attributes);
+rUser.get('/get-custom-attributes', get_custom_attributes);
 rUser.post('/insert-custom-attributes',auth.admin, put_custom_attributes.insert_attributes);
 rUser.delete('/delete-custom-attributes',auth.admin, put_custom_attributes.delete_attributes);
 

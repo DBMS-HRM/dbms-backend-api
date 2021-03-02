@@ -39,8 +39,8 @@ export function extract_employeeEmergencyData(req : any){
         country : req.body.country,
         district : req.body.district,
         city : req.body.city,
-        street_1 : req.body.street1,
-        street_2 : req.body.street2,
+        street_1 : req.body.street_1,
+        street_2 : req.body.street_2,
     }
 }
 
@@ -62,7 +62,6 @@ export function extract_phoneNumber(req : any){
 
 export function extract_employeeCustomData(req : any){
     return{
-        
-        
+        customData : req.body.customData
     }
 }

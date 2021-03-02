@@ -24,7 +24,7 @@ const update_PasswordEmployee: Handler = async (req, res) => {
     const {r} = res;
     const employeeId = req.params.userId;
     const newPassword = req.body.newPassword;
-
+    req.body.newPassword = await encrypt_password(req.body.newPassword);
     const [{code}] = await model.user.changePasswordEmployee(
         employeeId,newPassword
     );
@@ -60,31 +60,11 @@ const update_PasswordAdmin: Handler = async (req, res) => {
     r.pb.ISE().send();
 };
 
-/**
- * Encrypt password
- */
-const $encrypt_Password : Handler = async (req,res,next) => {
-    req.body.newPassword = await encrypt_password(req.body.newPassword);
-    next();
-    return;
-}
-
 
 /**
  * Compare password
  */
-const $compare_Password  = (password : string) : Handler => async (req,res,next) => {
-    const {r} = res;
-    console.log("New Password", req.body.newPassword);
-    if (!await compare(req.body.newPassword, password)) {
-        r.status.UN_AUTH()
-            .message("Incorrect username or password")
-            .send();
-        return;
-    }
-    next() ;
-    return;
-}
+
 // Check password of User
 const $check_Password_Employee : Handler = async (req,res, next) => {
     const {r} = res;
@@ -92,26 +72,44 @@ const $check_Password_Employee : Handler = async (req,res, next) => {
     if(code === MErr.NOT_FOUND){
         r.status.NOT_FOUND()
             .message("User not found")
+            .send()
+        return;
     }else if(code === MErr.NO_ERROR){
-        $compare_Password(user.password);
+        console.log(user.password,req.body.currentPassword);
+        if (!await compare(req.body.currentPassword,user.password)) {
+            r.status.ERROR()
+                .message("Password is incorrect")
+                .send()
+            return;
+        }
         next();
         return;
     }
     r.pb.ISE().send()
+    return;
 }
 
 const $check_Password_Admin : Handler = async (req,res, next) => {
     const {r} = res;
+    console.log(req.params.userId);
     const [{code}, user] = await model.user.getAdminAccountByUserId(req.params.userId);
     if(code === MErr.NOT_FOUND){
         r.status.NOT_FOUND()
             .message("User not found")
+            .send();
+        return;
     }else if(code === MErr.NO_ERROR){
-        $compare_Password(user.password);
+        if (!await compare(req.body.currentPassword,user.password)) {
+            r.status.ERROR()
+                .message("Password is incorrect")
+                .send()
+            return;
+        }
         next();
         return;
     }
-    r.pb.ISE().send()
+    r.pb.ISE().send();
+    return;
 }
 
 /**
@@ -130,15 +128,15 @@ const $set_adminId : Handler = (req,res, next) => {
 
 const change_password = {
     changeEmployeeMyPassword : [ password_inspector,$set_employeeId as EHandler,
-    $check_Password_Employee as EHandler, $encrypt_Password as EHandler, update_PasswordEmployee as EHandler],
+    $check_Password_Employee as EHandler, update_PasswordEmployee as EHandler],
 
     changeAdminMyPassword : [ password_inspector,$set_adminId as EHandler,
-        $check_Password_Admin as EHandler,$encrypt_Password as EHandler, update_PasswordAdmin as EHandler],
+        $check_Password_Admin as EHandler, update_PasswordAdmin as EHandler],
 
-    forgotEmployeePassword : [ forgot_password_inspector,$encrypt_Password as EHandler,
+    forgotEmployeePassword : [ forgot_password_inspector,
     update_PasswordEmployee as EHandler],
 
-    forgotAdminPassword : [ forgot_password_inspector,$encrypt_Password as EHandler,
+    forgotAdminPassword : [ forgot_password_inspector,
     update_PasswordAdmin as EHandler],
 }
 

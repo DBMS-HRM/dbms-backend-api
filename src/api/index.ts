@@ -14,9 +14,11 @@ rApi.get("/", cAbout);
 import rUser from "./[user]"
 import rLeave from "./[leave]";
 import rReport from "./[report]";
+import {rMeta} from "./[meta]";
 rApi.use('/user', rUser)
 rApi.use('/leave', rLeave)
 rApi.use('/report', rReport)
+rApi.use('/meta', rMeta)
 
 // Router
 export default rApi

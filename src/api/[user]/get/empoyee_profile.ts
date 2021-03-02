@@ -10,7 +10,6 @@ import model, {MErr} from "../../../model";
 const get_EmployeeProfile: Handler = async (req, res,next) => {
     const {r} = res;
     const employeeId = req.params.employeeId;
-
     const [{code}, user] = await model.user.getEmployeeFullDetail(employeeId)
     delete user['password'];
     if(code === MErr.NO_ERROR){
