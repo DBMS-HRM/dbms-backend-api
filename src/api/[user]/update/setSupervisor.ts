@@ -10,7 +10,7 @@ import {inspectBuilder,body} from "../../../utils/inspect";
  */
 const setSupervisor_inspector = inspectBuilder(
     body('supervisorId').exists().withMessage("Supervisor ID is required"),
-    body('employeeId').exists().withMessage("Employee ID is required")
+    body('employeeId').exists().withMessage("User ID is required")
         .custom((value, {req}) => value != req.body.supervisorId).withMessage("Supervisor and employee can not be same")
 )
 
@@ -33,7 +33,7 @@ const set_Supervisor : Handler = async (req,res, next) => {
         return
     }else if(code === MErr.DUPLICATE_ENTRY){
         r.status.BAD_REQ()
-            .message("Supervisor and Employee already set")
+            .message("Supervisor and User already set")
             .send()
     }
     r.pb.ISE();

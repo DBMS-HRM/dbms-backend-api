@@ -40,10 +40,10 @@ const get_Employees: Handler = async (req, res) => {
     r.pb.ISE().send();
 };
 
-const get_Level3Employees: Handler = async (req, res) => {
+const get_EmployeeWithSubordinateCounts: Handler = async (req, res) => {
     const {r} = res;
 
-    const [{code}, users] = await model.user.getLevel3Employee(req.query);
+    const [{code}, users] = await model.user.getEmployeesWithSubordinateCounts(req.query);
 
     if (code === MErr.NO_ERROR) {
         r.status.OK()
@@ -59,16 +59,19 @@ const get_Level3Employees: Handler = async (req, res) => {
 /**
  * Validation chain
  */
-const $set_level3 : Handler = (req,res,next) => {
-    req.query.payGrade = model.user.pay_grade.level3;
+
+
+const $set_SupervisorId : Handler = (req,res,next) => {
+    req.query.supervisorId = req.user.userId;
     next();
     return;
 }
 
 
 const get_employee = {
-    get_level3 : [inspector,$set_level3 as EHandler, get_Level3Employees as EHandler],
+    get_employees_sc : [inspector, get_EmployeeWithSubordinateCounts as EHandler],
     get_all : [inspector, get_Employees as EHandler],
+    get_subordinates : [inspector,$set_SupervisorId as EHandler, get_Employees as EHandler],
 }
 
 export default get_employee;

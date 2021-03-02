@@ -60,8 +60,7 @@ const update_EmployeeFullData: Handler = async (req, res) => {
 
 const employeePersonalData_inspectors = [
     inspectors.employeePersonalData_inspector,inspectors.employeeCompanyData_inspector,
-    inspectors.employeeEmergencyData_inspector, inspectors.employeeCustomData_inspector,
-    inspectors.phoneNumber_inspector
+    inspectors.employeeEmergencyData_inspector, inspectors.employeeCustomData_inspector
 ];
 
 const update_employee_data = {

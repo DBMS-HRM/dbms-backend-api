@@ -4,14 +4,15 @@ import {ResponseBuilder} from "./resp/res-builder";
 export interface Request extends ERequest {
     user: {
         userId: string,
-        accountType: "Admin" | "Super Admin" | "Employee" | "Managerial Employee" ,
+        accountType: "Admin" | "Super Admin" | "Employee" | "Managerial User" ,
         firstName: string,
         lastName: string,
         email: string,
         jobTitle : string,
         payGrade : string,
         isSupervisor : boolean,
-        branchName : string
+        branchName : string,
+        supervisorId : string,
     }
 }
 

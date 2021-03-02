@@ -3,8 +3,8 @@ import model, {MErr} from "../../../model";
 import {inspectBuilder,param} from "../../../utils/inspect";
 
 const inspector = inspectBuilder(
-    param("employeeId").exists().withMessage("Employee Id is required")
-        .isUUID().withMessage("Employee Id is not valid")
+    param("employeeId").exists().withMessage("User Id is required")
+        .isUUID().withMessage("User Id is not valid")
 )
 
 const get_LeaveConfigs : Handler = async (req,res,next) => {

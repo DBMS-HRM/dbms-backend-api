@@ -7,19 +7,20 @@ const TABLE = {
     employeeCompanyDetail: "employeeCompanyDetail",
     employeePersonalDetail: "employeePersonalDetail",
     employeeEmergencyDetail: "employeeEmergencyDetail",
-    customDetails: "customDetails",
+    employeeCustomDetail: "employeeCustomDetails",
     employmentStatus: "employmentStatus",
     phoneNumber: "phoneNumber",
     employeeDetailsFull: "employeeDetailsFull",
     supervisorEmployees : "supervisorEmployees",
     employeeLoginDetails : "employeeLoginDetails",
-    customAttribute : "customAttribute",
-    supervisorEmployeeMv : "supervisorEmployeeMv"
+    supervisorEmployeeMv : "supervisorEmployeeMv",
+    supervisorDetailsView : "supervisorDetails",
+    customColumn : "customColumn",
 
 };
 
 
-export default abstract class Employee {
+export default abstract class User {
     static job_titles = {
         HRManager: "HR Manager",
         QAEngineer: "QA Engineer",
@@ -60,12 +61,28 @@ export default abstract class Employee {
         pakistan : "Pakistan"
     }
 
+    static department_names = {
+        HR : "HR",
+        Security : "Security",
+        Financial : "Financial",
+        ICT : "ICT",
+        QualityAssurance : "Quality Assurance",
+    }
+
     /**
      * SELECT Queries ------------------------------------------------------------------------------
      */
     static getEmployeeAccount(username: string): Promise<[MError, interfaces.EmployeeAccount]> {
         return runQuery(
             qb(TABLE.employeeAccount).where({username}),
+            {single: true, required: true}
+        );
+    };
+
+    // Get employee by user id
+    static getEmployeeAccountByUserId(employeeId: string): Promise<[MError, interfaces.EmployeeAccount]> {
+        return runQuery(
+            qb(TABLE.employeeAccount).where({employeeId}),
             {single: true, required: true}
         );
     };
@@ -84,6 +101,13 @@ export default abstract class Employee {
     static getAdminAccount(username: string): Promise<[MError, interfaces.AdminAccount]> {
         return runQuery(
             qb(TABLE.adminAccount).where({username}),
+            {single: true, required: true}
+        );
+    };
+
+    static getAdminAccountByUserId(userId: string): Promise<[MError, interfaces.AdminAccount]> {
+        return runQuery(
+            qb(TABLE.adminAccount).where({userId}),
             {single: true, required: true}
         );
     };
@@ -158,46 +182,43 @@ export default abstract class Employee {
     /**
      * Get employee company and personal details
      */
-    static getLevel3Employee(query : any): Promise<[MError, any]> {
+    static getEmployeesWithSubordinateCounts(query : any): Promise<[MError, any]> {
         const q = cleanQuery(
             query,
-            ["jobTitle", "payGrade", "employeeId", "departmentName", "employmentStatus", "firstName","lastName"]
+            ["jobTitle", "payGrade", "employeeId",
+                "departmentName", "employmentStatus",
+                "firstName","lastName",
+                "branchName"
+            ]
         )
-        if(q.hasOwnProperty("employeeId")){
-            q["employeeCompanyDetail.employeeId"] = q["employeeId"];
-            delete q["employeeId"];
-        }
         return runQuery(
-            qb(TABLE.employeeCompanyDetail)
-                .leftJoin(TABLE.employeePersonalDetail,
-                    "employeeCompanyDetail.employeeId","=","employeePersonalDetail.employeeId")
-                .leftJoin(TABLE.supervisorEmployeeMv,
-                    "employeeCompanyDetail.employeeId","=","supervisorEmployeeMv.supervisorId")
+            qb(TABLE.supervisorDetailsView)
                 .where(q)
                 .select()
         );
     };
 
     /**
-     * Check whether supervisor or not
+     * Get custom attributes
      */
-    static checkSupervisor(supervisorId: string): Promise<[MError, any]> {
+    // Insert custom attributes
+    static getCustomAttributes(){
         return runQuery(
-            qb().raw(`select is_supervisor($1 :: uuid)`, [supervisorId])
-        );
-    };
-
+            qb(TABLE.customColumn).select()
+        )
+    }
 
     /**
      * INSERT Queries ----------------------------------------------------------------------------------------
      */
-
+    // Add admin account
     static addAdminUser(adminAccountData: interfaces.AdminAccount) {
         return runQuery(
             qb(TABLE.adminAccount).insert(adminAccountData)
         );
     }
 
+    // Add employee account
     static addEmployeeAccount(employeeAccountData: interfaces.EmployeeAccount,
                               employeeCompanyData: interfaces.EmployeeCompanyDetail,
                               employeeEmergencyData: interfaces.EmployeeEmergencyDetail,
@@ -210,7 +231,7 @@ export default abstract class Employee {
             qb(TABLE.employeeAccount).insert(employeeAccountData),
             qb(TABLE.employeePersonalDetail).insert(employeePersonalData),
             qb(TABLE.employeeEmergencyDetail).insert(employeeEmergencyData),
-            qb(TABLE.customDetails).insert(employeeCustomData),
+            qb(TABLE.employeeCustomDetail).insert(employeeCustomData),
             this.setPhoneNumbers(phoneNumber.employeeId, phoneNumber)
         );
     };
@@ -219,27 +240,28 @@ export default abstract class Employee {
     /**
      * UPDATE Queries ----------------------------------------------------------------------------------------
      */
+    // Set supervisor
     static setSupervisor(employeeId: string, supervisorId: string) {
         return runQuery(
             qb(TABLE.employeeCompanyDetail).update({supervisorId}).where({employeeId})
         );
     }
 
+    // Update phone numbers
     static setPhoneNumbers(employeeId : string, phoneNumbers : any){
         if(phoneNumbers == null){
             return qb()
         }
         const mobiles = phoneNumbers.phoneNumbers;
-        console.log("Mobile", mobiles);
-        console.log(qb().raw(`call set_phone_numbers($1 , $2)`, [employeeId, mobiles]).query)
         return qb().raw(`call set_phone_numbers($1 , $2)`, [employeeId, mobiles]);
     }
 
-    static updateEmployeePersonalInfo(employeeId : string, personalData : any, emergencyData : any, phoneNumbers : any) {
+    // Update employee personal info
+    static updateEmployeePersonalInfo(employeeId : string, personalData : any,
+                                      emergencyData : any, phoneNumbers : any) {
         const personalD = cleanQuery(personalData);
         const emergencyD = cleanQuery(emergencyData);
         const phoneD = cleanQuery(phoneNumbers);
-        console.log(qb(TABLE.employeePersonalDetail).update(personalD).where({employeeId}).query)
         return runTrx(
             qb(TABLE.employeePersonalDetail).update(personalD).where({employeeId}),
             qb(TABLE.employeeEmergencyDetail).update(emergencyD).where({employeeId}),
@@ -247,6 +269,7 @@ export default abstract class Employee {
         );
     }
 
+    // Update employee by managerial employee
     static updateEmployeeInfo(employeeId: string,
                               employeeCompanyData: any,
                               employeeEmergencyData: any,
@@ -260,9 +283,39 @@ export default abstract class Employee {
             qb(TABLE.employeeCompanyDetail).update(cleanQuery(employeeCompanyData)).where({employeeId}),
             qb(TABLE.employeePersonalDetail).update(cleanQuery(employeePersonalData)).where({employeeId}),
             qb(TABLE.employeeEmergencyDetail).update(cleanQuery(employeeEmergencyData)).where({employeeId}),
-            qb(TABLE.customDetails).update(cleanQuery(employeeCustomData)).where({employeeId}),
+            qb(TABLE.employeeCustomDetail).update(cleanQuery(employeeCustomData)).where({employeeId}),
             this.setPhoneNumbers(employeeId, cleanQuery(phoneNumbers))
         );
+    }
+
+
+    static changePasswordEmployee(employeeId : string,newPassword : string){
+        return runQuery(
+            qb(TABLE.employeeAccount).update({password : newPassword}).where({employeeId})
+        )
+    }
+
+    static changePasswordAdmin(userId : string,newPassword : string){
+        return runQuery(
+            qb(TABLE.adminAccount).update({password : newPassword}).where({userId})
+        )
+    }
+
+    /**
+     * Change employee custom attributes
+     */
+    // Insert custom attributes
+    static insertCustomAttributes(customColumns : interfaces.CustomColumn){
+        return runQuery(
+            qb(TABLE.customColumn).insert(customColumns)
+        )
+    }
+
+    // Delete custom attributes
+    static deleteCustomAttributes(customColumn : string){
+        return runQuery(
+            qb(TABLE.customColumn).delete().where({customColumn})
+        )
     }
 
 }

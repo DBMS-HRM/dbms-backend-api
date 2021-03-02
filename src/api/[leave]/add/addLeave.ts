@@ -9,7 +9,8 @@ import {inspectBuilder,body} from "../../../utils/inspect";
 const leaveRequest_inspector = inspectBuilder(
     body("leaveType").exists().withMessage("Leave type is required")
         .isIn([...Object.values(model.leave.leaveTypes)]).withMessage("Invalid leave type"),
-    body("leaveDate").exists().withMessage("Leave date is required")
+    body("fromDate").exists().withMessage("Leave from date is required"),
+    body("toDate").exists().withMessage("Leave to date is required")
 )
 
 const add_Leave : Handler = async (req,res,next) => {
@@ -18,11 +19,12 @@ const add_Leave : Handler = async (req,res,next) => {
     const leaveRequestData = {
         leaveId : UUID(),
         employeeId : req.user.userId,
-        requestedDate : new Date(req.body.leaveDate),
+        fromDate : new Date(req.body.fromDate),
+        toDate   : new Date(req.body.toDate),
         leaveStatus : model.leave.leaveRequestStates.pending,
         leaveType : req.body.leaveType
     }
-    console.log(leaveRequestData);
+
     const [{code}] = await model.leave.addLeave(leaveRequestData);
 
     if(code === MErr.NO_ERROR){
@@ -39,4 +41,15 @@ const add_Leave : Handler = async (req,res,next) => {
     r.pb.ISE().send();
 }
 
-export default [leaveRequest_inspector, add_Leave as EHandler];
+const $check_forSupervisor : Handler = (req,res,next) => {
+    const {r} = res;
+    if(req.user.supervisorId === undefined ||req.user.supervisorId === null ){
+        r.status.FORBIDDEN()
+            .message("You should have supervisor to request for a leave")
+            .send()
+        return;
+    }
+    next();
+    return;
+}
+export default [$check_forSupervisor as EHandler,leaveRequest_inspector, add_Leave as EHandler];

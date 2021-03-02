@@ -10,14 +10,15 @@ export const adminAccount_inspector = inspectBuilder(
         .isLength({min : 6}).withMessage("Password should be more than 6 characters"),
     body("email").exists().withMessage("Email is required")
         .isEmail().withMessage("Email should be a valid email address"),
-    body("branchName").exists().withMessage("Branch Name is required"),
+    body("branchName").exists().withMessage("Branch Name is required")
+        .isIn([...Object.values(model.user.branch_names)]).withMessage("Branch Name is not valid"),
     body("accountType").optional(),
 
 )
 
 
 /**
- * Add Employee account inspector
+ * Add User account inspector
  */
 
 export const employeeAccount_inspector = inspectBuilder(
@@ -39,29 +40,33 @@ export const managerialEmployee_EmployeeAccountType_inspector = inspectBuilder(
 )
 
 /**
- * Add Employee company details inspector
+ * Add User company details inspector
  */
 
 export const employeeCompanyData_inspector = inspectBuilder(
-    body("branchName").exists().withMessage("Branch Id is required"),
+    body("branchName").exists().withMessage("Branch Id is required")
+        .isIn([...Object.values(model.user.branch_names)])
+        .withMessage("Branch Name is not valid"),
     body("jobTitle").exists().withMessage("Branch Name is required")
-        .if((value :string,{req} :any) => req.body.accountType === model.user.user_account_types.managerialEmployee)
-        .isIn([model.user.job_titles.HRManager]).withMessage("Job title is not valid"),
-    body("employmentStatus").exists().withMessage("Employment status is required")
-        .isIn([...Object.values(model.user.employment_status)]).withMessage("Employment status is not valid"),
-    body("payGrade").exists().withMessage("Branch Id is required")
-        .isIn([...Object.values(model.user.pay_grade)]).withMessage("Pay grade is not valid"),
-    body("departmentName").exists().withMessage("Department name is required"),
-    body("supervisorId")
         .if((value :string,{req} :any) =>
-            req.body.payGrade != model.user.pay_grade.level3 &&
-            req.body.accountType != model.user.user_account_types.managerialEmployee)
-        .exists().withMessage("Supervisor id is required").isUUID().withMessage("Supervisor id is not valid"),
+            req.body.accountType === model.user.user_account_types.managerialEmployee)
+        .isIn([model.user.job_titles.HRManager])
+        .withMessage("Job title is not valid"),
+    body("employmentStatus").exists().withMessage("Employment status is required")
+        .isIn([...Object.values(model.user.employment_status)])
+        .withMessage("Employment status is not valid"),
+    body("payGrade").exists().withMessage("Branch Id is required")
+        .isIn([...Object.values(model.user.pay_grade)])
+        .withMessage("Pay grade is not valid"),
+    body("departmentName").exists().withMessage("Department name is required")
+        .isIn([...Object.values(model.user.department_names)])
+        .withMessage("Department Name is not valid"),
+    body("supervisorId").isUUID().withMessage("Supervisor id is not valid"),
 
 )
 
 /**
- * Add Employee emergency details inspector
+ * Add User emergency details inspector
  */
 
 export const employeeEmergencyData_inspector = inspectBuilder(
@@ -74,7 +79,7 @@ export const employeeEmergencyData_inspector = inspectBuilder(
 )
 
 /**
- * Add Employee personal details inspector
+ * Add User personal details inspector
  */
 
 export const employeePersonalData_inspector = inspectBuilder(
@@ -87,7 +92,7 @@ export const employeePersonalData_inspector = inspectBuilder(
 )
 
 /**
- * Add Employee custom details inspector
+ * Add User custom details inspector
  */
 
 export const employeeCustomData_inspector = inspectBuilder(

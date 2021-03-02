@@ -13,7 +13,7 @@ export interface AdminAccount {
 }
 
 /**
- * Employee Account interfaces
+ * User Account interfaces
  */
 export interface EmployeeAccount {
     employeeId : string;
@@ -88,7 +88,7 @@ export interface Supervisor {
 
 
 /**
- * Employee related Types
+ * User related Types
  */
 export interface Branch {
     branchId : string;
@@ -109,25 +109,59 @@ export interface EmploymentStatus {
 
 export interface PayGrade {
     payGrade : string;
-    annualLeaves : number,
-    casualLeaves : number,
-    maternityLeaves : number,
-    nopayLeaves : number,
+    annualLeaves : number;
+    casualLeaves : number;
+    maternityLeaves : number;
+    nopayLeaves : number;
 }
 
 /**
  * Leave related Types
  */
 export interface LeaveRequest {
-    leaveId  : string,
-    employeeId  : string,
-    requestedDate  : typeof Date,
-    leaveStatus  : string,
-    leaveType  : string,
-    reviewedDate  : typeof Date,
-    supervisorId : string
+    leaveId  : string;
+    employeeId  : string;
+    reviewedDate  : typeof Date;
+    leaveStatus  : string;
+    leaveType  : string;
+    supervisorId : string;
+    fromDate  : typeof Date;
+    toDate  : typeof Date;
+
+}
+
+export interface SupervisorLeaveRequest {
+    employeeId  : string;
+    branchName : string;
+    jobTitle : string;
+    employmentStatus : string;
+    payGrade : string;
+    departmentName : string;
+    supervisorId : string;
+    firstName : string;
+    lastName : string;
+    maritalStatus : string;
+    leaveId  : string;
+    leaveStatus  : string;
+    leaveType  : string;
+    reviewedDate  : typeof Date;
+    fromDate  : typeof Date;
+    toDate  : typeof Date;
+
 }
 
 /**
  * Report related Types
  */
+
+
+/**
+ * Custom attributes
+ */
+
+export interface CustomColumn {
+    customColumn : string,
+    dataType : string,
+    defaultValue : string
+}
+
