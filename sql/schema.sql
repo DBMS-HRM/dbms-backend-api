@@ -499,19 +499,19 @@ CREATE TRIGGER before_leave_request BEFORE INSERT OR UPDATE ON leave_request
     FOR EACH ROW EXECUTE PROCEDURE before_add_leave_request();
 
 -- Utils
-CREATE OR REPLACE FUNCTION real_difference(_lower DATE, _from DATE, _to DATE, _upper DATE) RETURNS INTEGER AS $$
+CREATE OR REPLACE FUNCTION real_difference(d_lower DATE, d_from DATE, d_to DATE, d_upper DATE) RETURNS INTEGER AS $$
 
     DECLARE
         diff INTEGER;
     BEGIN
-	   IF (_lower < _from) AND (_to < _upper) THEN
-	    	diff := coalesce(1 + _to - _from, 0);
-	   ELSIF (_from < _lower) AND (_to < _upper) THEN
-	    	diff := coalesce(1 + _to - _lower, 0);
-	   ELSIF (_lower < _from) AND (_upper < _to) THEN
-	    	diff := coalesce(1 + _upper - _from, 0);
-	   ELSIF (_from < lower) AND (_upper < _to)
-	    	diff := coalesce(1 + _upper - _lower, 0);
+	   IF (d_lower < d_from) AND (d_to < d_upper) THEN
+	    	diff := coalesce(1 + d_to - d_from, 0);
+	   ELSIF (d_from < d_lower) AND (d_lower < d_to) AND  (d_to < d_upper) THEN
+	    	diff := coalesce(1 + d_to - d_lower, 0);
+	   ELSIF (d_lower < d_from) AND (d_from < d_upper) AND (d_upper < d_to) THEN
+	    	diff := coalesce(1 + d_upper - d_from, 0);
+	   ELSIF (d_from < d_lower) AND (d_upper < d_to) THEN
+	    	diff := coalesce(1 + d_upper - d_lower, 0);
 	   ELSE
 	   		diff := 0;
 	   END IF;
@@ -519,5 +519,6 @@ CREATE OR REPLACE FUNCTION real_difference(_lower DATE, _from DATE, _to DATE, _u
     END;
 
 $$ LANGUAGE plpgsql;
+
 
 
