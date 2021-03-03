@@ -101,7 +101,7 @@ export default abstract class ReportModel {
                             JOIN employee_personal_detail USING(employee_id)
                             JOIN employee_custom_details USING(employee_id)
                                 WHERE employee_company_detail.branch_name = $1
-                                GROUP BY employee_custom_details.shift`,[branchName])
+                                GROUP BY employee_custom_details.${customColumn}`,[branchName])
         );
     }
 
