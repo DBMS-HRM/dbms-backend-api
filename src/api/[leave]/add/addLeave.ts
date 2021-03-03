@@ -33,7 +33,7 @@ const add_Leave : Handler = async (req,res,next) => {
             .send()
         return
     }else if(code === MErr.UNKNOWN){
-        r.status.OK()
+        r.status.ERROR()
             .message("Not enough leaves")
             .send()
         return
