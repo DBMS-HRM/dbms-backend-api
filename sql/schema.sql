@@ -279,6 +279,21 @@ CREATE MATERIALIZED VIEW meta_data AS
 	UNION SELECT 'departments' as meta_name, jsonb_agg(row_to_json(d)) as meta_data FROM department d GROUP BY meta_name
 	UNION SELECT 'custom_columns' as meta_name, jsonb_agg(row_to_json(cc)) as meta_data FROM custom_column cc GROUP BY meta_name;
 
+
+CREATE FUNCTION refresh_meta_data_view() RETURNS trigger AS $$
+
+    BEGIN
+	    REFRESH MATERIALIZED VIEW meta_data;
+	   	RETURN NEW;
+    END;
+
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER refresh_meta_data_view AFTER INSERT OR UPDATE ON pay_grade
+    FOR EACH ROW EXECUTE PROCEDURE refresh_meta_data_view();
+
+
 -- custom attribute triggers
 -- Run after new insertion to custom_column
 CREATE FUNCTION add_new_column() RETURNS trigger AS $$
