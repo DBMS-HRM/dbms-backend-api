@@ -1,5 +1,5 @@
 import {EHandler, Handler} from "../../../utils/types";
-import {inspectBuilder, body} from "../../../utils/inspect";
+import {inspectBuilder, body,param} from "../../../utils/inspect";
 import model, {MErr} from "../../../model";
 import {toCamelCase, toSnakeCase} from "../../../utils/db/typo";
 
@@ -14,7 +14,7 @@ const insert_inspector = inspectBuilder(
 )
 
 const delete_inspector = inspectBuilder(
-    body("customColumn").exists().withMessage("Attribute name is required"),
+    param("customColumn").exists().withMessage("Attribute name is required"),
 )
 
 
@@ -55,7 +55,7 @@ const insert_CustomColumn: Handler = async (req, res) => {
 const delete_CustomColumn: Handler = async (req, res) => {
     const {r} = res;
 
-    const [{code}] = await model.user.deleteCustomAttributes(toSnakeCase(req.body.customColumn));
+    const [{code}] = await model.user.deleteCustomAttributes(toSnakeCase(req.params.customColumn));
 
     if (code === MErr.NO_ERROR) {
         r.status.OK()
