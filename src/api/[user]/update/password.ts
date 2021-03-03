@@ -23,10 +23,9 @@ const forgot_password_inspector = inspectBuilder(
 const update_PasswordEmployee: Handler = async (req, res) => {
     const {r} = res;
     const employeeId = req.params.userId;
-    const newPassword = req.body.newPassword;
-    req.body.newPassword = await encrypt_password(req.body.newPassword);
+    const newPassword = await encrypt_password(req.body.newPassword);
     const [{code}] = await model.user.changePasswordEmployee(
-        employeeId,newPassword
+        employeeId, newPassword
     );
 
     if (code === MErr.NO_ERROR) {
@@ -45,8 +44,7 @@ const update_PasswordEmployee: Handler = async (req, res) => {
 const update_PasswordAdmin: Handler = async (req, res) => {
     const {r} = res;
     const userId = req.params.userId;
-    const newPassword = req.body.newPassword;
-
+    const newPassword = await encrypt_password(req.body.newPassword);
     const [{code}] = await model.user.changePasswordAdmin(
         userId,newPassword
     );

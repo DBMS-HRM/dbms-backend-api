@@ -441,7 +441,7 @@ CREATE VIEW employee_remaining_leaves AS
     					and leave_type = 'Maternity'
     					and	date_part('year', (SELECT reviewed_date)) = date_part('year', (SELECT current_date)))
     				as maternity,
-    		pg.maternity_leaves - (select COALESCE(SUM(1 + (to_date - from_date)), 0) from leave_request
+    		pg.nopay_leaves - (select COALESCE(SUM(1 + (to_date - from_date)), 0) from leave_request
     				where employee_id = ecd.employee_id
     					and leave_status = 'Approved'
     					and leave_type = 'No-pay'
