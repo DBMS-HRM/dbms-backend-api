@@ -3,26 +3,45 @@
 --    █░░ █░░ █▀▀ █▄▄█ █▄▄▀ 　 ▀▀█ █░░ █▀▀█ █▀▀ █░▀░█ █▄▄█
 --    ▀▀▀ ▀▀▀ ▀▀▀ ▀░░▀ ▀░▀▀ 　 ▀▀▀ ▀▀▀ ▀░░▀ ▀▀▀ ▀░░░▀ ▀░░▀
 
-DROP TABLE IF EXISTS job_title;
-DROP TABLE IF EXISTS employment_status;
-DROP TABLE IF EXISTS pay_grade;
-DROP TABLE IF EXISTS department;
-DROP TABLE IF EXISTS employee_personal_detail;
-DROP TABLE IF EXISTS employee_emergency_detail;
-DROP TABLE IF EXISTS employee_account;
-DROP TABLE IF EXISTS phone_number;
+-- Leave Module
+DROP TRIGGER IF EXISTS before_leave_request ON leave_request;
+DROP FUNCTION IF EXISTS before_add_leave_request;
+
+DROP VIEW IF EXISTS employee_remaining_leaves;
+DROP VIEW IF EXISTS supervisor_leave_request;
+
+DROP TABLE IF EXISTS leave_request;
+DROP TABLE IF EXISTS leave_type;
+DROP TABLE IF EXISTS leave_request_state;
+
+-- Employee Module
+DROP PROCEDURE IF EXISTS set_phone_numbers;
+DROP VIEW IF EXISTS employee_login_details;
+DROP FUNCTION IF EXISTS is_supervisor;
+
+DROP VIEW IF EXISTS supervisor_employees;
+DROP VIEW IF EXISTS employee_details_full;
+DROP VIEW IF EXISTS employee_details_ea_ecd;
+
 DROP TABLE IF EXISTS custom_details;
-DROP TABLE IF EXISTS supervisor;
+DROP TABLE IF EXISTS phone_number;
+DROP TABLE IF EXISTS employee_emergency_detail;
+DROP TABLE IF EXISTS employee_personal_detail;
+DROP TABLE IF EXISTS employee_account;
 DROP TABLE IF EXISTS employee_company_detail;
 DROP TABLE IF EXISTS employee_account_type;
+DROP TABLE IF EXISTS employment_status;
 
+-- Admin Module
 DROP TABLE IF EXISTS admin_account;
 DROP TABLE IF EXISTS admin_account_type;
 
-DROP TABLE IF EXISTS leave_approval_supervisor;
-DROP TABLE IF EXISTS leave_request;
-DROP TABLE IF EXISTS leave_request_state;
-DROP TABLE IF EXISTS leave_type;
+-- Core
+DROP TABLE IF EXISTS pay_grade;
+DROP TABLE IF EXISTS job_title;
+DROP TABLE IF EXISTS department;
+DROP TABLE IF EXISTS branch;
+
 
 
 --    █▀▀ █▀▀█ █▀▀█ █▀▀
@@ -48,6 +67,7 @@ CREATE TABLE pay_grade (
     maternity_leaves INTEGER  NOT NULL DEFAULT 50,
     nopay_leaves INTEGER  NOT NULL DEFAULT 50
 );
+
 
 
 --    █▀▀█ █▀▀▄ █▀▄▀█ ░▀░ █▀▀▄
@@ -103,6 +123,12 @@ CREATE TABLE employee_company_detail (
     FOREIGN KEY(department_name) REFERENCES department(department_name) ON DELETE RESTRICT
 );
 
+
+CREATE INDEX idx_ecd_branch_name ON employee_company_detail (branch_name);
+CREATE INDEX idx_ecd_department_name ON employee_company_detail (department_name);
+CREATE INDEX idx_ecd_supervisor_id ON employee_company_detail (supervisor_id);
+
+
 CREATE TABLE employee_account (
     employee_id UUID PRIMARY KEY,
     username VARCHAR(20) NOT NULL UNIQUE,
@@ -114,6 +140,10 @@ CREATE TABLE employee_account (
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT,
     FOREIGN KEY (account_type) REFERENCES employee_account_type(type) ON DELETE RESTRICT
 );
+
+
+CREATE INDEX idx_ea_status ON employee_account (status);
+
 
 CREATE TABLE employee_personal_detail (
     employee_id UUID PRIMARY KEY,
@@ -141,9 +171,21 @@ CREATE TABLE phone_number (
     FOREIGN KEY (employee_id) REFERENCES employee_emergency_detail(employee_id) ON DELETE RESTRICT
 );
 
-CREATE TABLE custom_details (
+CREATE TABLE employee_custom_details (
     employee_id UUID PRIMARY KEY,
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT
+);
+
+-- Data types which are allowed for custom columns
+--      TEXT    - VARCHAR(255)
+--      NUMBER  - DECIMAL
+-- * default value always should be a text. when data type is numeric it is converted internally
+CREATE TYPE column_datatype AS ENUM ('TEXT', 'NUMBER');
+
+CREATE TABLE custom_column (
+    custom_column VARCHAR(100) PRIMARY KEY,
+    data_type COLUMN_DATATYPE, -- 'TEXT' or 'NUMBER'
+    default_value VARCHAR(255)
 );
 
 
@@ -151,15 +193,17 @@ CREATE VIEW employee_details_ea_ecd AS
     SELECT ecd.*, ea.username, ea.email_address, ea.account_type, ea.status FROM employee_account ea
 		JOIN employee_company_detail ecd ON ea.employee_id = ecd.employee_id;
 
+
 CREATE VIEW employee_details_full AS
 	SELECT *
 	    FROM employee_account ea
 		NATURAL JOIN employee_company_detail
 		NATURAL JOIN employee_personal_detail
 		NATURAL JOIN employee_emergency_detail
-		NATURAL JOIN custom_details
-		NATURAL JOIN
-			(select employee_id, jsonb_agg(phone_number) from phone_number pn group by employee_id) as pns;
+		NATURAL JOIN employee_custom_details
+		LEFT JOIN
+			(select employee_id, jsonb_agg(phone_number) as phone_numbers
+			    from phone_number pn group by employee_id) as pns USING(employee_id);
 
 
 CREATE VIEW supervisor_employees AS
@@ -173,15 +217,28 @@ CREATE VIEW supervisor_employees AS
             JOIN employee_company_detail sup ON emp.supervisor_id = sup.employee_id
                 GROUP BY sup.employee_id;
 
-CREATE VIEW employee_login_details AS
-	SELECT *, is_supervisor(employee_id)
-		FROM employee_account ea
-		JOIN employee_company_detail ecd USING(employee_id)
-		JOIN employee_personal_detail epd USING(employee_id);
+
+CREATE VIEW supervisor_details AS
+    SELECT
+            ecd.employee_id,
+            ecd.branch_name,
+            ecd.department_name,
+            ecd.employment_status,
+            ecd.job_title,
+            ecd.pay_grade,
+            epd.first_name,
+            epd.last_name,
+            epd.marital_status,
+            COUNT(ecd2.employee_id) as subordinate_count
+        FROM employee_company_detail ecd
+        JOIN employee_personal_detail epd USING(employee_id)
+        LEFT JOIN employee_company_detail ecd2
+            ON ecd2.supervisor_id = ecd.employee_id
+                WHERE ecd.pay_grade != 'Level 1' AND ecd.pay_grade != 'Level 2'
+                GROUP BY ecd.employee_id, epd.first_name, epd.last_name, epd.marital_status;
 
 
 CREATE FUNCTION is_supervisor(emp_id UUID) RETURNS BOOLEAN AS $is_sup$
-
     BEGIN
 
         PERFORM employee_id FROM employee_company_detail ecd WHERE ecd.supervisor_id = emp_id;
@@ -192,10 +249,17 @@ CREATE FUNCTION is_supervisor(emp_id UUID) RETURNS BOOLEAN AS $is_sup$
         END IF;
 
     END;
-
 $is_sup$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE PROCEDURE set_phone_numbers(emp_id UUID, phone_numbers JSON)
+
+CREATE VIEW employee_login_details AS
+	SELECT *, is_supervisor(employee_id)
+		FROM employee_account ea
+		JOIN employee_company_detail ecd USING(employee_id)
+		JOIN employee_personal_detail epd USING(employee_id);
+
+
+CREATE PROCEDURE set_phone_numbers(emp_id UUID, phone_numbers JSON)
 LANGUAGE plpgsql
 AS $pn$
 	DECLARE
@@ -208,6 +272,103 @@ AS $pn$
 		END loop ;
 	END ;
 $pn$;
+
+CREATE MATERIALIZED VIEW meta_data AS
+	SELECT 'pay_grades' as meta_name, jsonb_agg(row_to_json(pg)) as meta_data FROM pay_grade pg GROUP BY meta_name
+	UNION SELECT 'branches' as meta_name, jsonb_agg(row_to_json(b)) as meta_data FROM branch b GROUP BY meta_name
+	UNION SELECT 'departments' as meta_name, jsonb_agg(row_to_json(d)) as meta_data FROM department d GROUP BY meta_name
+	UNION SELECT 'custom_columns' as meta_name, jsonb_agg(row_to_json(cc)) as meta_data FROM custom_column cc GROUP BY meta_name;
+
+-- custom attribute triggers
+-- Run after new insertion to custom_column
+CREATE FUNCTION add_new_column() RETURNS trigger AS $$
+
+	DECLARE
+		_query TEXT;
+    BEGIN
+		IF NEW.data_type = 'TEXT' THEN
+			_query := format(
+                            'ALTER TABLE employee_custom_details ADD COLUMN %s %s DEFAULT ''%s''',
+                            NEW.custom_column, 'VARCHAR(255)', NEW.default_value
+		                );
+		ELSE
+			_query := format(
+                            'ALTER TABLE employee_custom_details ADD COLUMN %s %s DEFAULT %s::DECIMAL',
+                            NEW.custom_column, 'DECIMAL', NEW.default_value
+		                );
+		END IF;
+
+	   	RAISE NOTICE '%', _query;
+		EXECUTE _query;
+
+        REFRESH MATERIALIZED VIEW meta_data;
+	   	RETURN NEW;
+    END;
+
+$$ LANGUAGE plpgsql;
+
+
+-- Run before removing custom column custom_column
+CREATE FUNCTION remove_old_column() RETURNS trigger AS $$
+
+	DECLARE
+		_query TEXT;
+    BEGIN
+
+		_query := format(
+                          'ALTER TABLE employee_custom_details DROP COLUMN %s',
+                           OLD.custom_column
+		                );
+
+
+	   	RAISE NOTICE '%', _query;
+		EXECUTE _query;
+
+        REFRESH MATERIALIZED VIEW meta_data;
+	   	RETURN OLD;
+    END;
+
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE TRIGGER add_new_column AFTER INSERT ON custom_column
+    FOR EACH ROW EXECUTE PROCEDURE add_new_column();
+
+CREATE TRIGGER remove_old_column BEFORE DELETE ON custom_column
+    FOR EACH ROW EXECUTE PROCEDURE remove_old_column();
+
+
+CREATE OR REPLACE FUNCTION before_update_com_details() RETURNS trigger AS $$
+
+    DECLARE
+       	sup_sup_id UUID;
+       	sup_pay_grade VARCHAR(20);
+    BEGIN
+
+        IF NEW.supervisor_id IS NOT NULL THEN
+        	SELECT supervisor_id, pay_grade  INTO sup_sup_id, sup_pay_grade
+        			FROM employee_company_detail ecd2
+        				WHERE employee_id = NEW.supervisor_id;
+
+        	IF NEW.employee_id = sup_sup_id THEN
+                RAISE EXCEPTION 'Supervisor cannot become supervisor to his supervisor';
+            END IF;
+
+           	IF sup_pay_grade != 'Level 3' THEN
+				RAISE EXCEPTION 'Supervisor must have pay grade of Level 1';
+           	END IF;
+        END IF;
+
+        RETURN NEW;
+    END;
+
+$$ LANGUAGE plpgsql;
+
+-- Trigger inserting into employee company details
+CREATE TRIGGER before_update_com_details BEFORE INSERT OR UPDATE ON employee_company_detail
+    FOR EACH ROW EXECUTE PROCEDURE before_update_com_details();
+
 
 
 --    █░░ █▀▀ █▀▀█ ▀█░█▀ █▀▀
@@ -229,8 +390,9 @@ CREATE TABLE leave_request (
     employee_id UUID NOT NULL,
     leave_status VARCHAR(20) NOT NULL,
     leave_type VARCHAR(20) NOT NULL,
-    requested_date DATE NOT NULL,
-    approved_date DATE,
+    from_date DATE NOT NULL,
+    to_date DATE NOT NULL,
+    reviewed_date DATE,
     supervisor_id UUID NOT NULL,
     FOREIGN KEY (employee_id) REFERENCES employee_company_detail(employee_id) ON DELETE RESTRICT,
     FOREIGN KEY (leave_status) REFERENCES leave_request_state(leave_state) ON DELETE RESTRICT,
@@ -239,13 +401,19 @@ CREATE TABLE leave_request (
 );
 
 
+CREATE INDEX idx_lr_employee_id ON leave_request (employee_id);
+CREATE INDEX idx_lr_leave_status ON leave_request (leave_status);
+CREATE INDEX idx_lr_leave_type ON leave_request (leave_type);
+
+
 CREATE VIEW supervisor_leave_request As
     SELECT ecd.*,
     	   epd.first_name, epd.last_name, epd.marital_status,
            lr.leave_id,
            lr.leave_status,
            lr.leave_type,
-           lr.requested_date,
+           lr.from_date,
+           lr.to_date,
            lr.reviewed_date
         FROM employee_company_detail ecd
             NATURAL JOIN employee_personal_detail epd
@@ -254,53 +422,54 @@ CREATE VIEW supervisor_leave_request As
 
 -- Leave count view
 CREATE VIEW employee_remaining_leaves AS
-    SELECT ecd.employee_id,
-
-    		pg.annual_leaves - (select count(leave_id) from leave_request
+	SELECT ecd.employee_id,
+    		pg.annual_leaves - (select COALESCE(SUM(1 + (to_date - from_date)), 0) from leave_request
     				where employee_id = ecd.employee_id
-    					and leave_state = 'Approved'
+    					and leave_status = 'Approved'
     					and leave_type = 'Annual'
-    					and	date_part('year', (SELECT approved_date))) = date_part('year', (SELECT current_date)))
+    					and	date_part('year', (SELECT reviewed_date)) = date_part('year', (SELECT current_date)))
     				as annual,
-
-    		pg.casual_leaves - (select count(leave_id) from leave_request
+    		pg.casual_leaves - (select COALESCE(SUM(1 + (to_date - from_date)), 0) from leave_request
     				where employee_id = ecd.employee_id
-    					and leave_state = 'Approved'
+    					and leave_status = 'Approved'
     					and leave_type = 'Casual'
-    					and	date_part('year', (SELECT approved_date))) = date_part('year', (SELECT current_date)))
+    					and	date_part('year', (SELECT reviewed_date)) = date_part('year', (SELECT current_date)))
     				as casual,
-
-    		pg.maternity_leaves - (select count(leave_id) from leave_request
+    		pg.maternity_leaves - (select COALESCE(SUM(1 + (to_date - from_date)), 0) from leave_request
     				where employee_id = ecd.employee_id
-    					and leave_state = 'Approved'
+    					and leave_status = 'Approved'
     					and leave_type = 'Maternity'
-    					and	date_part('year', (SELECT approved_date))) = date_part('year', (SELECT current_date)))
+    					and	date_part('year', (SELECT reviewed_date)) = date_part('year', (SELECT current_date)))
     				as maternity,
-
-    		pg.maternity_leaves - (select count(leave_id) from leave_request
+    		pg.maternity_leaves - (select COALESCE(SUM(1 + (to_date - from_date)), 0) from leave_request
     				where employee_id = ecd.employee_id
-    					and leave_state = 'Approved'
+    					and leave_status = 'Approved'
     					and leave_type = 'No-pay'
-    					and	date_part('month', (SELECT approved_date))) = date_part('month', (SELECT current_date)))
-    				as nopay,
-
+    					and	date_part('month', (SELECT reviewed_date)) = date_part('month', (SELECT current_date)))
+    				as nopay
     FROM employee_company_detail ecd
     	JOIN pay_grade pg ON pg.pay_grade = ecd.pay_grade;
 
 
 
 -- Run before insert leave request
-CREATE FUNCTION before_add_leave_request() RETURNS trigger AS $before_leave$
+CREATE OR REPLACE FUNCTION before_add_leave_request() RETURNS trigger AS $before_leave$
 
     DECLARE
         remaining INTEGER;
+       	current_status VARCHAR(20);
     BEGIN
-
         -- Check whether supervisor is correct
         IF NEW.supervisor_id IS NOT NULL THEN
             IF (select supervisor_id from employee_company_detail ecd
                	    where employee_id = NEW.employee_id) != NEW.supervisor_id THEN
                 RAISE EXCEPTION 'Unauthorized supervisor id';
+            END IF;
+        END IF;
+
+       	IF NEW.leave_status IS NOT NULL THEN
+            IF (OLD.leave_status != NEW.leave_status) AND OLD.leave_status != 'Pending' THEN
+                RAISE EXCEPTION 'Cannot change status from Approved or Rejected';
             END IF;
         END IF;
 
@@ -316,7 +485,7 @@ CREATE FUNCTION before_add_leave_request() RETURNS trigger AS $before_leave$
             RAISE EXCEPTION 'Invalid leave type';
         END IF;
 
-        IF remaining <= 0 THEN
+        IF remaining < ((1 + (NEW.to_date - NEW.from_date)) - COALESCE(1 + (OLD.to_date - OLD.from_date), 0)) THEN
             RAISE EXCEPTION 'No remaining leaves';
         ELSE
             RETURN NEW;
@@ -328,3 +497,27 @@ $before_leave$ LANGUAGE plpgsql;
 -- Trigger when insert a leave request
 CREATE TRIGGER before_leave_request BEFORE INSERT OR UPDATE ON leave_request
     FOR EACH ROW EXECUTE PROCEDURE before_add_leave_request();
+
+-- Utils
+CREATE OR REPLACE FUNCTION real_difference(_lower DATE, _from DATE, _to DATE, _upper DATE) RETURNS INTEGER AS $$
+
+    DECLARE
+        diff INTEGER;
+    BEGIN
+	   IF (_lower < _from) AND (_to < _upper) THEN
+	    	diff := coalesce(1 + _to - _from, 0);
+	   ELSIF (_from < _lower) AND (_to < _upper) THEN
+	    	diff := coalesce(1 + _to - _lower, 0);
+	   ELSIF (_lower < _from) AND (_upper < _to) THEN
+	    	diff := coalesce(1 + _upper - _from, 0);
+	   ELSIF (_from < lower) AND (_upper < _to)
+	    	diff := coalesce(1 + _upper - _lower, 0);
+	   ELSE
+	   		diff := 0;
+	   END IF;
+	   RETURN diff;
+    END;
+
+$$ LANGUAGE plpgsql;
+
+
