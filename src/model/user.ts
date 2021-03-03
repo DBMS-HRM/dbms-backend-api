@@ -251,10 +251,10 @@ export default abstract class User {
 
     // Update phone numbers
     static setPhoneNumbers(employeeId : string, phoneNumbers : any){
-        if(phoneNumbers == null){
+        if(phoneNumbers == null || phoneNumbers.phoneNumbers.length === 0){
             return qb()
         }
-        const mobiles = phoneNumbers.phoneNumbers;
+        const mobiles = JSON.stringify(phoneNumbers.phoneNumbers);
         return qb().raw(`call set_phone_numbers($1 , $2)`, [employeeId, mobiles]);
     }
 
